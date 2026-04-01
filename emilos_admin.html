@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emilio's Grocery — Editor de Precios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #E31837;
+            --red-dark: #a50f25;
+            --green: #00843D;
+            --yellow: #FFC107;
+            --white: #ffffff;
+            --bg: #0f0f0f;
+            --surface: #1a1a1a;
+            --surface2: #242424;
+            --border: #333;
+            --text: #f0f0f0;
+            --text-muted: #888;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; min-height: 100vh; }
+
+        /* ── LOGIN ── */
+        #login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at 50% 0%, #3a0010 0%, #0f0f0f 70%);
+        }
+        .login-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+        }
+        .login-box img { width: 180px; margin-bottom: 24px; }
+        .login-box h2 { font-family: 'Fredoka', sans-serif; font-size: 28px; color: var(--red); margin-bottom: 6px; }
+        .login-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 32px; }
+        .pin-display {
+            display: flex; gap: 12px; justify-content: center; margin-bottom: 24px;
+        }
+        .pin-dot {
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: transparent;
+            transition: all 0.2s;
+        }
+        .pin-dot.filled { background: var(--red); border-color: var(--red); }
+        .pin-pad {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
+        }
+        .pin-btn {
+            background: var(--surface2); border: 1px solid var(--border); border-radius: 12px;
+            color: var(--text); font-size: 24px; font-weight: 700; padding: 18px;
+            cursor: pointer; transition: all 0.15s; font-family: 'Poppins', sans-serif;
+        }
+        .pin-btn:hover { background: var(--red); border-color: var(--red); transform: scale(1.05); }
+        .pin-btn:active { transform: scale(0.95); }
+        .pin-btn.del { font-size: 18px; color: var(--text-muted); }
+        #login-error { color: #ff4d4d; font-size: 13px; min-height: 20px; margin-top: 8px; }
+
+        /* ── DASHBOARD ── */
+        #dashboard { display: none; }
+        .topbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 16px; }
+        .topbar-left img { height: 44px; }
+        .topbar-title { font-family: 'Fredoka', sans-serif; font-size: 22px; color: var(--red); }
+        .topbar-sub { font-size: 12px; color: var(--text-muted); }
+        .btn-logout { background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 13px; padding: 8px 18px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+        .dashboard-body { padding: 32px; max-width: 1400px; margin: 0 auto; }
+
+        /* Save banner */
+        #save-banner {
+            background: var(--green);
+            color: white;
+            text-align: center;
+            padding: 14px;
+            font-weight: 700;
+            font-size: 15px;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 999;
+            transform: translateY(-100%);
+            transition: transform 0.4s ease;
+        }
+        #save-banner.show { transform: translateY(0); }
+
+        /* Section header */
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 20px; margin-top: 36px;
+        }
+        .section-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 26px;
+            color: var(--yellow);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .section-badge {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 12px;
+            font-family: 'Poppins', sans-serif;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* Price table */
+        .price-table {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .price-table-header {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            padding: 12px 20px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+        .price-row {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+            transition: background 0.15s;
+        }
+        .price-row:last-child { border-bottom: none; }
+        .price-row:hover { background: var(--surface2); }
+        .item-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text);
+        }
+        .item-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .lock-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            font-size: 11px; padding: 2px 8px; border-radius: 6px;
+            font-weight: 500;
+        }
+        .price-input-wrap { display: flex; align-items: center; gap: 8px; }
+        .price-input {
+            background: var(--surface2);
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            font-size: 18px;
+            font-weight: 800;
+            font-family: 'Poppins', sans-serif;
+            padding: 8px 14px;
+            border-radius: 10px;
+            width: 130px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            color: #00c965;
+        }
+        .price-input:focus {
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(227,24,55,0.15);
+        }
+        .price-input.changed {
+            border-color: var(--yellow);
+            background: rgba(255,193,7,0.07);
+        }
+
+        /* Fajitas section */
+        .fajita-table-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 12px 20px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+        .fajita-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+            transition: background 0.15s;
+        }
+        .fajita-row:last-child { border-bottom: none; }
+        .fajita-row:hover { background: var(--surface2); }
+
+        /* Save button */
+        .save-section {
+            margin-top: 40px;
+            padding: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .save-info { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+        .save-info strong { color: var(--text); display: block; font-size: 15px; margin-bottom: 4px; }
+        .btn-save {
+            background: var(--green);
+            color: white;
+            border: none;
+            font-size: 18px;
+            font-weight: 800;
+            font-family: 'Poppins', sans-serif;
+            padding: 16px 48px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            box-shadow: 0 8px 24px rgba(0,132,61,0.35);
+        }
+        .btn-save:hover { background: #006b31; transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,132,61,0.45); }
+        .btn-save:active { transform: translateY(0); }
+        .btn-save:disabled { background: #555; box-shadow: none; cursor: not-allowed; transform: none; }
+
+        /* Status dot */
+        .status-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); margin-top: 28px; margin-bottom: 8px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        .note-text { font-size: 12px; color: var(--text-muted); font-style: italic; margin-top: 8px; }
+
+        /* Responsive */
+        @media (max-width: 700px) {
+            .dashboard-body { padding: 16px; }
+            .price-table-header, .price-row { grid-template-columns: 1fr 1fr; }
+            .price-table-header div:nth-child(2),
+            .price-row div:nth-child(2) { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="save-banner">✅ ¡Precios guardados! Las pantallas se actualizarán en menos de 1 minuto.</div>
+
+<!-- ──────────────── LOGIN ──────────────── -->
+<div id="login-screen">
+    <div class="login-box">
+        <img src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="Logo">
+        <h2>Editor de Precios</h2>
+        <p>Ingresa tu PIN para continuar</p>
+        <div class="pin-display">
+            <div class="pin-dot" id="dot-0"></div>
+            <div class="pin-dot" id="dot-1"></div>
+            <div class="pin-dot" id="dot-2"></div>
+            <div class="pin-dot" id="dot-3"></div>
+        </div>
+        <div class="pin-pad">
+            <button class="pin-btn" onclick="pinPress('1')">1</button>
+            <button class="pin-btn" onclick="pinPress('2')">2</button>
+            <button class="pin-btn" onclick="pinPress('3')">3</button>
+            <button class="pin-btn" onclick="pinPress('4')">4</button>
+            <button class="pin-btn" onclick="pinPress('5')">5</button>
+            <button class="pin-btn" onclick="pinPress('6')">6</button>
+            <button class="pin-btn" onclick="pinPress('7')">7</button>
+            <button class="pin-btn" onclick="pinPress('8')">8</button>
+            <button class="pin-btn" onclick="pinPress('9')">9</button>
+            <button class="pin-btn del" onclick="pinDel()">⌫</button>
+            <button class="pin-btn" onclick="pinPress('0')">0</button>
+            <button class="pin-btn del" onclick="pinClear()">✕</button>
+        </div>
+        <div id="login-error"></div>
+    </div>
+</div>
+
+<!-- ──────────────── DASHBOARD ──────────────── -->
+<div id="dashboard">
+    <div class="topbar">
+        <div class="topbar-left">
+            <img src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="Logo">
+            <div>
+                <div class="topbar-title">Editor de Precios</div>
+                <div class="topbar-sub">Emilio's Grocery Digital Menu</div>
+            </div>
+        </div>
+        <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+
+    <div class="dashboard-body">
+
+        <div class="status-row">
+            <div class="status-dot"></div>
+            Las pantallas se actualizan automáticamente cada 30 segundos
+        </div>
+
+        <!-- PANTALLA 1: ESTILOS -->
+        <div class="section-header">
+            <div class="section-title">🌮 Pantalla 1 — Pick Your Style <span class="section-badge">ESTILOS</span></div>
+        </div>
+        <div class="price-table">
+            <div class="price-table-header">
+                <div>Platillo</div>
+                <div>Descripción (no editable)</div>
+                <div>Precio</div>
+            </div>
+            <div id="table-estilos"></div>
+        </div>
+
+        <!-- PANTALLA 1: CARNES (informativo, sin precio) -->
+        <div class="section-header">
+            <div class="section-title">🥩 Pantalla 1 — Pick Your Meat <span class="section-badge">CARNES</span></div>
+        </div>
+        <div class="price-table">
+            <div class="fajita-table-header">
+                <div>Carne (Español)</div>
+                <div>Carne (Inglés)</div>
+            </div>
+            <div id="table-carnes"></div>
+        </div>
+        <p class="note-text">* Las carnes son un listado informativo, no tienen precio individual en pantalla.</p>
+
+        <!-- PANTALLA 2: ESPECIALIDADES -->
+        <div class="section-header">
+            <div class="section-title">⭐ Pantalla 2 — Especialidades <span class="section-badge">SIGNATURE PLATES</span></div>
+        </div>
+        <div class="price-table">
+            <div class="price-table-header">
+                <div>Platillo</div>
+                <div>Descripción (no editable)</div>
+                <div>Precio</div>
+            </div>
+            <div id="table-especialidades"></div>
+        </div>
+
+        <!-- PANTALLA 2: FAJITAS -->
+        <div class="section-header">
+            <div class="section-title">🔥 Pantalla 2 — Fajitas <span class="section-badge">PRECIOS ESPECIALES</span></div>
+        </div>
+        <div class="price-table">
+            <div class="fajita-table-header">
+                <div>Tipo de Fajita</div>
+                <div>Precio</div>
+            </div>
+            <div id="table-fajitas"></div>
+        </div>
+
+        <!-- SAVE -->
+        <div class="save-section">
+            <div class="save-info">
+                <strong>¿Listo para guardar?</strong>
+                Al guardar, las pantallas del restaurante se actualizarán en menos de 1 minuto automáticamente.
+            </div>
+            <button class="btn-save" id="btn-save" onclick="saveAllPrices()">
+                💾 GUARDAR CAMBIOS
+            </button>
+        </div>
+
+        <div style="height: 60px;"></div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    //  ⚠️ CONFIGURACIÓN — Cambia estos valores
+    // ============================================================
+    const CORRECT_PIN = "1234";           // ← Cambia este PIN
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec"; // ← Pega tu URL de Apps Script aquí
+    // ============================================================
+
+    // ── LOGIN ──
+    let currentPin = "";
+
+    function pinPress(digit) {
+        if (currentPin.length >= 4) return;
+        currentPin += digit;
+        updateDots();
+        if (currentPin.length === 4) setTimeout(checkPin, 200);
+    }
+
+    function pinDel() {
+        currentPin = currentPin.slice(0, -1);
+        updateDots();
+        document.getElementById('login-error').textContent = '';
+    }
+
+    function pinClear() {
+        currentPin = "";
+        updateDots();
+        document.getElementById('login-error').textContent = '';
+    }
+
+    function updateDots() {
+        for (let i = 0; i < 4; i++) {
+            document.getElementById('dot-' + i).classList.toggle('filled', i < currentPin.length);
+        }
+    }
+
+    function checkPin() {
+        if (currentPin === CORRECT_PIN) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            loadDataForAdmin();
+        } else {
+            document.getElementById('login-error').textContent = '❌ PIN incorrecto. Intenta de nuevo.';
+            currentPin = "";
+            updateDots();
+        }
+    }
+
+    function logout() {
+        currentPin = "";
+        updateDots();
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('dashboard').style.display = 'none';
+    }
+
+    // ── CARGAR DATOS ──
+    let cachedData = null;
+
+    async function loadDataForAdmin() {
+        try {
+            const res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now());
+            cachedData = await res.json();
+            renderAdminTables(cachedData);
+        } catch(e) {
+            alert("Error al conectar con el servidor. Verifica tu conexión.");
+        }
+    }
+
+    function renderAdminTables(data) {
+        // ESTILOS
+        const tEstilos = document.getElementById('table-estilos');
+        tEstilos.innerHTML = '';
+        data.estilos.forEach((item, i) => {
+            tEstilos.innerHTML += `
+                <div class="price-row">
+                    <div class="item-name">${item.nombre}</div>
+                    <div><span class="lock-badge">🔒 ${item.sub}</span></div>
+                    <div class="price-input-wrap">
+                        <input type="text" class="price-input" 
+                               id="estilo-precio-${i}" 
+                               value="${item.precio}"
+                               oninput="markChanged(this)">
+                    </div>
+                </div>`;
+        });
+
+        // CARNES (solo vista, no editables)
+        const tCarnes = document.getElementById('table-carnes');
+        tCarnes.innerHTML = '';
+        data.carnes.forEach((item) => {
+            tCarnes.innerHTML += `
+                <div class="fajita-row">
+                    <div class="item-name">${item.es}</div>
+                    <div class="item-sub">${item.en}</div>
+                </div>`;
+        });
+
+        // ESPECIALIDADES
+        const tEspec = document.getElementById('table-especialidades');
+        tEspec.innerHTML = '';
+        data.especialidades.forEach((item, i) => {
+            tEspec.innerHTML += `
+                <div class="price-row">
+                    <div class="item-name">${item.nombre}</div>
+                    <div><span class="lock-badge">🔒 ${item.sub}</span></div>
+                    <div class="price-input-wrap">
+                        <input type="text" class="price-input" 
+                               id="espec-precio-${i}" 
+                               value="${item.precio}"
+                               oninput="markChanged(this)">
+                    </div>
+                </div>`;
+        });
+
+        // FAJITAS
+        const tFajitas = document.getElementById('table-fajitas');
+        tFajitas.innerHTML = '';
+        data.fajitas.forEach((item, i) => {
+            tFajitas.innerHTML += `
+                <div class="fajita-row">
+                    <div class="item-name">${item.nombre}</div>
+                    <div class="price-input-wrap">
+                        <input type="text" class="price-input" 
+                               id="fajita-precio-${i}" 
+                               value="${item.precio}"
+                               oninput="markChanged(this)">
+                    </div>
+                </div>`;
+        });
+    }
+
+    function markChanged(el) {
+        el.classList.add('changed');
+    }
+
+    // ── GUARDAR ──
+    async function saveAllPrices() {
+        const btn = document.getElementById('btn-save');
+        btn.disabled = true;
+        btn.textContent = '⏳ Guardando...';
+
+        // Recopilar precios actualizados
+        const updatedEstilos = cachedData.estilos.map((item, i) => ({
+            nombre: item.nombre,
+            sub: item.sub,
+            precio: document.getElementById('estilo-precio-' + i).value
+        }));
+
+        const updatedEspec = cachedData.especialidades.map((item, i) => ({
+            nombre: item.nombre,
+            sub: item.sub,
+            precio: document.getElementById('espec-precio-' + i).value
+        }));
+
+        const updatedFajitas = cachedData.fajitas.map((item, i) => ({
+            nombre: item.nombre,
+            precio: document.getElementById('fajita-precio-' + i).value
+        }));
+
+        try {
+            const res = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    estilos: updatedEstilos,
+                    especialidades: updatedEspec,
+                    fajitas: updatedFajitas
+                })
+            });
+
+            // Mostrar banner de éxito
+            const banner = document.getElementById('save-banner');
+            banner.classList.add('show');
+            setTimeout(() => banner.classList.remove('show'), 4000);
+
+            // Quitar indicadores de cambio
+            document.querySelectorAll('.price-input.changed').forEach(el => el.classList.remove('changed'));
+
+            cachedData.estilos = updatedEstilos;
+            cachedData.especialidades = updatedEspec;
+            cachedData.fajitas = updatedFajitas;
+
+        } catch(e) {
+            alert("Error al guardar. Intenta de nuevo.");
+        }
+
+        btn.disabled = false;
+        btn.textContent = '💾 GUARDAR CAMBIOS';
+    }
+</script>
+</body>
+</html>

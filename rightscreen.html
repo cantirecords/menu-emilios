@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emilio's Grocery - Especialidades</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;600;800;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --img-size-right: 300px;
+            --img-offset-y-right: 120px;
+            --row-gap-right: 100px;
+            --text-title: 32px;
+            --text-price: 30px;
+            --red-main: #E31837;
+            --red-dark: #C1101D;
+            --yellow-main: #FFF000;
+            --green-main: #00843D;
+            --white: #ffffff;
+            --text-grey: #444444;
+            --font-tang: 'DM Serif Display', serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #111;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+        #preview-wrapper { transform-origin: top center; padding: 20px 0; }
+        .screen {
+            width: 1920px;
+            height: 1080px;
+            background-color: var(--red-main);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            box-shadow: 0 20px 80px rgba(0,0,0,0.8);
+        }
+        .bg-dots {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(var(--red-dark) 15%, transparent 16%);
+            background-size: 25px 25px;
+            z-index: 1;
+        }
+        .screen-full-content { width: 100%; height: 100%; position: relative; z-index: 2; padding: 30px 45px; display: flex; flex-direction: column; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-shrink: 0; }
+        .main-title { font-family: var(--font-tang); font-size: 75px; color: var(--white); text-shadow: 4px 4px 0px var(--red-dark); letter-spacing: 1px; line-height: 1; }
+        .papel-picado-border { width: 100%; height: 12px; background-image: linear-gradient(90deg, #FF007F 25%, #00E5FF 25%, #00E5FF 50%, #FFEA00 50%, #FFEA00 75%, #00E676 75%); background-size: 80px 100%; margin-bottom: 15px; border-radius: 10px; opacity: 0.9; flex-shrink: 0; }
+        .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 130px; }
+        #grid-especialidades { row-gap: var(--row-gap-right); grid-template-rows: repeat(3, auto); }
+        .food-card-wrapper { position: relative; display: flex; flex-direction: column; justify-content: flex-end; }
+        .food-text-box { background: var(--white); border-radius: 25px; padding: 50px 12px 15px 12px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); min-height: 165px; display: flex; flex-direction: column; justify-content: flex-end; position: relative; z-index: 1; }
+        .food-image { position: absolute; left: 50%; transform: translateX(-50%); object-fit: contain; filter: drop-shadow(0 15px 10px rgba(0,0,0,0.4)); z-index: 10; animation: superSlowFloat 15s ease-in-out infinite; }
+        .food-card-title { font-family: 'Fredoka', sans-serif; font-size: var(--text-title); color: var(--red-main); line-height: 1; margin-bottom: 5px; font-weight: 700; }
+        .food-card-sub { font-size: 14px; color: var(--text-grey); font-weight: 700; margin-bottom: 5px; min-height: 34px; line-height: 1.1; display: flex; align-items: center; justify-content: center; }
+        .food-card-price { font-size: var(--text-price); font-weight: 900; color: var(--green-main); line-height: 1; }
+
+        /* FAJITAS */
+        .fajita-card-wrapper { grid-column: 4; grid-row: 2 / 4; align-self: stretch; display: flex; flex-direction: column; justify-content: flex-end; }
+        .fajita-box { padding-top: 120px !important; height: 100% !important; min-height: 380px !important; justify-content: flex-start !important; padding-bottom: 30px !important; }
+        .fajita-container { display: flex; flex-direction: column; width: 100%; margin-top: 20px; gap: 12px; padding: 0 10px; }
+        .f-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed rgba(0,0,0,0.1); padding-bottom: 8px; }
+        .f-row:last-child { border-bottom: none; }
+        .f-n { font-size: 16px; color: var(--text-grey); font-weight: 800; text-align: left; line-height: 1.1; }
+        .f-n small { font-size: 11px; display: block; color: #888; font-weight: 600; line-height: 1; }
+        .f-p { font-size: 20px; color: var(--green-main); font-weight: 900; }
+
+        @keyframes superSlowFloat { 0% { transform: translateX(-50%) translateY(0px); } 50% { transform: translateX(-50%) translateY(-5px); } 100% { transform: translateX(-50%) translateY(0px); } }
+
+        #update-indicator {
+            position: fixed; bottom: 10px; left: 10px;
+            background: rgba(0,0,0,0.6); color: #0f0;
+            font-size: 11px; padding: 4px 10px; border-radius: 20px;
+            font-family: monospace; z-index: 9999;
+            opacity: 0; transition: opacity 1s;
+        }
+        #update-indicator.show { opacity: 1; }
+    </style>
+</head>
+<body>
+<div id="update-indicator">✓ Precios actualizados</div>
+<div id="preview-wrapper">
+    <div class="screen">
+        <div class="bg-dots"></div>
+        <div class="screen-full-content">
+            <div class="header-row">
+                <div class="title-group">
+                    <div class="main-title">ESPECIALIDADES</div>
+                    <div style="color:var(--yellow-main);font-size:32px;font-weight:800;font-family:'Fredoka';">SIGNATURE PLATES</div>
+                </div>
+                <img src="https://i.postimg.cc/FKtbLp6Y/Emilio-s-Logo-Icon-Transparent.png" style="height:110px;" alt="Logo">
+            </div>
+            <div class="papel-picado-border"></div>
+            <div id="grid-especialidades" class="grid-container"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ⚠️ REEMPLAZA ESTA URL CON TU URL DE APPS SCRIPT
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec";
+
+    const IMGS_ESPEC = [
+        "https://i.postimg.cc/vBvnSbS0/CHILAQUILES.png",
+        "https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png",
+        "https://i.postimg.cc/8cK6NwGw/GORDITAS.png",
+        "https://i.postimg.cc/KjqMxQbH/MOLCAJETE.png",
+        "https://i.postimg.cc/pXrjqNQB/PECHUGA-A-LA-PLANCHA.png",
+        "https://i.postimg.cc/fLsXKJ5p/CARNE-ASADA-A-LA-PLANCHA.png",
+        "https://i.postimg.cc/pdbnWmN2/QUESABIRRIA-TACOS.png",
+        "https://i.postimg.cc/G2jDSdSg/ENCHILADAS-VERDES.png",
+        "https://i.postimg.cc/T1YDzFzy/FLAUTA-DE-POLLO.png",
+        "https://i.postimg.cc/fL53f5Vt/TACOS.png"
+    ];
+
+    async function loadPrices() {
+        try {
+            const res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now());
+            const data = await res.json();
+
+            const gSpec = document.getElementById('grid-especialidades');
+            gSpec.innerHTML = '';
+
+            // Items normales (primeras 3 columnas, fila 1)
+            const fila1 = data.especialidades.slice(0, 4);
+            // Fila 2 (primeras 3 de la segunda fila)
+            const fila2 = data.especialidades.slice(4, 7);
+            // Fila 3
+            const fila3 = data.especialidades.slice(7, 10);
+
+            // Renderizar fila 1
+            fila1.forEach((item, i) => {
+                gSpec.innerHTML += buildCard(item, IMGS_ESPEC[i]);
+            });
+
+            // Renderizar fila 2 (3 cards) + Fajitas (columna 4, span 2 filas)
+            fila2.forEach((item, i) => {
+                gSpec.innerHTML += buildCard(item, IMGS_ESPEC[4 + i]);
+            });
+
+            // Fajitas (span 2 filas, columna 4)
+            const fajitas = data.fajitas;
+            gSpec.innerHTML += `
+                <div class="fajita-card-wrapper food-card-wrapper">
+                    <img src="https://i.postimg.cc/SsG9tktV/FAJITAS.png" class="food-image" style="width:500px;bottom:320px;">
+                    <div class="food-text-box fajita-box">
+                        <div class="food-card-title" style="font-size:38px;">Fajitas</div>
+                        <div class="fajita-container">
+                            ${fajitas.map(f => `
+                                <div class="f-row">
+                                    <span class="f-n">${f.nombre}</span>
+                                    <span class="f-p">${f.precio}</span>
+                                </div>`).join('')}
+                        </div>
+                    </div>
+                </div>`;
+
+            // Renderizar fila 3
+            fila3.forEach((item, i) => {
+                gSpec.innerHTML += buildCard(item, IMGS_ESPEC[7 + i]);
+            });
+
+            // Indicador
+            const ind = document.getElementById('update-indicator');
+            ind.classList.add('show');
+            setTimeout(() => ind.classList.remove('show'), 3000);
+
+        } catch(e) {
+            console.error("Error cargando precios:", e);
+        }
+    }
+
+    function buildCard(item, img) {
+        return `
+            <div class="food-card-wrapper">
+                <img src="${img}" class="food-image" style="width:var(--img-size-right);bottom:var(--img-offset-y-right);">
+                <div class="food-text-box">
+                    <div class="food-card-title">${item.nombre}</div>
+                    <div class="food-card-sub">${item.sub}</div>
+                    <div class="food-card-price">${item.precio}</div>
+                </div>
+            </div>`;
+    }
+
+    function handleScale() {
+        const wrapper = document.getElementById('preview-wrapper');
+        const scale = window.innerWidth / 1960;
+        wrapper.style.transform = `scale(${scale})`;
+    }
+
+    loadPrices();
+    setInterval(loadPrices, 30000);
+    window.onresize = handleScale;
+    window.onload = handleScale;
+</script>
+</body>
+</html>
