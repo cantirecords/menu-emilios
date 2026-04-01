@@ -116,7 +116,7 @@
                 <div class="sidebar-title">PICK YOUR MEAT</div>
                 <div class="papel-picado-border" style="margin-bottom: 20px; height: 15px;"></div>
                 <div class="meat-box" id="list-carnes"></div>
-                <div class="aguas-badge">🍹 Aguas <span id="price-Aguas" class="dynamic-price">$5</span></div>
+                <div class="aguas-badge">🍹 Aguas <span id="price-Aguas" class="dynamic-price">...</span></div>
             </div>
         </div>
 
@@ -139,12 +139,10 @@
 
     <script>
         // --- 1. CONFIGURACIÓN DE PANTALLA ---
-        // Lee la URL para saber qué pantalla mostrar. Ej: index.html?pantalla=izquierda
         const urlParams = new URLSearchParams(window.location.search);
-        const currentScreen = urlParams.get('pantalla') || 'izquierda'; // Por defecto muestra la izquierda
+        const currentScreen = urlParams.get('pantalla') || 'izquierda'; 
         document.getElementById('screen-' + currentScreen).style.display = 'flex';
 
-        // Escala la pantalla si no estás en una TV 1080p (Para verla en tu monitor)
         function handleScale() {
             const screenEl = document.getElementById('screen-' + currentScreen);
             const scaleX = window.innerWidth / 1920;
@@ -158,7 +156,7 @@
 
         // --- 2. DATOS ESTRUCTURALES ---
         const ESTILOS = [
-            { id: "Tacos", sub: "Maíz. Harina $3.59", img: "https://i.postimg.cc/fL53f5Vt/TACOS.png" },
+            { id: "Tacos", sub: "Maíz. Harina", img: "https://i.postimg.cc/fL53f5Vt/TACOS.png" },
             { id: "Burritos", sub: "Classic Style", img: "https://i.postimg.cc/SRDWjk6g/BURRITOS.png" },
             { id: "Tortas", sub: "Mexican Sub", img: "https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png" },
             { id: "Gorditas", sub: "Stuffed Corn", img: "https://i.postimg.cc/8cK6NwGw/GORDITAS.png" },
@@ -229,28 +227,41 @@
             });
         }
 
-        // --- 4. CONEXIÓN CON GOOGLE SHEETS ---
-        // Pega aquí la URL que obtuviste en el Paso 2 de Google Apps Script
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxec89QLxdwIL-pnT5QqRrnu3xKE9m8rnULb0xpl9wtCJr5lF0Tp9_LDc45hR512AEJ/exec"; 
+        // --- 4. NUEVA CONEXIÓN DIRECTA CON GOOGLE SHEETS ---
+        // Extraído directamente de la foto de tu Excel
+        const SHEET_ID = '1qE8ORhQ4_meZaN9qjnko3amO3BsoqNHk2EX_XpW9AEQ';
+        const SHEET_TITLE = 'Sheet1';
+        const SHEET_RANGE = 'A2:B30';
+        const FULL_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_TITLE}&range=${SHEET_RANGE}`;
 
-        function fetchPrices() {
-            fetch(SCRIPT_URL)
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(item => {
-                        // Busca el elemento del precio por su ID y lo actualiza
-                        const priceEl = document.getElementById('price-' + item.id);
-                        if (priceEl && priceEl.innerText !== item.precio) {
-                            priceEl.innerText = item.precio;
+        async function fetchPrices() {
+            try {
+                const res = await fetch(FULL_URL);
+                const data = await res.text();
+                const json = JSON.parse(data.substr(47).slice(0, -2));
+                const rows = json.table.rows;
+
+                rows.forEach(row => {
+                    // Si la fila tiene ID (columna A) y Precio (columna B)
+                    if (row.c[0] && row.c[1]) {
+                        const itemName = row.c[0].v;
+                        const price = row.c[1].v;
+                        
+                        // Busca el texto en la pantalla y actualiza
+                        const priceEl = document.getElementById('price-' + itemName);
+                        if (priceEl && priceEl.innerText !== price) {
+                            priceEl.innerText = price;
                         }
-                    });
-                })
-                .catch(err => console.error("Error al cargar precios:", err));
+                    }
+                });
+            } catch (error) {
+                console.error("Error al cargar precios:", error);
+            }
         }
 
-        // Cargar precios al iniciar y luego cada 5 minutos (300,000 milisegundos)
+        // Carga los precios inmediatamente y luego cada 30 segundos
         fetchPrices();
-        setInterval(fetchPrices, 300000);
+        setInterval(fetchPrices, 30000);
     </script>
 </body>
 </html>
