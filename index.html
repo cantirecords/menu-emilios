@@ -3,259 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emilio's Menu</title>
+    <title>Menú Digital - Emilio's</title>
     <style>
-        :root {
-            --red-emilios: #e31b23;
-            --yellow-emilios: #ffde00;
-            --green-emilios: #008148;
-        }
-
         body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: #fff;
             margin: 0;
-            padding: 0;
-            background-color: var(--red-emilios);
-            background-image: radial-gradient(#c4161d 15%, transparent 16%);
-            background-size: 20px 20px;
-            font-family: 'Arial Black', sans-serif;
-            color: white;
-            overflow: hidden;
-        }
-
-        /* Contenedor Principal */
-        .main-layout {
-            display: flex;
-            height: 100vh;
             padding: 20px;
-            box-sizing: border-box;
+            text-align: center;
         }
-
-        /* Sección de Platos (Izquierda) */
-        .menu-section {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header-title {
-            font-size: 4rem;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .grid-menu {
+        .menu-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
-            margin-top: 40px;
+            max-width: 1200px;
+            margin: auto;
         }
-
-        .card {
-            background: white;
-            border-radius: 30px;
-            padding: 15px;
-            text-align: center;
-            color: black;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            position: relative;
-            min-height: 200px;
-        }
-
-        .card img {
-            width: 150px;
-            height: 100px;
-            object-fit: contain;
-            margin-top: -50px;
-        }
-
-        .card h2 {
-            margin: 10px 0 5px;
-            color: var(--red-emilios);
-            font-size: 1.8rem;
-        }
-
-        .card p {
-            margin: 0;
-            font-size: 0.9rem;
-            color: #555;
-            font-family: Arial, sans-serif;
-        }
-
-        .price-tag {
-            font-size: 1.8rem;
-            color: var(--green-emilios);
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        /* Panel Lateral (Derecha) */
-        .sidebar {
-            flex: 1;
-            background: var(--yellow-emilios);
-            border-radius: 40px;
-            margin-left: 20px;
-            padding: 30px;
-            color: black;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .meat-list {
-            background: var(--red-emilios);
-            border-radius: 20px;
-            padding: 20px;
-            color: white;
-            text-align: left;
-            margin-top: 20px;
-        }
-
-        .meat-item {
+        .menu-item {
             display: flex;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 0;
-            font-size: 1.2rem;
+            border-bottom: 2px dashed #444;
+            padding: 10px 0;
+            font-size: 24px;
         }
-
-        .meat-item span:last-child {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            opacity: 0.8;
+        .price {
+            color: #ffcc00;
+            font-weight: bold;
         }
-
-        .footer-btn {
-            background: var(--green-emilios);
-            color: white;
-            padding: 15px;
-            border-radius: 50px;
-            font-size: 2rem;
-            margin-top: auto;
-            border: 4px solid white;
-        }
+        h1 { color: #ff0000; font-size: 50px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="main-layout">
-        <div class="menu-section">
-            <h1 class="header-title">PICK YOUR STYLE 🌵</h1>
-            
-            <div class="grid-menu">
-                <div class="card">
-                    <img src="https://via.placeholder.com/150x100?text=Tacos" alt="Tacos">
-                    <h2>Tacos</h2>
-                    <p>Maíz, Harina</p>
-                    <div id="Tacos-val" class="price-tag">Cargando...</div>
-                </div>
-
-                <div class="card">
-                    <img src="https://via.placeholder.com/150x100?text=Burritos" alt="Burritos">
-                    <h2>Burritos</h2>
-                    <p>Classic Style</p>
-                    <div id="Burritos-val" class="price-tag">Cargando...</div>
-                </div>
-
-                <div class="card">
-                    <img src="https://via.placeholder.com/150x100?text=Tortas" alt="Tortas">
-                    <h2>Tortas</h2>
-                    <p>Mexican Sub</p>
-                    <div id="Tortas-val" class="price-tag">Cargando...</div>
-                </div>
-
-                <div class="card">
-                    <img src="https://via.placeholder.com/150x100?text=Gorditas" alt="Gorditas">
-                    <h2>Gorditas</h2>
-                    <p>Stuffed Corn</p>
-                    <div id="Gorditas-val" class="price-tag">Cargando...</div>
-                </div>
-
-                <div class="card">
-                    <img src="https://via.placeholder.com/150x100?text=Sopes" alt="Sopes">
-                    <h2>Sopes</h2>
-                    <p>Thick Tortilla</p>
-                    <div id="Sopes-val" class="price-tag">Cargando...</div>
-                </div>
-
-                <div class="card">
-                    <img src="https://via.placeholder.com/150x100?text=Quesadillas" alt="Quesadillas">
-                    <h2>Quesadillas</h2>
-                    <p>Cheese & Meat</p>
-                    <div id="Quesadillas-val" class="price-tag">Cargando...</div>
-                </div>
-
-                <div class="card">
-                    <img src="https://via.placeholder.com/150x100?text=Huaraches" alt="Huaraches">
-                    <h2>Huaraches</h2>
-                    <p>Sandal Shaped</p>
-                    <div id="Huaraches-val" class="price-tag">Cargando...</div>
-                </div>
-
-                <div class="card">
-                    <img src="https://via.placeholder.com/150x100?text=Platillo" alt="Platillo">
-                    <h2>Platillo</h2>
-                    <p>Rice & Beans</p>
-                    <div id="Platillo-val" class="price-tag">Cargando...</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="sidebar">
-            <h1 style="color:red; font-size: 3rem; margin-bottom:0;">EMILIO'S</h1>
-            <h2 style="margin-top:0;">PICK YOUR MEAT</h2>
-            
-            <div class="meat-list">
-                <div class="meat-item"><span>Asada</span><span>Steak</span></div>
-                <div class="meat-item"><span>Barbacoa</span><span>Beef Stew</span></div>
-                <div class="meat-item"><span>Birria</span><span>Spiced Beef</span></div>
-                <div class="meat-item"><span>Pollo</span><span>Chicken</span></div>
-                <div class="meat-item"><span>Al Pastor</span><span>Marinated Pork</span></div>
-                <div class="meat-item"><span>Carnitas</span><span>Fried Pork</span></div>
-                <div class="meat-item"><span>Chorizo</span><span>Sausage</span></div>
-                <div class="meat-item"><span>Camarón</span><span>Shrimp (+$)</span></div>
-            </div>
-
-            <div class="footer-btn">
-                🥤 Aguas $5
-            </div>
-        </div>
+    <h1>Menú Emilio's</h1>
+    <div class="menu-container" id="menu-board">
+        <p>Cargando precios...</p>
     </div>
 
     <script>
-        // 1. REEMPLAZA ESTO CON TU ID DE GOOGLE SHEETS
-        const SHEET_ID = 'https://script.google.com/macros/s/AKfycbxec89QLxdwIL-pnT5QqRrnu3xKE9m8rnULb0xpl9wtCJr5lF0Tp9_LDc45hR512AEJ/exec'; 
-        const SHEET_TITLE = 'Hoja 1';
+        // PEGA AQUÍ TU ID DE GOOGLE SHEETS
+        const SHEET_ID = 'Thttps://script.google.com/macros/s/AKfycbxec89QLxdwIL-pnT5QqRrnu3xKE9m8rnULb0xpl9wtCJr5lF0Tp9_LDc45hR512AEJ/exec';
+        const SHEET_TITLE = 'Hoja 1'; // O el nombre que tenga tu pestaña
         const SHEET_RANGE = 'A2:B30';
 
-        const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_TITLE}&range=${SHEET_RANGE}`;
+        const FULL_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_TITLE}&range=${SHEET_RANGE}`;
 
-        async function updatePrices() {
+        async function loadMenu() {
             try {
-                const response = await fetch(URL);
-                const text = await response.text();
-                const json = JSON.parse(text.substr(47).slice(0, -2));
+                const res = await fetch(FULL_URL);
+                const data = await res.text();
+                const json = JSON.parse(data.substr(47).slice(0, -2));
                 const rows = json.table.rows;
-
+                
+                let html = '';
                 rows.forEach(row => {
-                    const itemName = row.c[0].v; // Columna A (ID)
-                    const price = row.c[1].v;    // Columna B (Precio)
-                    
-                    // Busca el elemento que tenga el ID del plato y actualiza su precio
-                    const element = document.getElementById(`${itemName}-val`);
-                    if (element) {
-                        element.innerText = price;
+                    if (row.c[0] && row.c[1]) {
+                        html += `
+                            <div class="menu-item">
+                                <span>${row.c[0].v}</span>
+                                <span class="price">${row.c[1].v}</span>
+                            </div>`;
                     }
                 });
+                document.getElementById('menu-board').innerHTML = html;
             } catch (error) {
-                console.error("Error al cargar precios:", error);
+                console.error("Error cargando el menú:", error);
+                document.getElementById('menu-board').innerHTML = "Error al conectar con los precios.";
             }
         }
 
-        // Actualizar cada 30 segundos
-        setInterval(updatePrices, 30000);
-        updatePrices();
+        setInterval(loadMenu, 30000); // Se actualiza cada 30 segundos
+        loadMenu();
     </script>
 </body>
 </html>
