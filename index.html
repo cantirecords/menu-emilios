@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emilio's Grocery - Digital Signage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --img-size-left: 350px;   
+            --img-size-right: 300px;  
+            --img-offset-y-left: 40px;   
+            --img-offset-y-right: 40px;  
+            --row-gap-left: 200px;   
+            --row-gap-right: 80px;  
+            --text-title: 45px;  
+            --text-price: 35px;  
+            
+            --red-main: #E31837;
+            --red-dark: #C1101D;
+            --yellow-main: #FFF000;
+            --green-main: #00843D;
+            --white: #ffffff;
+            --text-grey: #666666;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: #000;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden; /* Evita scroll en la TV */
+        }
+
+        #screens-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .screen {
+            width: 1920px;
+            height: 1080px;
+            background-color: var(--red-main);
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden; 
+            display: flex;
+            display: none; /* Ocultas por defecto, JS las muestra */
+        }
+
+        .bg-dots {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(var(--red-dark) 15%, transparent 16%);
+            background-size: 25px 25px;
+            z-index: 1;
+        }
+
+        .screen-left-content { width: 75%; height: 100%; position: relative; z-index: 2; padding: 40px; display: flex; flex-direction: column; }
+        .screen-right-sidebar { width: 25%; height: 100%; background-color: var(--yellow-main); position: relative; z-index: 2; padding: 40px; display: flex; flex-direction: column; align-items: center; box-shadow: -10px 0 30px rgba(0,0,0,0.2); }
+        .screen-full-content { width: 100%; height: 100%; position: relative; z-index: 2; padding: 40px; display: flex; flex-direction: column; }
+
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0; }
+        .main-title { font-family: 'Fredoka', sans-serif; font-size: 60px; color: var(--white); text-shadow: 4px 4px 0px var(--red-dark), 8px 8px 15px rgba(0,0,0,0.4); letter-spacing: 4px; display: flex; align-items: center; gap: 15px; line-height: 1; }
+        .order-online-btn { background-color: var(--green-main); color: white; padding: 12px 30px; border-radius: 50px; font-size: 20px; font-weight: 800; text-transform: uppercase; box-shadow: 0 10px 20px rgba(0,0,0,0.3); animation: pulse 3s infinite; }
+        .papel-picado-border { width: 100%; height: 20px; background-image: linear-gradient(90deg, #FF007F 25%, #00E5FF 25%, #00E5FF 50%, #FFEA00 50%, #FFEA00 75%, #00E676 75%); background-size: 80px 100%; margin-bottom: 30px; border-radius: 10px; opacity: 0.9; flex-shrink: 0; }
+
+        #grid-estilos { display: grid; grid-template-columns: repeat(4, 2fr); gap: 20px; row-gap: var(--row-gap-left); margin-top: calc(var(--img-size-left) / 2); }
+        #grid-especialidades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; row-gap: var(--row-gap-right); margin-top: calc(var(--img-size-right) / 2 - 20px); }
+
+        .food-card-wrapper { position: relative; display: flex; flex-direction: column; justify-content: flex-end; animation: slideUp 0.8s ease-out backwards; }
+        .food-text-box { background: var(--white); border-radius: 30px; padding: 55px 15px 15px 15px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); min-height: 140px; display: flex; flex-direction: column; justify-content: flex-end; position: relative; z-index: 1; }
+        
+        .food-image { position: absolute; left: 50%; transform: translateX(-50%); object-fit: contain; filter: drop-shadow(0 15px 10px rgba(0,0,0,0.4)); z-index: 10; }
+        #grid-estilos .food-image { width: var(--img-size-left); height: var(--img-size-left); bottom: var(--img-offset-y-left); }
+        #grid-especialidades .food-image { width: var(--img-size-right); height: var(--img-size-right); bottom: var(--img-offset-y-right); }
+
+        .food-card-title { font-family: 'Fredoka', sans-serif; font-size: var(--text-title); color: var(--red-main); line-height: 1; margin-bottom: 5px; font-weight: 700; }
+        .food-card-sub { font-size: 16px; color: var(--text-grey); font-weight: 600; margin-bottom: 8px; min-height: 24px; }
+        .food-card-price { font-size: var(--text-price); font-weight: 900; color: var(--green-main); line-height: 1; transition: color 0.3s ease; }
+
+        .logo-container img { width: 320px; object-fit: contain; margin-bottom: 20px; }
+        .sidebar-title { font-family: 'Fredoka', sans-serif; font-size: 45px; color: var(--red-main); margin-bottom: 10px; }
+        .meat-box { background-color: var(--red-main); width: 100%; border-radius: 30px; padding: 30px; display: flex; flex-direction: column; gap: 15px; box-shadow: inset 0 -10px 20px rgba(0,0,0,0.2), 0 15px 30px rgba(227, 24, 55, 0.4); margin-bottom: 30px; }
+        .meat-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .meat-name { color: var(--white); font-size: 26px; font-weight: 800; }
+        .meat-sub { color: rgba(255,255,255,0.8); font-size: 16px; text-transform: uppercase; font-weight: 600; }
+        .aguas-badge { background: var(--green-main); color: white; padding: 15px 40px; border-radius: 50px 50px 0 50px; font-size: 38px; font-weight: 900; position: absolute; bottom: 30px; right: 40px; box-shadow: 0 15px 30px rgba(0,0,0,0.4); transform: rotate(-3deg); border: 4px solid var(--white); }
+
+        @keyframes float { 0% { transform: translateX(-50%) translateY(0px); } 50% { transform: translateX(-50%) translateY(3px); } 100% { transform: translateX(-50%) translateY(0px); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="screens-container">
+        
+        <div class="screen" id="screen-izquierda">
+            <div class="bg-dots"></div>
+            <div class="screen-left-content">
+                <div class="header-row">
+                    <div class="main-title">PICK YOUR STYLE 🌵</div>
+                    <div class="order-online-btn">ORDENA EN LÍNEA EMILIOSGROCERY.COM</div>
+                </div>
+                <div class="papel-picado-border"></div>
+                <div id="grid-estilos"></div>
+            </div>
+            <div class="screen-right-sidebar">
+                <div class="logo-container">
+                    <img src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="Emilio's Logo">
+                </div>
+                <div class="sidebar-title">PICK YOUR MEAT</div>
+                <div class="papel-picado-border" style="margin-bottom: 20px; height: 15px;"></div>
+                <div class="meat-box" id="list-carnes"></div>
+                <div class="aguas-badge">🍹 Aguas <span id="price-Aguas" class="dynamic-price">$5</span></div>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-derecha">
+            <div class="bg-dots"></div>
+            <div class="screen-full-content">
+                <div class="header-row">
+                    <div class="title-group" style="display:flex; flex-direction:column;">
+                        <div class="main-title">ESPECIALIDADES 🌶️</div>
+                        <div style="color: var(--yellow-main); font-size: 35px; font-weight: 800; font-family: 'Fredoka'; line-height: 1;">SIGNATURE PLATES</div>
+                    </div>
+                    <img src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="Logo" style="height: 140px;">
+                </div>
+                <div class="papel-picado-border" style="margin-bottom: 10px;"></div>
+                <div id="grid-especialidades"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. CONFIGURACIÓN DE PANTALLA ---
+        // Lee la URL para saber qué pantalla mostrar. Ej: index.html?pantalla=izquierda
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentScreen = urlParams.get('pantalla') || 'izquierda'; // Por defecto muestra la izquierda
+        document.getElementById('screen-' + currentScreen).style.display = 'flex';
+
+        // Escala la pantalla si no estás en una TV 1080p (Para verla en tu monitor)
+        function handleScale() {
+            const screenEl = document.getElementById('screen-' + currentScreen);
+            const scaleX = window.innerWidth / 1920;
+            const scaleY = window.innerHeight / 1080;
+            const scale = Math.min(scaleX, scaleY);
+            screenEl.style.transform = `scale(${scale})`;
+            screenEl.style.transformOrigin = 'top left';
+        }
+        window.onresize = handleScale;
+        handleScale();
+
+        // --- 2. DATOS ESTRUCTURALES ---
+        const ESTILOS = [
+            { id: "Tacos", sub: "Maíz. Harina $3.59", img: "https://i.postimg.cc/fL53f5Vt/TACOS.png" },
+            { id: "Burritos", sub: "Classic Style", img: "https://i.postimg.cc/SRDWjk6g/BURRITOS.png" },
+            { id: "Tortas", sub: "Mexican Sub", img: "https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png" },
+            { id: "Gorditas", sub: "Stuffed Corn", img: "https://i.postimg.cc/8cK6NwGw/GORDITAS.png" },
+            { id: "Sopes", sub: "Thick Tortilla", img: "https://i.postimg.cc/7L3JfqDh/SOPES.png" },
+            { id: "Quesadillas", sub: "Cheese & Meat", img: "https://i.postimg.cc/BvTPXJs3/QUESADILLAS.png" },
+            { id: "Huaraches", sub: "Sandal Shaped", img: "https://i.postimg.cc/SQD86Q96/HUARACHES.png" },
+            { id: "Platillo", sub: "Rice & Beans", img: "https://i.postimg.cc/cL8nGQbc/PLATILLO.png" }
+        ];
+
+        const CARNES = [
+            { id: "Asada", en: "STEAK" }, { id: "Barbacoa", en: "BEEF STEW" }, { id: "Birria", en: "SPICED BEEF" },
+            { id: "Pollo", en: "CHICKEN" }, { id: "Al Pastor", en: "MARINATED PORK" }, { id: "Carnitas", en: "FRIED PORK" },
+            { id: "Chorizo", en: "SAUSAGE" }, { id: "Camarón", en: "SHRIMP (+$)" }
+        ];
+
+        const ESPECIALIDADES = [
+            { id: "Quesabirria (3)", sub: "Con Consomé", img: "https://i.postimg.cc/pdbnWmN2/QUESABIRRIA-TACOS.png" },
+            { id: "Chilaquiles", sub: "Red or Green", img: "https://i.postimg.cc/vBvnSbS0/CHILAQUILES.png" },
+            { id: "Torta Cubana", sub: "The Ultimate", img: "https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png" },
+            { id: "Pechuga Plancha", sub: "Grilled", img: "https://i.postimg.cc/pXrjqNQB/PECHUGA-A-LA-PLANCHA.png" },
+            { id: "Enchiladas (3)", sub: "Verdes o Rojas", img: "https://i.postimg.cc/G2jDSdSg/ENCHILADAS-VERDES.png" },
+            { id: "Flautas (4)", sub: "Crispy Chicken", img: "https://i.postimg.cc/T1YDzFzy/FLAUTA-DE-POLLO.png" },
+            { id: "Fajitas Mix", sub: "Res/Pollo/Camarón", img: "https://i.postimg.cc/SsG9tktV/FAJITAS.png" },
+            { id: "Asada Plancha", sub: "Grilled Steak", img: "https://i.postimg.cc/fLsXKJ5p/CARNE-ASADA-A-LA-PLANCHA.png" },
+            { id: "Molcajete", sub: "Hot Stone Pot", img: "https://i.postimg.cc/KjqMxQbH/MOLCAJETE.png" },
+            { id: "Fajita Pollo", sub: "Chicken Sizzler", img: "https://i.postimg.cc/SsG9tktV/FAJITAS.png" },
+            { id: "Torta Milanesa", sub: "Breaded Meat", img: "https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png" },
+            { id: "Empanadas (3)", sub: "Varias Carnes", img: "https://i.postimg.cc/8cK6NwGw/GORDITAS.png" }
+        ];
+
+        // --- 3. RENDERIZADO INICIAL ---
+        if (currentScreen === 'izquierda') {
+            const gEstilos = document.getElementById('grid-estilos');
+            ESTILOS.forEach((item, index) => {
+                const delay = (Math.random() * 2).toFixed(2);
+                gEstilos.innerHTML += `
+                    <div class="food-card-wrapper" style="animation-delay: ${index * 0.1}s">
+                        <img src="${item.img}" class="food-image" style="animation: float 6s ease-in-out infinite ${delay}s;">
+                        <div class="food-text-box">
+                            <div class="food-card-title">${item.id}</div>
+                            <div class="food-card-sub">${item.sub}</div>
+                            <div class="food-card-price dynamic-price" id="price-${item.id}">Cargando...</div>
+                        </div>
+                    </div>`;
+            });
+
+            const lCarnes = document.getElementById('list-carnes');
+            CARNES.forEach(item => {
+                lCarnes.innerHTML += `
+                    <div class="meat-row">
+                        <span class="meat-name">${item.id}</span>
+                        <span class="meat-sub">${item.en}</span>
+                    </div>`;
+            });
+        } else {
+            const gSpec = document.getElementById('grid-especialidades');
+            ESPECIALIDADES.forEach((item, index) => {
+                const delay = (Math.random() * 2).toFixed(2);
+                gSpec.innerHTML += `
+                    <div class="food-card-wrapper" style="animation-delay: ${index * 0.05}s">
+                        <img src="${item.img}" class="food-image" style="animation: float 6s ease-in-out infinite ${delay}s;">
+                        <div class="food-text-box">
+                            <div class="food-card-title">${item.id}</div>
+                            <div class="food-card-sub">${item.sub}</div>
+                            <div class="food-card-price dynamic-price" id="price-${item.id}">Cargando...</div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        // --- 4. CONEXIÓN CON GOOGLE SHEETS ---
+        // Pega aquí la URL que obtuviste en el Paso 2 de Google Apps Script
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxec89QLxdwIL-pnT5QqRrnu3xKE9m8rnULb0xpl9wtCJr5lF0Tp9_LDc45hR512AEJ/exec"; 
+
+        function fetchPrices() {
+            fetch(SCRIPT_URL)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(item => {
+                        // Busca el elemento del precio por su ID y lo actualiza
+                        const priceEl = document.getElementById('price-' + item.id);
+                        if (priceEl && priceEl.innerText !== item.precio) {
+                            priceEl.innerText = item.precio;
+                        }
+                    });
+                })
+                .catch(err => console.error("Error al cargar precios:", err));
+        }
+
+        // Cargar precios al iniciar y luego cada 5 minutos (300,000 milisegundos)
+        fetchPrices();
+        setInterval(fetchPrices, 300000);
+    </script>
+</body>
+</html>
