@@ -2,117 +2,285 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emilio's Grocery - Pick Your Style</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;600;800;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
     <style>
         :root {
-            --img-size-left: 350px;
-            --img-offset-y-left: 120px;
-            --row-gap-left: 250px;
-            --text-title: 32px;
-            --text-price: 30px;
-            --red-main: #E31837;
-            --red-dark: #C1101D;
-            --yellow-main: #FFF000;
-            --green-main: #00843D;
-            --white: #ffffff;
-            --text-grey: #444444;
-            --font-tang: 'DM Serif Display', serif;
+            --red:    #E31837;
+            --red-dk: #C1101D;
+            --yellow: #ffde59;
+            --green:  #00843D;
+            --white:  #ffffff;
+            --grey:   #444444;
+            --fh:     'Fredoka', sans-serif;
+            --fs:     'DM Serif Display', serif;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background-color: #111;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+
+        #root {
+            width: 1920px; height: 1080px;
+            position: absolute; top: 0; left: 0;
+            transform-origin: top left;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: 'Poppins', sans-serif;
-            overflow-x: hidden;
-        }
-        #preview-wrapper { transform-origin: top center; padding: 20px 0; }
-        .screen {
-            width: 1920px;
-            height: 1080px;
-            background-color: var(--red-main);
-            position: relative;
+            background: var(--red);
             overflow: hidden;
-            display: flex;
-            box-shadow: 0 20px 80px rgba(0,0,0,0.8);
         }
-        .bg-dots {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background-image: radial-gradient(var(--red-dark) 15%, transparent 16%);
-            background-size: 25px 25px;
+        #root::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(0,0,0,0.2) 14%, transparent 15%);
+            background-size: 28px 28px;
+            z-index: 0;
+        }
+
+        /* ══ LEFT ══ */
+        .left {
+            flex: 0 0 1370px; height: 100%;
+            position: relative; z-index: 1;
+            padding: 32px 44px 22px;
+            display: flex; flex-direction: column;
+        }
+        .hdr {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+        .t-en {
+            font-family: var(--fs);
+            font-size: 100px;
+            color: var(--white);
+            line-height: 0.92;
+            text-shadow: 5px 5px 0 var(--red-dk);
+        }
+        .t-es {
+            font-family: var(--fh);
+            font-size: 34px; font-weight: 600;
+            color: var(--yellow);
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+        .pill {
+            background: var(--green);
+            color: var(--white);
+            font-family: var(--fh);
+            font-size: 22px; font-weight: 700;
+            padding: 12px 28px;
+            border-radius: 50px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            margin-top: 14px;
+            white-space: nowrap;
+        }
+        .fiesta {
+            height: 13px; border-radius: 10px;
+            background: repeating-linear-gradient(
+                90deg,
+                #FF007F 0 20px, #00E5FF 20px 40px,
+                #ffde59 40px 60px, #00E676 60px 80px
+            );
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            column-gap: 20px;
+            row-gap: 210px;
+            margin-top: 165px;
+            flex: 1;
+        }
+        .card {
+            position: relative;
+            display: flex; flex-direction: column;
+            justify-content: flex-end;
+            animation: fadeUp 0.7s ease both;
+        }
+        .card:nth-child(1){animation-delay:.05s}
+        .card:nth-child(2){animation-delay:.10s}
+        .card:nth-child(3){animation-delay:.15s}
+        .card:nth-child(4){animation-delay:.20s}
+        .card:nth-child(5){animation-delay:.25s}
+        .card:nth-child(6){animation-delay:.30s}
+        .card:nth-child(7){animation-delay:.35s}
+        .card:nth-child(8){animation-delay:.40s}
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(22px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        .card-img {
+            position: absolute;
+            left: 50%; transform: translateX(-50%);
+            bottom: 148px;
+            width: 300px;
+            object-fit: contain;
+            filter: drop-shadow(0 18px 14px rgba(0,0,0,0.45));
+            z-index: 10;
+            animation: float 13s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%,100%{ transform:translateX(-50%) translateY(0px); }
+            50%    { transform:translateX(-50%) translateY(-9px); }
+        }
+
+        .card-box {
+            background: var(--white);
+            border-radius: 26px;
+            padding: 55px 14px 18px;
+            text-align: center;
+            box-shadow: 0 20px 42px rgba(0,0,0,0.35);
+            min-height: 178px;
+            display: flex; flex-direction: column;
+            justify-content: flex-end;
             z-index: 1;
         }
-        .screen-left-content { width: 72%; height: 100%; position: relative; z-index: 2; padding: 40px; display: flex; flex-direction: column; }
-        .screen-right-sidebar { width: 30%; height: 100%; background-color: var(--yellow-main); position: relative; z-index: 2; padding: 25px 35px; display: flex; flex-direction: column; align-items: center; box-shadow: -10px 0 30px rgba(0,0,0,0.2); }
-        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-shrink: 0; }
-        .main-title { font-family: var(--font-tang); font-size: 75px; color: var(--white); text-shadow: 4px 4px 0px var(--red-dark); letter-spacing: 1px; line-height: 1; }
-        .order-online-btn { background-color: var(--green-main); color: white; padding: 10px 25px; border-radius: 50px; font-size: 20px; font-weight: 800; text-transform: uppercase; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-        .papel-picado-border { width: 100%; height: 12px; background-image: linear-gradient(90deg, #FF007F 25%, #00E5FF 25%, #00E5FF 50%, #FFEA00 50%, #FFEA00 75%, #00E676 75%); background-size: 80px 100%; margin-bottom: 15px; border-radius: 10px; opacity: 0.9; flex-shrink: 0; }
-        .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 130px; }
-        #grid-estilos { row-gap: var(--row-gap-left); }
-        .food-card-wrapper { position: relative; display: flex; flex-direction: column; justify-content: flex-end; }
-        .food-text-box { background: var(--white); border-radius: 25px; padding: 50px 12px 15px 12px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); min-height: 165px; display: flex; flex-direction: column; justify-content: flex-end; position: relative; z-index: 1; }
-        .food-image { position: absolute; left: 50%; transform: translateX(-50%); object-fit: contain; filter: drop-shadow(0 15px 10px rgba(0,0,0,0.4)); z-index: 10; animation: superSlowFloat 15s ease-in-out infinite; }
-        .food-card-title { font-family: 'Fredoka', sans-serif; font-size: var(--text-title); color: var(--red-main); line-height: 1; margin-bottom: 5px; font-weight: 700; }
-        .food-card-sub { font-size: 14px; color: var(--text-grey); font-weight: 700; margin-bottom: 5px; min-height: 34px; line-height: 1.1; display: flex; align-items: center; justify-content: center; }
-        .food-card-price { font-size: var(--text-price); font-weight: 900; color: var(--green-main); line-height: 1; }
-        .logo-container img { width: 260px; object-fit: contain; margin-bottom: 15px; }
-        .sidebar-title { font-family: var(--font-tang); font-size: 48px; color: var(--red-main); margin-bottom: 10px; text-align: center; line-height: 0.9; }
-        .meat-box { background-color: var(--red-main); width: 100%; border-radius: 25px; padding: 20px; display: flex; flex-direction: column; gap: 6px; box-shadow: inset 0 -10px 20px rgba(0,0,0,0.2); margin-bottom: 15px; }
-        .meat-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 4px; }
-        .meat-name { color: var(--white); font-size: 20px; font-weight: 800; }
-        .meat-sub { color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 600; text-transform: uppercase; }
-        .drinks-container { position: absolute; bottom: 20px; right: -200px; z-index: 10; display: flex; flex-direction: column; align-items: left; }
-        .drinks-img { width: 500px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4)); animation: superSlowFloat 15s ease-in-out infinite; }
-        .drinks-label { background: var(--green-main); color: white; font-size: 34px; font-weight: 900; padding: 8px 35px; border-radius: 50px; border: 4px solid white; margin-top: -45px; transform: rotate(-3deg); box-shadow: 0 10px 20px rgba(0,0,0,0.3); text-transform: uppercase; }
-        @keyframes superSlowFloat { 0% { transform: translateX(-50%) translateY(0px); } 50% { transform: translateX(-50%) translateY(-5px); } 100% { transform: translateX(-50%) translateY(0px); } }
-
-        /* Indicador de actualización */
-        #update-indicator {
-            position: fixed; bottom: 10px; left: 10px;
-            background: rgba(0,0,0,0.6); color: #0f0;
-            font-size: 11px; padding: 4px 10px; border-radius: 20px;
-            font-family: monospace; z-index: 9999;
-            opacity: 0; transition: opacity 1s;
+        .c-name {
+            font-family: var(--fh);
+            font-size: 38px; font-weight: 700;
+            color: var(--red); line-height: 1;
+            margin-bottom: 5px;
         }
-        #update-indicator.show { opacity: 1; }
+        .c-sub {
+            font-family: var(--fh);
+            font-size: 15px; font-weight: 600;
+            color: var(--grey);
+            min-height: 36px; line-height: 1.15;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 5px;
+        }
+        .c-price {
+            font-family: var(--fh);
+            font-size: 40px; font-weight: 700;
+            color: var(--green); line-height: 1;
+        }
+        .price-note {
+            font-family: var(--fh);
+            font-size: 18px;
+            color: rgba(255,255,255,0.5);
+            text-align: right;
+            margin-top: 8px;
+            font-style: italic;
+            flex-shrink: 0;
+        }
+
+        /* ══ RIGHT SIDEBAR ══ */
+        .right {
+            flex: 1; height: 100%;
+            background: var(--yellow);
+            position: relative; z-index: 1;
+            padding: 26px 30px;
+            display: flex; flex-direction: column;
+            align-items: center;
+            box-shadow: -12px 0 40px rgba(0,0,0,0.22);
+        }
+        .logo { width: 260px; object-fit: contain; margin-bottom: 10px; }
+        .s-en {
+            font-family: var(--fs);
+            font-size: 58px;
+            color: var(--red); text-align: center;
+            line-height: 0.92;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+        }
+        .s-es {
+            font-family: var(--fh);
+            font-size: 21px; font-weight: 600;
+            color: var(--red-dk);
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+        }
+        .meat-box {
+            background: var(--red);
+            width: 100%;
+            border-radius: 22px;
+            padding: 16px 20px;
+            display: flex; flex-direction: column;
+            gap: 3px;
+            box-shadow: inset 0 -8px 20px rgba(0,0,0,0.2), 0 8px 22px rgba(0,0,0,0.18);
+            flex: 1;
+        }
+        .m-row {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.13);
+            padding-bottom: 3px;
+        }
+        .m-row:last-child { border-bottom: none; }
+        .m-name { color: var(--white); font-family: var(--fh); font-size: 23px; font-weight: 700; }
+        .m-sub  { color: rgba(255,255,255,0.75); font-family: var(--fh); font-size: 12px; font-weight: 600; text-transform: uppercase; }
+
+        .drinks-wrap {
+            width: 100%;
+            display: flex; flex-direction: column; align-items: center;
+            margin-top: 12px;
+        }
+        .drinks-img {
+            width: 340px;
+            filter: drop-shadow(0 12px 12px rgba(0,0,0,0.3));
+            animation: float 15s ease-in-out infinite;
+            animation-delay: 3s;
+        }
+        .drinks-badge {
+            background: var(--green);
+            color: var(--white);
+            font-family: var(--fh);
+            font-size: 28px; font-weight: 700;
+            padding: 8px 28px;
+            border-radius: 50px;
+            border: 4px solid var(--white);
+            margin-top: -34px;
+            transform: rotate(-3deg);
+            box-shadow: 0 10px 22px rgba(0,0,0,0.28);
+            text-transform: uppercase;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed; bottom: 22px; right: 22px;
+            background: var(--green); color: var(--white);
+            font-family: var(--fh); font-size: 16px; font-weight: 700;
+            padding: 10px 22px; border-radius: 40px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            opacity: 0; transform: translateY(10px);
+            transition: opacity 0.5s, transform 0.5s;
+            pointer-events: none; z-index: 9999;
+        }
+        #toast.show { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body>
-<div id="update-indicator">✓ Precios actualizados</div>
-<div id="preview-wrapper">
-    <div class="screen">
-        <div class="bg-dots"></div>
-        <div class="screen-left-content">
-            <div class="header-row">
-                <div class="main-title">PICK YOUR STYLE</div>
-                <div class="order-online-btn"> EMILIOSGROCERY.COM</div>
+<div id="toast">✓ Precios actualizados</div>
+<div id="root">
+    <div class="left">
+        <div class="hdr">
+            <div>
+                <div class="t-en">PICK YOUR STYLE</div>
+                <div class="t-es">ELIGE TU ESTILO</div>
             </div>
-            <div class="papel-picado-border"></div>
-            <div id="grid-estilos" class="grid-container"></div>
+            <div class="pill">EMILIOSGROCERY.COM</div>
         </div>
-        <div class="screen-right-sidebar">
-            <div class="logo-container">
-                <img src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="Logo">
-            </div>
-            <div class="sidebar-title">PICK YOUR MEAT</div>
-            <div class="meat-box" id="list-carnes"></div>
-            <div class="drinks-container">
-                <img src="https://i.postimg.cc/4N3NHMrm/DRINKS.png" class="drinks-img" alt="Bebidas">
-                <div class="drinks-label">5 DÓLARES</div>
-            </div>
+        <div class="fiesta"></div>
+        <div class="grid" id="grid-estilos"></div>
+        <div class="price-note">* Prices may change &nbsp;/&nbsp; Los precios pueden cambiar</div>
+    </div>
+    <div class="right">
+        <img class="logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="Logo">
+        <div class="s-en">PICK YOUR<br>MEAT</div>
+        <div class="s-es">ELIGE TU CARNE</div>
+        <div class="meat-box" id="list-carnes"></div>
+        <div class="drinks-wrap">
+            <img class="drinks-img" src="https://i.postimg.cc/4N3NHMrm/DRINKS.png" alt="Bebidas">
+            <div class="drinks-badge">SOLO $5 DÓLARES</div>
         </div>
     </div>
 </div>
 
 <script>
-    // ⚠️ REEMPLAZA ESTA URL CON TU URL DE APPS SCRIPT
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec"; // ⚠️ reemplaza
 
-    const IMGS_ESTILOS = [
+    const FALLBACK_IMGS = [
         "https://i.postimg.cc/fL53f5Vt/TACOS.png",
         "https://i.postimg.cc/SRDWjk6g/BURRITOS.png",
         "https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png",
@@ -123,59 +291,68 @@
         "https://i.postimg.cc/cL8nGQbc/PLATILLO.png"
     ];
 
-    async function loadPrices() {
+    function scaleRoot() {
+        const el = document.getElementById('root');
+        const sx = window.innerWidth  / 1920;
+        const sy = window.innerHeight / 1080;
+        const s  = Math.min(sx, sy);
+        el.style.transform = `scale(${s})`;
+        el.style.left = ((window.innerWidth  - 1920 * s) / 2) + 'px';
+        el.style.top  = ((window.innerHeight - 1080 * s) / 2) + 'px';
+        document.body.style.background = '#E31837';
+    }
+
+    function dollar(v) {
+        const s = String(v || '').trim();
+        return s.startsWith('$') ? s : '$' + s;
+    }
+
+    let lastKey = '';
+    function showToast() {
+        const t = document.getElementById('toast');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    async function load() {
         try {
-            const res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now());
-            const data = await res.json();
+            const r    = await fetch(APPS_SCRIPT_URL + '?t=' + Date.now());
+            const data = await r.json();
+            const key  = JSON.stringify((data.estilos||[]).map(i=>i.precio));
 
-            // Renderizar Estilos
-            const gEstilos = document.getElementById('grid-estilos');
-            gEstilos.innerHTML = '';
-            data.estilos.forEach((item, i) => {
-                gEstilos.innerHTML += `
-                    <div class="food-card-wrapper">
-                        <img src="${IMGS_ESTILOS[i]}" class="food-image" style="width:var(--img-size-left);bottom:var(--img-offset-y-left);">
-                        <div class="food-text-box">
-                            <div class="food-card-title">${item.nombre}</div>
-                            <div class="food-card-sub">${item.sub}</div>
-                            <div class="food-card-price">${item.precio}</div>
-                        </div>
-                    </div>`;
+            // Estilos
+            const g = document.getElementById('grid-estilos');
+            g.innerHTML = '';
+            (data.estilos || []).forEach((item, i) => {
+                const img = item.img || FALLBACK_IMGS[i] || '';
+                g.innerHTML += `<div class="card">
+                    <img class="card-img" src="${img}" alt="" onerror="this.style.display='none'">
+                    <div class="card-box">
+                        <div class="c-name">${item.nombre}</div>
+                        <div class="c-sub">${item.sub}</div>
+                        <div class="c-price">${dollar(item.precio)}</div>
+                    </div></div>`;
             });
 
-            // Renderizar Carnes
-            const lCarnes = document.getElementById('list-carnes');
-            lCarnes.innerHTML = '';
-            data.carnes.forEach(item => {
-                lCarnes.innerHTML += `
-                    <div class="meat-row">
-                        <span class="meat-name">${item.es}</span>
-                        <span class="meat-sub">${item.en}</span>
-                    </div>`;
+            // Carnes
+            const l = document.getElementById('list-carnes');
+            l.innerHTML = '';
+            (data.carnes || []).forEach(c => {
+                l.innerHTML += `<div class="m-row">
+                    <span class="m-name">${c.es}</span>
+                    <span class="m-sub">${c.en}</span></div>`;
             });
 
-            // Mostrar indicador
-            const ind = document.getElementById('update-indicator');
-            ind.classList.add('show');
-            setTimeout(() => ind.classList.remove('show'), 3000);
+            if (key !== lastKey && lastKey !== '') showToast();
+            lastKey = key;
 
-        } catch(e) {
-            console.error("Error cargando precios:", e);
-        }
+        } catch(e) { console.warn(e); }
     }
 
-    function handleScale() {
-        const wrapper = document.getElementById('preview-wrapper');
-        const scale = window.innerWidth / 1960;
-        wrapper.style.transform = `scale(${scale})`;
-    }
-
-    // Cargar al inicio y luego cada 30 segundos
-    loadPrices();
-    setInterval(loadPrices, 30000);
-
-    window.onresize = handleScale;
-    window.onload = handleScale;
+    scaleRoot();
+    window.addEventListener('resize', scaleRoot);
+    load();
+    setInterval(load, 30000);
 </script>
 </body>
 </html>
