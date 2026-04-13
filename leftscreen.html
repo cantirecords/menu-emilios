@@ -3,20 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Emilio's Grocery - Pick Your Style</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --red:    #E31837;
-            --red-dk: #C1101D;
-            --yellow: #ffde59;
-            --green:  #00843D;
-            --white:  #ffffff;
-            --grey:   #444444;
-            --fh:     'Fredoka', sans-serif;
-            --fs:     'DM Serif Display', serif;
+            --red:           #E31837;
+            --red-dk:        #C1101D;
+            --yellow:        #ffde59;
+            --green:         #00843D;
+            --white:         #ffffff;
+            --grey:          #3a3a3a;
+            --ff:            'Fredoka', sans-serif;
+            --divider-w:     10px;
+            --divider-color: #ffffff;
+            --card-radius:   40px;
+            --sidebar-bg:    #ffde59;
+            --sidebar-width: 500px;
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: var(--red); font-family: var(--ff); }
 
         #root {
             width: 1920px; height: 1080px;
@@ -29,60 +33,61 @@
         #root::before {
             content: '';
             position: absolute; inset: 0;
-            background-image: radial-gradient(rgba(0,0,0,0.2) 14%, transparent 15%);
+            background-image: radial-gradient(rgba(0,0,0,0.18) 14%, transparent 15%);
             background-size: 28px 28px;
             z-index: 0;
         }
 
-        /* ══ LEFT ══ */
+        /* ══ LEFT PANEL ══ */
         .left {
-            flex: 0 0 1370px; height: 100%;
+            flex: 1; height: 100%;
             position: relative; z-index: 1;
-            padding: 32px 44px 22px;
+            padding: 32px 44px 20px;
             display: flex; flex-direction: column;
         }
         .hdr {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 8px;
+            margin-bottom: 0; /* space controlled by title block */
             flex-shrink: 0;
         }
+        .title-block { display: flex; flex-direction: column; }
         .t-en {
-            font-family: var(--fs);
-            font-size: 100px;
+            font-family: var(--ff);
+            font-size: 80px; font-weight: 700;
             color: var(--white);
-            line-height: 0.92;
+            line-height: 1;
             text-shadow: 5px 5px 0 var(--red-dk);
         }
+        /* Space between EN and ES title */
+        .title-gap { height: 10px; }
         .t-es {
-            font-family: var(--fh);
+            font-family: var(--ff);
             font-size: 34px; font-weight: 600;
             color: var(--yellow);
             letter-spacing: 2px;
-            margin-top: 4px;
         }
         .pill {
-            background: var(--green);
-            color: var(--white);
-            font-family: var(--fh);
-            font-size: 22px; font-weight: 700;
-            padding: 12px 28px;
-            border-radius: 50px;
+            background: var(--green); color: var(--white);
+            font-family: var(--ff); font-size: 22px; font-weight: 700;
+            padding: 12px 28px; border-radius: 50px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            margin-top: 14px;
-            white-space: nowrap;
+            margin-top: 14px; white-space: nowrap;
         }
+        /* Fiesta bar — height 0 so it's hidden but recoverable */
         .fiesta {
-            height: 13px; border-radius: 10px;
-            background: repeating-linear-gradient(
-                90deg,
+            height: 0px;
+            border-radius: 10px;
+            background: repeating-linear-gradient(90deg,
                 #FF007F 0 20px, #00E5FF 20px 40px,
-                #ffde59 40px 60px, #00E676 60px 80px
-            );
-            margin-bottom: 12px;
+                #ffde59 40px 60px, #00E676 60px 80px);
+            margin-bottom: 0;
             flex-shrink: 0;
+            overflow: hidden;
         }
+        /* Space between header area and grid */
+        .hdr-spacer { height: 16px; flex-shrink: 0; }
 
         /* Grid */
         .grid {
@@ -97,157 +102,120 @@
             position: relative;
             display: flex; flex-direction: column;
             justify-content: flex-end;
-            animation: fadeUp 0.7s ease both;
         }
-        .card:nth-child(1){animation-delay:.05s}
-        .card:nth-child(2){animation-delay:.10s}
-        .card:nth-child(3){animation-delay:.15s}
-        .card:nth-child(4){animation-delay:.20s}
-        .card:nth-child(5){animation-delay:.25s}
-        .card:nth-child(6){animation-delay:.30s}
-        .card:nth-child(7){animation-delay:.35s}
-        .card:nth-child(8){animation-delay:.40s}
-        @keyframes fadeUp {
-            from { opacity:0; transform:translateY(22px); }
-            to   { opacity:1; transform:translateY(0); }
-        }
-
         .card-img {
             position: absolute;
-            left: 50%; transform: translateX(-50%);
+            /* defaults — overridden per-card by JS imgCfg */
+            left: 50%;
+            transform: translateX(-50%);
             bottom: 148px;
-            width: 300px;
+            width: 400px;
             object-fit: contain;
             filter: drop-shadow(0 18px 14px rgba(0,0,0,0.45));
             z-index: 10;
             animation: float 13s ease-in-out infinite;
+            transition: opacity 0.3s;
         }
         @keyframes float {
             0%,100%{ transform:translateX(-50%) translateY(0px); }
             50%    { transform:translateX(-50%) translateY(-9px); }
         }
-
         .card-box {
             background: var(--white);
-            border-radius: 26px;
+            border-radius: var(--card-radius);
             padding: 55px 14px 18px;
             text-align: center;
             box-shadow: 0 20px 42px rgba(0,0,0,0.35);
             min-height: 178px;
             display: flex; flex-direction: column;
-            justify-content: flex-end;
-            z-index: 1;
+            justify-content: flex-end; z-index: 1;
         }
-        .c-name {
-            font-family: var(--fh);
-            font-size: 38px; font-weight: 700;
-            color: var(--red); line-height: 1;
-            margin-bottom: 5px;
-        }
-        .c-sub {
-            font-family: var(--fh);
-            font-size: 15px; font-weight: 600;
-            color: var(--grey);
-            min-height: 36px; line-height: 1.15;
-            display: flex; align-items: center; justify-content: center;
-            margin-bottom: 5px;
-        }
-        .c-price {
-            font-family: var(--fh);
-            font-size: 40px; font-weight: 700;
-            color: var(--green); line-height: 1;
-        }
-        .price-note {
-            font-family: var(--fh);
-            font-size: 18px;
-            color: rgba(255,255,255,0.5);
-            text-align: right;
-            margin-top: 8px;
-            font-style: italic;
+        .c-name  { font-family:var(--ff); font-size:55px; font-weight:700; color:var(--red); line-height:1; margin-bottom:5px; }
+        .c-sub   { font-family:var(--ff); font-size:28px; font-weight:600; color:var(--grey); min-height:36px; line-height:1.15; display:flex; align-items:center; justify-content:center; margin-bottom:5px; }
+        .c-price { font-family:var(--ff); font-size:50px; font-weight:700; color:var(--green); line-height:1; }
+
+        /* ══ DIVIDER ══ */
+        .divider {
+            width: var(--divider-w);
+            height: 100%;
+            background: var(--divider-color);
             flex-shrink: 0;
+            z-index: 2;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
         }
 
         /* ══ RIGHT SIDEBAR ══ */
         .right {
-            flex: 1; height: 100%;
-            background: var(--yellow);
+            width: var(--sidebar-width);
+            height: 100%;
+            background: var(--sidebar-bg);
             position: relative; z-index: 1;
-            padding: 26px 30px;
+            padding: 26px 40px 20px;
             display: flex; flex-direction: column;
             align-items: center;
-            box-shadow: -12px 0 40px rgba(0,0,0,0.22);
         }
-        .logo { width: 260px; object-fit: contain; margin-bottom: 10px; }
+        .logo { width: 260px; object-fit: contain; margin-bottom: 6px; }
+
+        /* Space between titles in sidebar */
         .s-en {
-            font-family: var(--fs);
-            font-size: 58px;
+            font-family: var(--ff);
+            font-size: 60px; font-weight: 700;
             color: var(--red); text-align: center;
-            line-height: 0.92;
-            text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+            line-height: 1;
         }
+        /* Explicit gap div between EN and ES sidebar titles */
+        .sidebar-title-gap { height: 10px; flex-shrink: 0; }
         .s-es {
-            font-family: var(--fh);
-            font-size: 21px; font-weight: 600;
+            font-family: var(--ff);
+            font-size: 30px; font-weight: 600;
+            /* Same dark red as the left panel uses for ELIGE TU ESTILO */
             color: var(--red-dk);
             letter-spacing: 1.5px;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+            text-align: center;
         }
+
         .meat-box {
-            background: var(--red);
-            width: 100%;
-            border-radius: 22px;
-            padding: 16px 20px;
-            display: flex; flex-direction: column;
-            gap: 3px;
+            background: var(--red); width: 100%;
+            border-radius: 40px; padding: 16px 22px;
+            display: flex; flex-direction: column; gap: 0;
             box-shadow: inset 0 -8px 20px rgba(0,0,0,0.2), 0 8px 22px rgba(0,0,0,0.18);
             flex: 1;
         }
         .m-row {
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid rgba(255,255,255,0.13);
-            padding-bottom: 3px;
+            padding: 9px 0;
         }
         .m-row:last-child { border-bottom: none; }
-        .m-name { color: var(--white); font-family: var(--fh); font-size: 23px; font-weight: 700; }
-        .m-sub  { color: rgba(255,255,255,0.75); font-family: var(--fh); font-size: 12px; font-weight: 600; text-transform: uppercase; }
+        .m-name { color: var(--white); font-family: var(--ff); font-size: 35px; font-weight: 700; }
+        .m-sub  { color: rgba(255,255,255,0.75); font-family: var(--ff); font-size: 25px; font-weight: 600; text-transform: uppercase; }
 
-        .drinks-wrap {
-            width: 100%;
-            display: flex; flex-direction: column; align-items: center;
-            margin-top: 12px;
-        }
-        .drinks-img {
-            width: 340px;
-            filter: drop-shadow(0 12px 12px rgba(0,0,0,0.3));
-            animation: float 15s ease-in-out infinite;
-            animation-delay: 3s;
-        }
-        .drinks-badge {
-            background: var(--green);
-            color: var(--white);
-            font-family: var(--fh);
-            font-size: 28px; font-weight: 700;
-            padding: 8px 28px;
-            border-radius: 50px;
-            border: 4px solid var(--white);
-            margin-top: -34px;
-            transform: rotate(-3deg);
-            box-shadow: 0 10px 22px rgba(0,0,0,0.28);
-            text-transform: uppercase;
+        /* ── Price note at bottom of sidebar (below meat list) ── */
+        .sidebar-price-note {
+            font-family: var(--ff);
+            font-size: 18px;
+            color: var(--red-dk);
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+            font-weight: 600;
+            flex-shrink: 0;
+            line-height: 1.3;
         }
 
         /* Toast */
         #toast {
-            position: fixed; bottom: 22px; right: 22px;
-            background: var(--green); color: var(--white);
-            font-family: var(--fh); font-size: 16px; font-weight: 700;
-            padding: 10px 22px; border-radius: 40px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-            opacity: 0; transform: translateY(10px);
-            transition: opacity 0.5s, transform 0.5s;
-            pointer-events: none; z-index: 9999;
+            position:fixed; bottom:22px; right:22px;
+            background:var(--green); color:var(--white);
+            font-family:var(--ff); font-size:16px; font-weight:700;
+            padding:10px 22px; border-radius:40px;
+            box-shadow:0 8px 24px rgba(0,0,0,0.4);
+            opacity:0; transform:translateY(10px);
+            transition:opacity .5s,transform .5s;
+            pointer-events:none; z-index:9999;
         }
-        #toast.show { opacity: 1; transform: translateY(0); }
+        #toast.show { opacity:1; transform:translateY(0); }
     </style>
 </head>
 <body>
@@ -255,30 +223,33 @@
 <div id="root">
     <div class="left">
         <div class="hdr">
-            <div>
-                <div class="t-en">PICK YOUR STYLE</div>
-                <div class="t-es">ELIGE TU ESTILO</div>
+            <div class="title-block">
+                <div class="t-en" id="title-en">PICK YOUR STYLE</div>
+                <div class="title-gap"></div>
+                <div class="t-es" id="title-es">ELIGE TU ESTILO</div>
             </div>
-            <div class="pill">EMILIOSGROCERY.COM</div>
+            <div class="pill" id="website-pill">EMILIOSGROCERY.COM</div>
         </div>
         <div class="fiesta"></div>
+        <div class="hdr-spacer"></div>
         <div class="grid" id="grid-estilos"></div>
-        <div class="price-note">* Prices may change &nbsp;/&nbsp; Los precios pueden cambiar</div>
     </div>
-    <div class="right">
+
+    <div class="divider" id="divider"></div>
+
+    <div class="right" id="sidebar">
         <img class="logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="Logo">
-        <div class="s-en">PICK YOUR<br>MEAT</div>
-        <div class="s-es">ELIGE TU CARNE</div>
+        <div class="s-en" id="meat-title-en">PICK YOUR<br>MEAT</div>
+        <div class="sidebar-title-gap"></div>
+        <div class="s-es" id="meat-title-es">ELIGE TU CARNE</div>
         <div class="meat-box" id="list-carnes"></div>
-        <div class="drinks-wrap">
-            <img class="drinks-img" src="https://i.postimg.cc/4N3NHMrm/DRINKS.png" alt="Bebidas">
-            <div class="drinks-badge">SOLO $5 DÓLARES</div>
-        </div>
+        <!-- Price note lives here, below the meat list -->
+        <div class="sidebar-price-note">* Lengua &amp; Camarón = market price<br>* Prices may change</div>
     </div>
 </div>
 
 <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec"; // ⚠️ reemplaza
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec";
 
     const FALLBACK_IMGS = [
         "https://i.postimg.cc/fL53f5Vt/TACOS.png",
@@ -291,61 +262,211 @@
         "https://i.postimg.cc/cL8nGQbc/PLATILLO.png"
     ];
 
+    // Default per-image position config
+    // Each: { bottom: px, width: px, offsetX: px (added to the -50% translate) }
+    const DEFAULT_IMG_CFG = [
+        { bottom: 160, width: 400, offsetX: 0 }, // Tacos
+        { bottom: 160, width: 400, offsetX: 0 }, // Burritos
+        { bottom: 160, width: 400, offsetX: 0 }, // Tortas
+        { bottom: 160, width: 400, offsetX: 0 }, // Gorditas
+        { bottom: 160, width: 400, offsetX: 0 }, // Sopes
+        { bottom: 160, width: 400, offsetX: 0 }, // Quesadillas
+        { bottom: 160, width: 400, offsetX: 0 }, // Huaraches
+        { bottom: 160, width: 400, offsetX: 0 }, // Platillo
+    ];
+
+    let imgCfg = JSON.parse(localStorage.getItem('imgCfgP1') || 'null') || DEFAULT_IMG_CFG;
+
+    function applyImgStyle(el, cfg) {
+        el.style.bottom = cfg.bottom + 'px';
+        el.style.width  = cfg.width + 'px';
+        // offsetX shifts left/right: we build a custom transform
+        const ox = cfg.offsetX || 0;
+        el.style.setProperty('--ox', ox + 'px');
+        // Override the animation to include the offset
+        el.style.animationName = 'none';
+        el.style.transform = `translateX(calc(-50% + ${ox}px))`;
+        // Re-enable float but with offset via wrapper trick
+        // Simplest: use animation on a wrapper we already have via card
+        setTimeout(()=>{
+            el.style.animationName = '';
+            el.style.transform = '';
+            el.style.setProperty('--translate-x', `calc(-50% + ${ox}px)`);
+        }, 50);
+    }
+
     function scaleRoot() {
         const el = document.getElementById('root');
-        const sx = window.innerWidth  / 1920;
-        const sy = window.innerHeight / 1080;
-        const s  = Math.min(sx, sy);
+        const s  = Math.min(window.innerWidth/1920, window.innerHeight/1080);
         el.style.transform = `scale(${s})`;
-        el.style.left = ((window.innerWidth  - 1920 * s) / 2) + 'px';
-        el.style.top  = ((window.innerHeight - 1080 * s) / 2) + 'px';
+        el.style.left = ((window.innerWidth  - 1920*s)/2)+'px';
+        el.style.top  = ((window.innerHeight - 1080*s)/2)+'px';
         document.body.style.background = '#E31837';
     }
 
-    function dollar(v) {
-        const s = String(v || '').trim();
-        return s.startsWith('$') ? s : '$' + s;
+    function applyLayout(cfg) {
+        if (!cfg) return;
+        const r = document.documentElement.style;
+        if (cfg.dividerW      !== undefined) r.setProperty('--divider-w',     cfg.dividerW+'px');
+        if (cfg.dividerColor)                r.setProperty('--divider-color',  cfg.dividerColor);
+        if (cfg.sidebarBg)                   r.setProperty('--sidebar-bg',     cfg.sidebarBg);
+        if (cfg.sidebarWidth  !== undefined) r.setProperty('--sidebar-width',  cfg.sidebarWidth+'px');
+        if (cfg.redMain)                     r.setProperty('--red',            cfg.redMain);
+        if (cfg.cardRadius    !== undefined) r.setProperty('--card-radius',    cfg.cardRadius+'px');
     }
 
+    function dollar(v) {
+        const s = String(v||'').trim();
+        return s.startsWith('$') ? s : '$'+s;
+    }
+
+    let initialized = false;
     let lastKey = '';
+    let lastCarnesKey = '';
+
     function showToast() {
         const t = document.getElementById('toast');
         t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3500);
+        setTimeout(()=>t.classList.remove('show'), 3500);
     }
+
+    function updateEstilos(items) {
+        const grid = document.getElementById('grid-estilos');
+        const newKey = JSON.stringify(items.map(i=>[i.nombre,i.sub,i.precio,i.img]));
+
+        if (!initialized) {
+            grid.innerHTML = '';
+            items.forEach((item, i) => {
+                const img = item.img || FALLBACK_IMGS[i] || '';
+                const cfg = imgCfg[i] || DEFAULT_IMG_CFG[0];
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.id = 'card-e-'+i;
+
+                // Build float animation with per-card offsetX
+                const ox = cfg.offsetX || 0;
+                const styleTag = `
+                    position:absolute;
+                    left:50%;
+                    bottom:${cfg.bottom}px;
+                    width:${cfg.width}px;
+                    object-fit:contain;
+                    filter:drop-shadow(0 18px 14px rgba(0,0,0,0.45));
+                    z-index:10;
+                    animation:float-${i} 13s ease-in-out infinite;
+                    transition:opacity 0.3s;
+                `;
+                // Inject per-card keyframe
+                const kfId = 'kf-e-'+i;
+                if (!document.getElementById(kfId)) {
+                    const s2 = document.createElement('style');
+                    s2.id = kfId;
+                    s2.textContent = `
+                        @keyframes float-${i} {
+                            0%,100%{ transform:translateX(calc(-50% + ${ox}px)) translateY(0px); }
+                            50%    { transform:translateX(calc(-50% + ${ox}px)) translateY(-9px); }
+                        }`;
+                    document.head.appendChild(s2);
+                }
+
+                div.innerHTML = `
+                    <img id="cimg-e-${i}" src="${img}" alt=""
+                         style="${styleTag}"
+                         onerror="this.style.opacity='0'">
+                    <div class="card-box">
+                        <div class="c-name"  id="cname-e-${i}">${item.nombre}</div>
+                        <div class="c-sub"   id="csub-e-${i}">${item.sub}</div>
+                        <div class="c-price" id="cprice-e-${i}">${dollar(item.precio)}</div>
+                    </div>`;
+                grid.appendChild(div);
+            });
+        } else if (newKey !== lastKey) {
+            items.forEach((item, i) => {
+                const img = item.img || FALLBACK_IMGS[i] || '';
+                const elImg = document.getElementById('cimg-e-'+i);
+                const elN   = document.getElementById('cname-e-'+i);
+                const elS   = document.getElementById('csub-e-'+i);
+                const elP   = document.getElementById('cprice-e-'+i);
+                if (elImg && elImg.getAttribute('src') !== img) { elImg.src = img; elImg.style.opacity='1'; }
+                if (elN && elN.textContent !== item.nombre) elN.textContent = item.nombre;
+                if (elS && elS.textContent !== item.sub)    elS.textContent = item.sub;
+                if (elP) { const p = dollar(item.precio); if(elP.textContent!==p) elP.textContent=p; }
+            });
+            showToast();
+        }
+        lastKey = newKey;
+    }
+
+    function updateCarnes(items) {
+        const list = document.getElementById('list-carnes');
+        const newKey = JSON.stringify(items.map(c=>[c.es,c.en]));
+        if (!initialized) {
+            list.innerHTML = '';
+            items.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'm-row';
+                div.innerHTML = `<span class="m-name">${c.es}</span><span class="m-sub">${c.en}</span>`;
+                list.appendChild(div);
+            });
+        } else if (newKey !== lastCarnesKey) {
+            const rows = list.querySelectorAll('.m-row');
+            items.forEach((c, i) => {
+                if (rows[i]) {
+                    rows[i].querySelector('.m-name').textContent = c.es;
+                    rows[i].querySelector('.m-sub').textContent  = c.en;
+                }
+            });
+        }
+        lastCarnesKey = newKey;
+    }
+
+    // Listen for live imgCfg updates from admin (via localStorage)
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'imgCfgP1') {
+            imgCfg = JSON.parse(e.newValue || 'null') || DEFAULT_IMG_CFG;
+            // Re-apply styles to images already in DOM
+            imgCfg.forEach((cfg, i) => {
+                const el = document.getElementById('cimg-e-'+i);
+                if (!el) return;
+                const ox = cfg.offsetX || 0;
+                el.style.bottom = cfg.bottom+'px';
+                el.style.width  = cfg.width+'px';
+                // Update keyframe
+                const kfEl = document.getElementById('kf-e-'+i);
+                if (kfEl) kfEl.textContent = `
+                    @keyframes float-${i} {
+                        0%,100%{ transform:translateX(calc(-50% + ${ox}px)) translateY(0px); }
+                        50%    { transform:translateX(calc(-50% + ${ox}px)) translateY(-9px); }
+                    }`;
+            });
+        }
+    });
 
     async function load() {
         try {
-            const r    = await fetch(APPS_SCRIPT_URL + '?t=' + Date.now());
+            const r    = await fetch(APPS_SCRIPT_URL+'?t='+Date.now());
             const data = await r.json();
-            const key  = JSON.stringify((data.estilos||[]).map(i=>i.precio));
-
-            // Estilos
-            const g = document.getElementById('grid-estilos');
-            g.innerHTML = '';
-            (data.estilos || []).forEach((item, i) => {
-                const img = item.img || FALLBACK_IMGS[i] || '';
-                g.innerHTML += `<div class="card">
-                    <img class="card-img" src="${img}" alt="" onerror="this.style.display='none'">
-                    <div class="card-box">
-                        <div class="c-name">${item.nombre}</div>
-                        <div class="c-sub">${item.sub}</div>
-                        <div class="c-price">${dollar(item.precio)}</div>
-                    </div></div>`;
-            });
-
-            // Carnes
-            const l = document.getElementById('list-carnes');
-            l.innerHTML = '';
-            (data.carnes || []).forEach(c => {
-                l.innerHTML += `<div class="m-row">
-                    <span class="m-name">${c.es}</span>
-                    <span class="m-sub">${c.en}</span></div>`;
-            });
-
-            if (key !== lastKey && lastKey !== '') showToast();
-            lastKey = key;
-
+            applyLayout(data.layoutP1);
+            if (data.titlesP1) {
+                const te = document.getElementById('title-en');
+                const ts = document.getElementById('title-es');
+                const me = document.getElementById('meat-title-en');
+                const ms = document.getElementById('meat-title-es');
+                const wp = document.getElementById('website-pill');
+                if (te && data.titlesP1.styleEn) te.textContent = data.titlesP1.styleEn;
+                if (ts && data.titlesP1.styleEs) ts.textContent = data.titlesP1.styleEs;
+                if (me && data.titlesP1.meatEn)  me.innerHTML   = data.titlesP1.meatEn;
+                if (ms && data.titlesP1.meatEs)  ms.textContent = data.titlesP1.meatEs;
+                if (wp && data.titlesP1.website) wp.textContent = data.titlesP1.website;
+            }
+            // Per-image config from sheet if present
+            if (data.imgCfgP1) {
+                imgCfg = data.imgCfgP1;
+                localStorage.setItem('imgCfgP1', JSON.stringify(imgCfg));
+            }
+            updateEstilos(data.estilos || []);
+            updateCarnes(data.carnes   || []);
+            initialized = true;
         } catch(e) { console.warn(e); }
     }
 
