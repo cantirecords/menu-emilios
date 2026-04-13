@@ -2,108 +2,192 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emilio's Grocery - Especialidades</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;600;800;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --img-size-right: 300px;
-            --img-offset-y-right: 120px;
-            --row-gap-right: 100px;
-            --text-title: 32px;
-            --text-price: 30px;
-            --red-main: #E31837;
-            --red-dark: #C1101D;
-            --yellow-main: #FFF000;
-            --green-main: #00843D;
-            --white: #ffffff;
-            --text-grey: #444444;
-            --font-tang: 'DM Serif Display', serif;
+            --red:    #E31837;
+            --red-dk: #C1101D;
+            --yellow: #ffde59;
+            --green:  #00843D;
+            --white:  #ffffff;
+            --grey:   #3a3a3a;
+            --ff:      'Fredoka', sans-serif;
+            --card-radius: 32px;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background-color: #111;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: 'Poppins', sans-serif;
-            overflow-x: hidden;
-        }
-        #preview-wrapper { transform-origin: top center; padding: 20px 0; }
-        .screen {
-            width: 1920px;
-            height: 1080px;
-            background-color: var(--red-main);
-            position: relative;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: var(--red); font-family: var(--ff); }
+
+        #root {
+            width: 1920px; height: 1080px;
+            position: absolute; top: 0; left: 0;
+            transform-origin: top left;
+            background: var(--red);
             overflow: hidden;
-            display: flex;
-            box-shadow: 0 20px 80px rgba(0,0,0,0.8);
+            display: flex; flex-direction: column;
         }
-        .bg-dots {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background-image: radial-gradient(var(--red-dark) 15%, transparent 16%);
-            background-size: 25px 25px;
-            z-index: 1;
+        
+        /* Fondo con textura sutil */
+        #root::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(0,0,0,0.15) 12%, transparent 15%);
+            background-size: 30px 30px; z-index: 0;
         }
-        .screen-full-content { width: 100%; height: 100%; position: relative; z-index: 2; padding: 30px 45px; display: flex; flex-direction: column; }
-        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-shrink: 0; }
-        .main-title { font-family: var(--font-tang); font-size: 75px; color: var(--white); text-shadow: 4px 4px 0px var(--red-dark); letter-spacing: 1px; line-height: 1; }
-        .papel-picado-border { width: 100%; height: 12px; background-image: linear-gradient(90deg, #FF007F 25%, #00E5FF 25%, #00E5FF 50%, #FFEA00 50%, #FFEA00 75%, #00E676 75%); background-size: 80px 100%; margin-bottom: 15px; border-radius: 10px; opacity: 0.9; flex-shrink: 0; }
-        .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 130px; }
-        #grid-especialidades { row-gap: var(--row-gap-right); grid-template-rows: repeat(3, auto); }
-        .food-card-wrapper { position: relative; display: flex; flex-direction: column; justify-content: flex-end; }
-        .food-text-box { background: var(--white); border-radius: 25px; padding: 50px 12px 15px 12px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); min-height: 165px; display: flex; flex-direction: column; justify-content: flex-end; position: relative; z-index: 1; }
-        .food-image { position: absolute; left: 50%; transform: translateX(-50%); object-fit: contain; filter: drop-shadow(0 15px 10px rgba(0,0,0,0.4)); z-index: 10; animation: superSlowFloat 15s ease-in-out infinite; }
-        .food-card-title { font-family: 'Fredoka', sans-serif; font-size: var(--text-title); color: var(--red-main); line-height: 1; margin-bottom: 5px; font-weight: 700; }
-        .food-card-sub { font-size: 14px; color: var(--text-grey); font-weight: 700; margin-bottom: 5px; min-height: 34px; line-height: 1.1; display: flex; align-items: center; justify-content: center; }
-        .food-card-price { font-size: var(--text-price); font-weight: 900; color: var(--green-main); line-height: 1; }
 
-        /* FAJITAS */
-        .fajita-card-wrapper { grid-column: 4; grid-row: 2 / 4; align-self: stretch; display: flex; flex-direction: column; justify-content: flex-end; }
-        .fajita-box { padding-top: 120px !important; height: 100% !important; min-height: 380px !important; justify-content: flex-start !important; padding-bottom: 30px !important; }
-        .fajita-container { display: flex; flex-direction: column; width: 100%; margin-top: 20px; gap: 12px; padding: 0 10px; }
-        .f-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed rgba(0,0,0,0.1); padding-bottom: 8px; }
+        .content {
+            position: relative; z-index: 1;
+            flex: 1; display: flex; flex-direction: column;
+            padding: 25px 40px 15px;
+        }
+
+        /* ── HEADER ── */
+        .hdr {
+            display: flex; justify-content: space-between;
+            align-items: center; flex-shrink: 0; margin-bottom: 20px;
+        }
+        .t-en { font-size: 90px; font-weight: 700; color: var(--white); line-height: 1; text-shadow: 6px 6px 0 var(--red-dk); }
+        .t-es { font-size: 32px; font-weight: 600; color: var(--yellow); letter-spacing: 3px; margin-top: 5px; }
+        .logo-icon { height: 120px; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3)); }
+
+        .body { flex: 1; display: flex; gap: 25px; min-height: 0; margin-top: 10px; }
+
+        /* ── GRID DE ITEMS (IZQUIERDA) ── */
+        .items-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(5, 1fr);
+            gap: 18px;
+        }
+
+        .card {
+            position: relative;
+            background: var(--white);
+            border-radius: var(--card-radius);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+            display: flex; flex-direction: row;
+            align-items: center;
+            padding: 10px 25px;
+            overflow: visible; /* Importante para que la comida sobresalga */
+        }
+
+        .card-img-wrap {
+            flex-shrink: 0;
+            width: 180px; height: 140px;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; z-index: 10;
+            margin-left: -15px; /* Hace que la imagen se mueva un poco a la izquierda */
+        }
+        
+        .card-img {
+            object-fit: contain;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));
+            animation: float 10s ease-in-out infinite;
+            width: 250px; /* Tamaño base grande */
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50%      { transform: translate(0, -8px) rotate(2deg); }
+        }
+
+        .card-text {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; padding-left: 15px; gap: 2px;
+        }
+        .c-name  { font-size: 40px; font-weight: 700; color: var(--red); line-height: 1; }
+        .c-sub   { font-size: 24px; font-weight: 500; color: var(--grey); line-height: 1.2; min-height: 28px; }
+        .c-price { font-size: 48px; font-weight: 700; color: var(--green); line-height: 1; }
+
+        /* ── COLUMNA FAJITA (DERECHA) ── */
+        .fajita-col {
+            width: 380px; flex-shrink: 0;
+            display: flex; flex-direction: column;
+            position: relative;
+            margin-top: 80px; /* Espacio para que la imagen de arriba no choque con el header */
+        }
+
+        .fajita-card {
+            background: var(--white);
+            border-radius: var(--card-radius);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            flex: 1; display: flex; flex-direction: column;
+            padding: 20px 30px;
+            overflow: visible;
+        }
+
+        .fajita-img-wrap {
+            position: absolute;
+            top: -110px; /* Posiciona la imagen sobre la tarjeta */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            width: 450px;
+        }
+        
+        .fajita-img {
+            width: 100%;
+            filter: drop-shadow(0 15px 20px rgba(0,0,0,0.5));
+            animation: floatFaj 12s ease-in-out infinite;
+        }
+
+        @keyframes floatFaj {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50%      { transform: translateY(-15px) scale(1.02); }
+        }
+
+        .fajita-content {
+            padding-top: 100px; /* Espacio para que el texto no quede bajo la imagen */
+            display: flex; flex-direction: column; flex: 1;
+        }
+        .fajita-title { font-size: 70px; font-weight: 700; color: var(--red); text-align: center; margin-bottom: 15px; }
+        .f-table { display: flex; flex-direction: column; flex: 1; justify-content: space-evenly; }
+        .f-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed rgba(0,0,0,0.1); padding: 15px 0; }
         .f-row:last-child { border-bottom: none; }
-        .f-n { font-size: 16px; color: var(--text-grey); font-weight: 800; text-align: left; line-height: 1.1; }
-        .f-n small { font-size: 11px; display: block; color: #888; font-weight: 600; line-height: 1; }
-        .f-p { font-size: 20px; color: var(--green-main); font-weight: 900; }
+        .f-name  { font-size: 28px; font-weight: 700; color: var(--grey); }
+        .f-price { font-size: 42px; font-weight: 700; color: var(--green); }
 
-        @keyframes superSlowFloat { 0% { transform: translateX(-50%) translateY(0px); } 50% { transform: translateX(-50%) translateY(-5px); } 100% { transform: translateX(-50%) translateY(0px); } }
+        .price-note { font-size: 16px; color: rgba(255,255,255,0.6); text-align: right; margin-top: 15px; font-style: italic; }
 
-        #update-indicator {
-            position: fixed; bottom: 10px; left: 10px;
-            background: rgba(0,0,0,0.6); color: #0f0;
-            font-size: 11px; padding: 4px 10px; border-radius: 20px;
-            font-family: monospace; z-index: 9999;
-            opacity: 0; transition: opacity 1s;
-        }
-        #update-indicator.show { opacity: 1; }
+        #toast { position: fixed; bottom: 25px; right: 25px; background: var(--green); color: var(--white); font-size: 18px; font-weight: 700; padding: 12px 25px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); opacity: 0; transform: translateY(15px); transition: all .5s; z-index: 9999; }
+        #toast.show { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body>
-<div id="update-indicator">✓ Precios actualizados</div>
-<div id="preview-wrapper">
-    <div class="screen">
-        <div class="bg-dots"></div>
-        <div class="screen-full-content">
-            <div class="header-row">
-                <div class="title-group">
-                    <div class="main-title">ESPECIALIDADES</div>
-                    <div style="color:var(--yellow-main);font-size:32px;font-weight:800;font-family:'Fredoka';">SIGNATURE PLATES</div>
-                </div>
-                <img src="https://i.postimg.cc/FKtbLp6Y/Emilio-s-Logo-Icon-Transparent.png" style="height:110px;" alt="Logo">
+<div id="toast">✓ Menú Actualizado</div>
+<div id="root">
+    <div class="content">
+        <div class="hdr">
+            <div>
+                <div class="t-en" id="title-en">ESPECIALIDADES</div>
+                <div class="t-es" id="title-es">SIGNATURE PLATES</div>
             </div>
-            <div class="papel-picado-border"></div>
-            <div id="grid-especialidades" class="grid-container"></div>
+            <img class="logo-icon" src="https://i.postimg.cc/FKtbLp6Y/Emilio-s-Logo-Icon-Transparent.png" alt="Logo">
         </div>
+
+        <div class="body">
+            <div class="items-grid" id="items-grid"></div>
+
+            <div class="fajita-col">
+                <div class="fajita-card">
+                    <div class="fajita-img-wrap">
+                        <img class="fajita-img" id="fajita-main-img" src="https://i.postimg.cc/SsG9tktV/FAJITAS.png" alt="">
+                    </div>
+                    <div class="fajita-content">
+                        <div class="fajita-title" id="fajita-title">Fajitas</div>
+                        <div class="f-table" id="f-table"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="price-note">* Prices may change &nbsp;/&nbsp; Los precios pueden cambiar</div>
     </div>
 </div>
 
 <script>
-    // ⚠️ REEMPLAZA ESTA URL CON TU URL DE APPS SCRIPT
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec";
 
-    const IMGS_ESPEC = [
+    const FALLBACK_IMGS = [
         "https://i.postimg.cc/vBvnSbS0/CHILAQUILES.png",
         "https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png",
         "https://i.postimg.cc/8cK6NwGw/GORDITAS.png",
@@ -116,85 +200,79 @@
         "https://i.postimg.cc/fL53f5Vt/TACOS.png"
     ];
 
-    async function loadPrices() {
-        try {
-            const res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now());
-            const data = await res.json();
-
-            const gSpec = document.getElementById('grid-especialidades');
-            gSpec.innerHTML = '';
-
-            // Items normales (primeras 3 columnas, fila 1)
-            const fila1 = data.especialidades.slice(0, 4);
-            // Fila 2 (primeras 3 de la segunda fila)
-            const fila2 = data.especialidades.slice(4, 7);
-            // Fila 3
-            const fila3 = data.especialidades.slice(7, 10);
-
-            // Renderizar fila 1
-            fila1.forEach((item, i) => {
-                gSpec.innerHTML += buildCard(item, IMGS_ESPEC[i]);
-            });
-
-            // Renderizar fila 2 (3 cards) + Fajitas (columna 4, span 2 filas)
-            fila2.forEach((item, i) => {
-                gSpec.innerHTML += buildCard(item, IMGS_ESPEC[4 + i]);
-            });
-
-            // Fajitas (span 2 filas, columna 4)
-            const fajitas = data.fajitas;
-            gSpec.innerHTML += `
-                <div class="fajita-card-wrapper food-card-wrapper">
-                    <img src="https://i.postimg.cc/SsG9tktV/FAJITAS.png" class="food-image" style="width:500px;bottom:320px;">
-                    <div class="food-text-box fajita-box">
-                        <div class="food-card-title" style="font-size:38px;">Fajitas</div>
-                        <div class="fajita-container">
-                            ${fajitas.map(f => `
-                                <div class="f-row">
-                                    <span class="f-n">${f.nombre}</span>
-                                    <span class="f-p">${f.precio}</span>
-                                </div>`).join('')}
-                        </div>
-                    </div>
-                </div>`;
-
-            // Renderizar fila 3
-            fila3.forEach((item, i) => {
-                gSpec.innerHTML += buildCard(item, IMGS_ESPEC[7 + i]);
-            });
-
-            // Indicador
-            const ind = document.getElementById('update-indicator');
-            ind.classList.add('show');
-            setTimeout(() => ind.classList.remove('show'), 3000);
-
-        } catch(e) {
-            console.error("Error cargando precios:", e);
-        }
+    function scaleRoot() {
+        const el = document.getElementById('root');
+        const s = Math.min(window.innerWidth/1920, window.innerHeight/1080);
+        el.style.transform = `scale(${s})`;
+        el.style.left = ((window.innerWidth - 1920*s)/2) + 'px';
+        el.style.top  = ((window.innerHeight - 1080*s)/2) + 'px';
     }
 
-    function buildCard(item, img) {
-        return `
-            <div class="food-card-wrapper">
-                <img src="${img}" class="food-image" style="width:var(--img-size-right);bottom:var(--img-offset-y-right);">
-                <div class="food-text-box">
-                    <div class="food-card-title">${item.nombre}</div>
-                    <div class="food-card-sub">${item.sub}</div>
-                    <div class="food-card-price">${item.precio}</div>
+    function dollar(v) { const s=String(v||'').trim(); return s.startsWith('$')?s:'$'+s; }
+
+    function showToast() {
+        const t = document.getElementById('toast');
+        t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 3500);
+    }
+
+    let initialized = false;
+    let lastKey = '';
+
+    function buildGrid(espec) {
+        const g = document.getElementById('items-grid');
+        g.innerHTML = '';
+        espec.slice(0,10).forEach((item, i) => {
+            const img = item.img || FALLBACK_IMGS[i] || '';
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-img-wrap">
+                    <img class="card-img" id="cimg-p2-${i}" src="${img}" onerror="this.style.opacity='0'">
                 </div>
-            </div>`;
+                <div class="card-text">
+                    <div class="c-name" id="cname-p2-${i}">${item.nombre}</div>
+                    <div class="c-sub" id="csub-p2-${i}">${item.sub}</div>
+                    <div class="c-price" id="cprice-p2-${i}">${dollar(item.precio)}</div>
+                </div>`;
+            g.appendChild(card);
+        });
     }
 
-    function handleScale() {
-        const wrapper = document.getElementById('preview-wrapper');
-        const scale = window.innerWidth / 1960;
-        wrapper.style.transform = `scale(${scale})`;
+    function buildFajitas(fajitas) {
+        const tbl = document.getElementById('f-table');
+        tbl.innerHTML = '';
+        fajitas.forEach((f,i) => {
+            const row = document.createElement('div');
+            row.className = 'f-row';
+            row.innerHTML = `<span class="f-name">${f.nombre}</span><span class="f-price">${dollar(f.precio)}</span>`;
+            tbl.appendChild(row);
+        });
     }
 
-    loadPrices();
-    setInterval(loadPrices, 30000);
-    window.onresize = handleScale;
-    window.onload = handleScale;
+    async function load() {
+        try {
+            const r = await fetch(APPS_SCRIPT_URL+'?t='+Date.now());
+            const data = await r.json();
+            const espec = data.especialidades || [];
+            const fajitas = data.fajitas || [];
+            const key = JSON.stringify(data);
+
+            if (!initialized) {
+                buildGrid(espec);
+                buildFajitas(fajitas);
+            } else if (key !== lastKey) {
+                buildGrid(espec);
+                buildFajitas(fajitas);
+                showToast();
+            }
+            lastKey = key; initialized = true;
+        } catch(e) { console.warn("Error cargando datos:", e); }
+    }
+
+    scaleRoot();
+    window.addEventListener('resize', scaleRoot);
+    load();
+    setInterval(load, 30000);
 </script>
 </body>
 </html>
