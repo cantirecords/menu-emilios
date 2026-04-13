@@ -5,175 +5,59 @@
     <title>Emilio's Grocery - Especialidades</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --red:    #E31837;
-            --red-dk: #C1101D;
-            --yellow: #ffde59;
-            --green:  #00843D;
-            --white:  #ffffff;
-            --grey:   #3a3a3a;
-            --ff:      'Fredoka', sans-serif;
-            --card-radius: 32px;
-        }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: 100%; height: 100%; overflow: hidden; background: var(--red); font-family: var(--ff); }
-
-        #root {
-            width: 1920px; height: 1080px;
-            position: absolute; top: 0; left: 0;
-            transform-origin: top left;
-            background: var(--red);
-            overflow: hidden;
-            display: flex; flex-direction: column;
-        }
-        
-        /* Fondo con textura sutil */
-        #root::before {
-            content: ''; position: absolute; inset: 0;
-            background-image: radial-gradient(rgba(0,0,0,0.15) 12%, transparent 15%);
-            background-size: 30px 30px; z-index: 0;
-        }
-
-        .content {
-            position: relative; z-index: 1;
-            flex: 1; display: flex; flex-direction: column;
-            padding: 25px 40px 15px;
-        }
-
-        /* ── HEADER ── */
-        .hdr {
-            display: flex; justify-content: space-between;
-            align-items: center; flex-shrink: 0; margin-bottom: 20px;
-        }
-        .t-en { font-size: 90px; font-weight: 700; color: var(--white); line-height: 1; text-shadow: 6px 6px 0 var(--red-dk); }
-        .t-es { font-size: 32px; font-weight: 600; color: var(--yellow); letter-spacing: 3px; margin-top: 5px; }
-        .logo-icon { height: 120px; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3)); }
-
-        .body { flex: 1; display: flex; gap: 25px; min-height: 0; margin-top: 10px; }
-
-        /* ── GRID DE ITEMS (IZQUIERDA) ── */
-        .items-grid {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: repeat(5, 1fr);
-            gap: 18px;
-        }
-
-        .card {
-            position: relative;
-            background: var(--white);
-            border-radius: var(--card-radius);
-            box-shadow: 0 12px 35px rgba(0,0,0,0.25);
-            display: flex; flex-direction: row;
-            align-items: center;
-            padding: 10px 25px;
-            overflow: visible; /* Importante para que la comida sobresalga */
-        }
-
-        .card-img-wrap {
-            flex-shrink: 0;
-            width: 180px; height: 140px;
-            display: flex; align-items: center; justify-content: center;
-            position: relative; z-index: 10;
-            margin-left: -15px; /* Hace que la imagen se mueva un poco a la izquierda */
-        }
-        
-        .card-img {
-            object-fit: contain;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));
-            animation: float 10s ease-in-out infinite;
-            width: 250px; /* Tamaño base grande */
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50%      { transform: translate(0, -8px) rotate(2deg); }
-        }
-
-        .card-text {
-            flex: 1; display: flex; flex-direction: column;
-            justify-content: center; padding-left: 15px; gap: 2px;
-        }
-        .c-name  { font-size: 40px; font-weight: 700; color: var(--red); line-height: 1; }
-        .c-sub   { font-size: 24px; font-weight: 500; color: var(--grey); line-height: 1.2; min-height: 28px; }
-        .c-price { font-size: 48px; font-weight: 700; color: var(--green); line-height: 1; }
-
-        /* ── COLUMNA FAJITA (DERECHA) ── */
-        .fajita-col {
-            width: 380px; flex-shrink: 0;
-            display: flex; flex-direction: column;
-            position: relative;
-            margin-top: 80px; /* Espacio para que la imagen de arriba no choque con el header */
-        }
-
-        .fajita-card {
-            background: var(--white);
-            border-radius: var(--card-radius);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-            flex: 1; display: flex; flex-direction: column;
-            padding: 20px 30px;
-            overflow: visible;
-        }
-
-        .fajita-img-wrap {
-            position: absolute;
-            top: -110px; /* Posiciona la imagen sobre la tarjeta */
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 20;
-            width: 450px;
-        }
-        
-        .fajita-img {
-            width: 100%;
-            filter: drop-shadow(0 15px 20px rgba(0,0,0,0.5));
-            animation: floatFaj 12s ease-in-out infinite;
-        }
-
-        @keyframes floatFaj {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50%      { transform: translateY(-15px) scale(1.02); }
-        }
-
-        .fajita-content {
-            padding-top: 100px; /* Espacio para que el texto no quede bajo la imagen */
-            display: flex; flex-direction: column; flex: 1;
-        }
-        .fajita-title { font-size: 70px; font-weight: 700; color: var(--red); text-align: center; margin-bottom: 15px; }
-        .f-table { display: flex; flex-direction: column; flex: 1; justify-content: space-evenly; }
-        .f-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed rgba(0,0,0,0.1); padding: 15px 0; }
-        .f-row:last-child { border-bottom: none; }
-        .f-name  { font-size: 28px; font-weight: 700; color: var(--grey); }
-        .f-price { font-size: 42px; font-weight: 700; color: var(--green); }
-
-        .price-note { font-size: 16px; color: rgba(255,255,255,0.6); text-align: right; margin-top: 15px; font-style: italic; }
-
-        #toast { position: fixed; bottom: 25px; right: 25px; background: var(--green); color: var(--white); font-size: 18px; font-weight: 700; padding: 12px 25px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); opacity: 0; transform: translateY(15px); transition: all .5s; z-index: 9999; }
-        #toast.show { opacity: 1; transform: translateY(0); }
+        :root{--red:#E31837;--red-dk:#C1101D;--yellow:#ffde59;--green:#00843D;--white:#ffffff;--grey:#3a3a3a;--ff:'Fredoka',sans-serif;--card-radius:32px;}
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        html,body{width:100%;height:100%;overflow:hidden;background:var(--red);font-family:var(--ff);}
+        #root{width:1920px;height:1080px;position:absolute;top:0;left:0;transform-origin:top left;background:var(--red);overflow:hidden;display:flex;flex-direction:column;}
+        #root::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(0,0,0,0.15) 12%,transparent 15%);background-size:30px 30px;z-index:0;}
+        .content{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;padding:25px 40px 15px;}
+        .hdr{display:flex;justify-content:space-between;align-items:center;flex-shrink:0;margin-bottom:20px;}
+        .t-en{font-size:90px;font-weight:700;color:var(--white);line-height:1;text-shadow:6px 6px 0 var(--red-dk);}
+        .t-es{font-size:32px;font-weight:600;color:var(--yellow);letter-spacing:3px;margin-top:5px;}
+        .logo-icon{height:120px;filter:drop-shadow(0 6px 12px rgba(0,0,0,0.3));}
+        .body{flex:1;display:flex;gap:25px;min-height:0;margin-top:10px;}
+        .items-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(5,1fr);gap:18px;}
+        .card{position:relative;background:var(--white);border-radius:var(--card-radius);box-shadow:0 12px 35px rgba(0,0,0,0.25);display:flex;flex-direction:row;align-items:center;padding:10px 25px;overflow:visible;}
+        .card-img-wrap{flex-shrink:0;width:180px;height:140px;display:flex;align-items:center;justify-content:center;position:relative;z-index:10;margin-left:-15px;}
+        .card-img{object-fit:contain;filter:drop-shadow(0 10px 15px rgba(0,0,0,0.4));animation:floatCard 10s ease-in-out infinite;width:250px;}
+        @keyframes floatCard{0%,100%{transform:translate(var(--tx,0px),var(--ty,0px)) rotate(0deg);}50%{transform:translate(var(--tx,0px),calc(var(--ty,0px) - 8px)) rotate(2deg);}}
+        .card-text{flex:1;display:flex;flex-direction:column;justify-content:center;padding-left:15px;gap:2px;}
+        .c-name{font-size:40px;font-weight:700;color:var(--red);line-height:1;}
+        .c-sub{font-size:24px;font-weight:500;color:var(--grey);line-height:1.2;min-height:28px;}
+        .c-price{font-size:48px;font-weight:700;color:var(--green);line-height:1;}
+        .fajita-col{width:380px;flex-shrink:0;display:flex;flex-direction:column;position:relative;margin-top:80px;}
+        .fajita-card{background:var(--white);border-radius:var(--card-radius);box-shadow:0 15px 40px rgba(0,0,0,0.3);flex:1;display:flex;flex-direction:column;padding:20px 30px;overflow:visible;}
+        .fajita-img-wrap{position:absolute;top:var(--faj-top,-110px);left:calc(50% + var(--faj-tx,0px));transform:translateX(-50%);z-index:20;}
+        .fajita-img{display:block;filter:drop-shadow(0 15px 20px rgba(0,0,0,0.5));animation:floatFaj 12s ease-in-out infinite;width:var(--faj-w,450px);}
+        @keyframes floatFaj{0%,100%{transform:translateY(0);}50%{transform:translateY(-15px);}}
+        .fajita-content{padding-top:var(--faj-pt,100px);display:flex;flex-direction:column;flex:1;}
+        .fajita-title{font-size:70px;font-weight:700;color:var(--red);text-align:center;margin-bottom:15px;}
+        .f-table{display:flex;flex-direction:column;flex:1;justify-content:space-evenly;}
+        .f-row{display:flex;justify-content:space-between;align-items:center;border-bottom:2px dashed rgba(0,0,0,0.1);padding:15px 0;}
+        .f-row:last-child{border-bottom:none;}
+        .f-name{font-size:28px;font-weight:700;color:var(--grey);}
+        .f-price{font-size:42px;font-weight:700;color:var(--green);}
+        .price-note{font-size:16px;color:rgba(255,255,255,0.6);text-align:right;margin-top:15px;font-style:italic;}
+        #toast{position:fixed;bottom:25px;right:25px;background:var(--green);color:var(--white);font-size:18px;font-weight:700;padding:12px 25px;border-radius:50px;box-shadow:0 10px 30px rgba(0,0,0,0.4);opacity:0;transform:translateY(15px);transition:all .5s;z-index:9999;}
+        #toast.show{opacity:1;transform:translateY(0);}
     </style>
 </head>
 <body>
-<div id="toast">✓ Menú Actualizado</div>
+<div id="toast">&#x2713; Men&uacute; Actualizado</div>
 <div id="root">
     <div class="content">
         <div class="hdr">
-            <div>
-                <div class="t-en" id="title-en">ESPECIALIDADES</div>
-                <div class="t-es" id="title-es">SIGNATURE PLATES</div>
-            </div>
+            <div><div class="t-en" id="title-en">ESPECIALIDADES</div><div class="t-es" id="title-es">SIGNATURE PLATES</div></div>
             <img class="logo-icon" src="https://i.postimg.cc/FKtbLp6Y/Emilio-s-Logo-Icon-Transparent.png" alt="Logo">
         </div>
-
         <div class="body">
             <div class="items-grid" id="items-grid"></div>
-
             <div class="fajita-col">
-                <div class="fajita-card">
-                    <div class="fajita-img-wrap">
-                        <img class="fajita-img" id="fajita-main-img" src="https://i.postimg.cc/SsG9tktV/FAJITAS.png" alt="">
+                <div class="fajita-card" id="fajita-card">
+                    <div class="fajita-img-wrap" id="fajita-img-wrap">
+                        <img class="fajita-img" id="fajita-main-img" src="https://i.postimg.cc/SsG9tktV/FAJITAS.png" alt="" onerror="this.style.opacity='0'">
                     </div>
-                    <div class="fajita-content">
+                    <div class="fajita-content" id="fajita-content">
                         <div class="fajita-title" id="fajita-title">Fajitas</div>
                         <div class="f-table" id="f-table"></div>
                     </div>
@@ -183,96 +67,106 @@
         <div class="price-note">* Prices may change &nbsp;/&nbsp; Los precios pueden cambiar</div>
     </div>
 </div>
-
 <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec";
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec";
+const FALLBACK_IMGS=["https://i.postimg.cc/vBvnSbS0/CHILAQUILES.png","https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png","https://i.postimg.cc/8cK6NwGw/GORDITAS.png","https://i.postimg.cc/KjqMxQbH/MOLCAJETE.png","https://i.postimg.cc/pXrjqNQB/PECHUGA-A-LA-PLANCHA.png","https://i.postimg.cc/fLsXKJ5p/CARNE-ASADA-A-LA-PLANCHA.png","https://i.postimg.cc/pdbnWmN2/QUESABIRRIA-TACOS.png","https://i.postimg.cc/G2jDSdSg/ENCHILADAS-VERDES.png","https://i.postimg.cc/T1YDzFzy/FLAUTA-DE-POLLO.png","https://i.postimg.cc/fL53f5Vt/TACOS.png"];
+const DEF_P2=FALLBACK_IMGS.map(()=>({width:250,tx:0,ty:0}));
+const DEF_FAJ={width:450,tx:0,top:-110};
+let imgCfgP2=JSON.parse(localStorage.getItem('imgCfgP2')||'null')||DEF_P2.map(c=>({...c}));
+let imgCfgFaj=JSON.parse(localStorage.getItem('imgCfgFaj')||'null')||{...DEF_FAJ};
+let initialized=false,lastKey='';
 
-    const FALLBACK_IMGS = [
-        "https://i.postimg.cc/vBvnSbS0/CHILAQUILES.png",
-        "https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png",
-        "https://i.postimg.cc/8cK6NwGw/GORDITAS.png",
-        "https://i.postimg.cc/KjqMxQbH/MOLCAJETE.png",
-        "https://i.postimg.cc/pXrjqNQB/PECHUGA-A-LA-PLANCHA.png",
-        "https://i.postimg.cc/fLsXKJ5p/CARNE-ASADA-A-LA-PLANCHA.png",
-        "https://i.postimg.cc/pdbnWmN2/QUESABIRRIA-TACOS.png",
-        "https://i.postimg.cc/G2jDSdSg/ENCHILADAS-VERDES.png",
-        "https://i.postimg.cc/T1YDzFzy/FLAUTA-DE-POLLO.png",
-        "https://i.postimg.cc/fL53f5Vt/TACOS.png"
-    ];
+function scaleRoot(){const el=document.getElementById('root');const s=Math.min(window.innerWidth/1920,window.innerHeight/1080);el.style.transform=`scale(${s})`;el.style.left=((window.innerWidth-1920*s)/2)+'px';el.style.top=((window.innerHeight-1080*s)/2)+'px';document.body.style.background='#E31837';}
+function dollar(v){const s=String(v||'').trim();return s.startsWith('$')?s:'$'+s;}
+function showToast(){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 
-    function scaleRoot() {
-        const el = document.getElementById('root');
-        const s = Math.min(window.innerWidth/1920, window.innerHeight/1080);
-        el.style.transform = `scale(${s})`;
-        el.style.left = ((window.innerWidth - 1920*s)/2) + 'px';
-        el.style.top  = ((window.innerHeight - 1080*s)/2) + 'px';
+function applyImgP2(cfg,i){
+    const img=document.getElementById('cimg-p2-'+i);
+    if(!img)return;
+    img.style.width=cfg.width+'px';
+    img.style.setProperty('--tx',(cfg.tx||0)+'px');
+    img.style.setProperty('--ty',(cfg.ty||0)+'px');
+}
+
+function applyFajCfg(cfg){
+    const wrap=document.getElementById('fajita-img-wrap');
+    const img=document.getElementById('fajita-main-img');
+    const content=document.getElementById('fajita-content');
+    if(!wrap||!img)return;
+    img.style.width=cfg.width+'px';
+    wrap.style.setProperty('--faj-w',cfg.width+'px');
+    wrap.style.setProperty('--faj-tx',(cfg.tx||0)+'px');
+    const top=cfg.top||DEF_FAJ.top;
+    wrap.style.setProperty('--faj-top',top+'px');
+    // Adjust content padding so title doesn't hide under image
+    if(content){const protrude=Math.abs(Math.min(0,top));content.style.setProperty('--faj-pt',(protrude+20)+'px');}
+}
+
+function buildGrid(espec){
+    const g=document.getElementById('items-grid');g.innerHTML='';
+    espec.slice(0,10).forEach((item,i)=>{
+        const img=item.img||FALLBACK_IMGS[i]||'';
+        const cfg=imgCfgP2[i]||DEF_P2[0];
+        const card=document.createElement('div');card.className='card';card.id='card-p2-'+i;
+        card.innerHTML=`<div class="card-img-wrap"><img class="card-img" id="cimg-p2-${i}" src="${img}" alt="" style="width:${cfg.width}px;--tx:${cfg.tx||0}px;--ty:${cfg.ty||0}px;" onerror="this.style.opacity='0'"></div>
+        <div class="card-text"><div class="c-name" id="cname-p2-${i}">${item.nombre}</div><div class="c-sub" id="csub-p2-${i}">${item.sub}</div><div class="c-price" id="cprice-p2-${i}">${dollar(item.precio)}</div></div>`;
+        g.appendChild(card);
+    });
+}
+
+function buildFajitas(fajitas){
+    const mainImg=(fajitas[0]&&fajitas[0].img)?fajitas[0].img:'https://i.postimg.cc/SsG9tktV/FAJITAS.png';
+    const fImg=document.getElementById('fajita-main-img');
+    if(fImg){fImg.src=mainImg;fImg.style.opacity='1';}
+    applyFajCfg(imgCfgFaj);
+    const tbl=document.getElementById('f-table');tbl.innerHTML='';
+    fajitas.forEach((f,i)=>{const row=document.createElement('div');row.className='f-row';row.id='frow-'+i;row.innerHTML=`<span class="f-name" id="fn-${i}">${f.nombre}</span><span class="f-price" id="fp-${i}">${dollar(f.precio)}</span>`;tbl.appendChild(row);});
+}
+
+function updateInPlace(espec,fajitas){
+    espec.slice(0,10).forEach((item,i)=>{
+        const img=item.img||FALLBACK_IMGS[i]||'';
+        const elImg=document.getElementById('cimg-p2-'+i),elN=document.getElementById('cname-p2-'+i),elS=document.getElementById('csub-p2-'+i),elP=document.getElementById('cprice-p2-'+i);
+        if(elImg&&elImg.getAttribute('src')!==img){elImg.src=img;elImg.style.opacity='1';}
+        if(elN&&elN.textContent!==item.nombre)elN.textContent=item.nombre;
+        if(elS&&elS.textContent!==item.sub)elS.textContent=item.sub;
+        if(elP){const p=dollar(item.precio);if(elP.textContent!==p)elP.textContent=p;}
+    });
+    fajitas.forEach((f,i)=>{
+        const elN=document.getElementById('fn-'+i),elP=document.getElementById('fp-'+i);
+        if(elN&&elN.textContent!==f.nombre)elN.textContent=f.nombre;
+        if(elP){const p=dollar(f.precio);if(elP.textContent!==p)elP.textContent=p;}
+        if(i===0&&f.img){const fImg=document.getElementById('fajita-main-img');if(fImg&&fImg.getAttribute('src')!==f.img){fImg.src=f.img;fImg.style.opacity='1';}}
+    });
+}
+
+// ── postMessage from admin — live updates ──
+window.addEventListener('message',(e)=>{
+    const d=e.data;if(!d||d.source!=='emilios-admin')return;
+    if(d.type==='imgCfgP2'&&d.cfg){
+        imgCfgP2=d.cfg;localStorage.setItem('imgCfgP2',JSON.stringify(imgCfgP2));
+        imgCfgP2.forEach((cfg,i)=>applyImgP2(cfg,i));
     }
-
-    function dollar(v) { const s=String(v||'').trim(); return s.startsWith('$')?s:'$'+s; }
-
-    function showToast() {
-        const t = document.getElementById('toast');
-        t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 3500);
+    if(d.type==='imgCfgFaj'&&d.cfg){
+        imgCfgFaj=d.cfg;localStorage.setItem('imgCfgFaj',JSON.stringify(imgCfgFaj));
+        applyFajCfg(d.cfg);
     }
+});
 
-    let initialized = false;
-    let lastKey = '';
-
-    function buildGrid(espec) {
-        const g = document.getElementById('items-grid');
-        g.innerHTML = '';
-        espec.slice(0,10).forEach((item, i) => {
-            const img = item.img || FALLBACK_IMGS[i] || '';
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card-img-wrap">
-                    <img class="card-img" id="cimg-p2-${i}" src="${img}" onerror="this.style.opacity='0'">
-                </div>
-                <div class="card-text">
-                    <div class="c-name" id="cname-p2-${i}">${item.nombre}</div>
-                    <div class="c-sub" id="csub-p2-${i}">${item.sub}</div>
-                    <div class="c-price" id="cprice-p2-${i}">${dollar(item.precio)}</div>
-                </div>`;
-            g.appendChild(card);
-        });
-    }
-
-    function buildFajitas(fajitas) {
-        const tbl = document.getElementById('f-table');
-        tbl.innerHTML = '';
-        fajitas.forEach((f,i) => {
-            const row = document.createElement('div');
-            row.className = 'f-row';
-            row.innerHTML = `<span class="f-name">${f.nombre}</span><span class="f-price">${dollar(f.precio)}</span>`;
-            tbl.appendChild(row);
-        });
-    }
-
-    async function load() {
-        try {
-            const r = await fetch(APPS_SCRIPT_URL+'?t='+Date.now());
-            const data = await r.json();
-            const espec = data.especialidades || [];
-            const fajitas = data.fajitas || [];
-            const key = JSON.stringify(data);
-
-            if (!initialized) {
-                buildGrid(espec);
-                buildFajitas(fajitas);
-            } else if (key !== lastKey) {
-                buildGrid(espec);
-                buildFajitas(fajitas);
-                showToast();
-            }
-            lastKey = key; initialized = true;
-        } catch(e) { console.warn("Error cargando datos:", e); }
-    }
-
-    scaleRoot();
-    window.addEventListener('resize', scaleRoot);
-    load();
-    setInterval(load, 30000);
+async function load(){
+    try{
+        const r=await fetch(APPS_SCRIPT_URL+'?t='+Date.now());const data=await r.json();
+        const espec=data.especialidades||[],fajitas=data.fajitas||[];
+        const key=JSON.stringify([...espec.map(i=>[i.nombre,i.sub,i.precio,i.img]),...fajitas.map(i=>[i.nombre,i.precio,i.img])]);
+        if(data.titlesP2){const te=document.getElementById('title-en'),ts=document.getElementById('title-es');if(te&&data.titlesP2.titleEn)te.textContent=data.titlesP2.titleEn;if(ts&&data.titlesP2.titleEs)ts.textContent=data.titlesP2.titleEs;}
+        if(data.imgCfgP2){imgCfgP2=data.imgCfgP2;localStorage.setItem('imgCfgP2',JSON.stringify(imgCfgP2));}
+        if(data.imgCfgFaj){imgCfgFaj=data.imgCfgFaj;localStorage.setItem('imgCfgFaj',JSON.stringify(imgCfgFaj));}
+        if(!initialized){buildGrid(espec);buildFajitas(fajitas);}
+        else if(key!==lastKey){updateInPlace(espec,fajitas);showToast();}
+        lastKey=key;initialized=true;
+    }catch(e){console.warn(e);}
+}
+scaleRoot();window.addEventListener('resize',scaleRoot);load();setInterval(load,30000);
 </script>
 </body>
 </html>
