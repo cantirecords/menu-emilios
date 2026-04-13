@@ -6,586 +6,404 @@
     <title>Emilio's — Editor de Menú</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ── RESET & BASE ── */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        :root {
-            --red:    #E31837;
-            --red-dk: #b5102a;
-            --yellow: #ffde59;
-            --green:  #00843D;
-            --green-dk:#006830;
-            --bg:     #0d0d0d;
-            --surf:   #1c1c1c;
-            --surf2:  #252525;
-            --border: #333;
-            --text:   #f0f0f0;
-            --muted:  #888;
-            --fh:     'Fredoka', sans-serif;
-        }
-        html { font-size: 16px; }
-        body { background: var(--bg); color: var(--text); font-family: var(--fh); min-height: 100vh; }
-
-        /* ── SAVE BANNER ── */
-        #save-banner {
-            position: fixed; top: 0; left: 0; right: 0;
-            background: var(--green);
-            color: white; font-size: 15px; font-weight: 700;
-            text-align: center; padding: 15px;
-            transform: translateY(-100%);
-            transition: transform 0.35s ease;
-            z-index: 2000;
-        }
-        #save-banner.show { transform: translateY(0); }
-
-        /* ── LOGIN ── */
-        #login {
-            min-height: 100vh;
-            display: flex; align-items: center; justify-content: center;
-            background: radial-gradient(ellipse at 50% 0%, #3a000f 0%, #0d0d0d 65%);
-            padding: 20px;
-        }
-        .login-card {
-            background: var(--surf);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 40px 28px;
-            width: 100%; max-width: 360px;
-            text-align: center;
-        }
-        .login-logo { width: 160px; margin-bottom: 20px; }
-        .login-h { font-size: 24px; font-weight: 700; color: var(--red); margin-bottom: 4px; }
-        .login-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; font-weight: 500; }
-
-        .dots { display: flex; gap: 14px; justify-content: center; margin-bottom: 22px; }
-        .dot { width: 16px; height: 16px; border-radius: 50%; border: 2.5px solid var(--border); background: transparent; transition: all .2s; }
-        .dot.on { background: var(--red); border-color: var(--red); }
-
-        .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-        .pad-btn {
-            background: var(--surf2); border: 1.5px solid var(--border);
-            border-radius: 14px; color: var(--text);
-            font-family: var(--fh); font-size: 26px; font-weight: 700;
-            padding: 18px 10px; cursor: pointer;
-            transition: background .15s, transform .1s;
-            user-select: none;
-        }
-        .pad-btn:active { background: var(--red); border-color: var(--red); transform: scale(0.93); }
-        .pad-del { font-size: 19px; color: var(--muted); }
-        #pin-err { color: #ff4d4d; font-size: 13px; min-height: 18px; font-weight: 600; }
-
-        /* ── DASHBOARD ── */
-        #dash { display: none; }
-
-        .topbar {
-            background: var(--surf);
-            border-bottom: 1px solid var(--border);
-            padding: 14px 16px;
-            display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 100;
-        }
-        .topbar-left { display: flex; align-items: center; gap: 12px; }
-        .topbar-logo { height: 38px; }
-        .topbar-title { font-size: 18px; font-weight: 700; color: var(--red); line-height: 1; }
-        .topbar-sub { font-size: 11px; color: var(--muted); font-weight: 500; }
-        .btn-out {
-            background: transparent; border: 1.5px solid var(--border);
-            color: var(--muted); font-family: var(--fh); font-size: 13px; font-weight: 600;
-            padding: 7px 14px; border-radius: 8px; cursor: pointer; transition: all .2s;
-        }
-        .btn-out:active { border-color: var(--red); color: var(--red); }
-
-        /* Tabs */
-        .tabs {
-            display: flex; overflow-x: auto;
-            background: var(--surf); border-bottom: 1px solid var(--border);
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-        .tabs::-webkit-scrollbar { display: none; }
-        .tab {
-            flex: 1; min-width: 100px;
-            padding: 13px 8px;
-            text-align: center;
-            font-size: 13px; font-weight: 700;
-            color: var(--muted);
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
-            transition: all .2s;
-        }
-        .tab.active { color: var(--red); border-bottom-color: var(--red); }
-
-        /* Body */
-        .body { padding: 16px; max-width: 640px; margin: 0 auto; }
-
-        /* Section header */
-        .sec-hdr { font-size: 18px; font-weight: 700; color: var(--yellow); margin: 24px 0 12px; display: flex; align-items: center; gap: 8px; }
-        .sec-badge { background: var(--surf2); border: 1px solid var(--border); color: var(--muted); font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
-
-        /* ── ITEM CARD ── */
-        .item-card {
-            background: var(--surf);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            margin-bottom: 10px;
-            overflow: hidden;
-            transition: border-color .2s;
-        }
-        .item-card.dirty { border-color: var(--yellow); }
-
-        .item-top {
-            display: flex; align-items: center;
-            gap: 12px; padding: 14px 14px 10px;
-        }
-        .item-thumb {
-            width: 56px; height: 56px;
-            border-radius: 12px;
-            object-fit: cover;
-            background: var(--surf2);
-            flex-shrink: 0;
-            cursor: pointer;
-            border: 2px solid var(--border);
-            transition: border-color .2s;
-        }
-        .item-thumb:active { border-color: var(--red); }
-
-        .item-info { flex: 1; min-width: 0; }
-        .item-name { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
-        .item-sub  { font-size: 12px; color: var(--muted); font-weight: 500; line-height: 1.2; }
-
-        /* Price row */
-        .price-row {
-            display: flex; align-items: center;
-            gap: 10px; padding: 0 14px 14px;
-        }
-        .price-label { font-size: 13px; color: var(--muted); font-weight: 600; white-space: nowrap; }
-        .price-input {
-            flex: 1;
-            background: var(--surf2);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            color: #00c96b;
-            font-family: var(--fh);
-            font-size: 22px; font-weight: 700;
-            padding: 9px 14px;
-            outline: none;
-            transition: border-color .2s, box-shadow .2s;
-            min-width: 0;
-        }
-        .price-input:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(227,24,55,.15); }
-
-        /* Photo panel */
-        .photo-panel {
-            display: none;
-            background: var(--surf2);
-            border-top: 1px solid var(--border);
-            padding: 14px;
-        }
-        .photo-panel.open { display: block; }
-        .photo-label { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
-        .photo-preview-wrap {
-            display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px;
-        }
-        .photo-preview {
-            width: 80px; height: 80px;
-            border-radius: 12px;
-            object-fit: contain;
-            background: var(--border);
-            flex-shrink: 0;
-        }
-        .photo-url-input {
-            flex: 1;
-            background: var(--surf);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            color: var(--text);
-            font-family: var(--fh);
-            font-size: 14px; font-weight: 500;
-            padding: 10px 12px;
-            outline: none;
-            resize: none;
-            min-height: 80px;
-            word-break: break-all;
-            transition: border-color .2s;
-        }
-        .photo-url-input:focus { border-color: var(--red); }
-        .photo-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-sm {
-            font-family: var(--fh); font-size: 13px; font-weight: 700;
-            padding: 8px 16px; border-radius: 10px; cursor: pointer;
-            border: none; transition: all .15s;
-        }
-        .btn-apply { background: var(--green); color: white; }
-        .btn-apply:active { background: var(--green-dk); }
-        .btn-remove { background: var(--surf); border: 1.5px solid var(--border); color: var(--muted); }
-        .btn-remove:active { border-color: #ff4d4d; color: #ff4d4d; }
-        .photo-hint { font-size: 11px; color: var(--muted); margin-top: 8px; line-height: 1.4; }
-
-        /* Carnes table */
-        .carnes-table { background: var(--surf); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-        .carne-row { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); align-items: center; }
-        .carne-row:last-child { border-bottom: none; }
-        .carne-es { font-size: 16px; font-weight: 700; }
-        .carne-en { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
-        .carnes-note { font-size: 12px; color: var(--muted); margin-top: 8px; font-style: italic; }
-
-        /* Save button */
-        .save-bar {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            padding: 14px 16px;
-            background: var(--bg);
-            border-top: 1px solid var(--border);
-            z-index: 50;
-        }
-        .btn-save {
-            width: 100%;
-            background: var(--green);
-            color: white; border: none;
-            font-family: var(--fh); font-size: 20px; font-weight: 700;
-            padding: 17px;
-            border-radius: 16px;
-            cursor: pointer;
-            box-shadow: 0 8px 24px rgba(0,132,61,.35);
-            transition: all .2s;
-        }
-        .btn-save:active { background: var(--green-dk); transform: scale(0.98); }
-        .btn-save:disabled { background: #444; box-shadow: none; }
-
-        /* Status dot */
-        .status-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); padding: 14px 0 0; font-weight: 500; }
-        .sdot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+        :root { --red:#E31837;--red-dk:#b5102a;--yellow:#ffde59;--green:#00843D;--green-dk:#006830;--bg:#0d0d0d;--surf:#1c1c1c;--surf2:#252525;--border:#333;--text:#f0f0f0;--muted:#888;--ff:'Fredoka',sans-serif; }
+        html { font-size:16px; }
+        body { background:var(--bg); color:var(--text); font-family:var(--ff); min-height:100vh; }
+        #save-banner { position:fixed;top:0;left:0;right:0;background:var(--green);color:white;font-size:15px;font-weight:700;text-align:center;padding:15px;transform:translateY(-100%);transition:transform .35s;z-index:3000; }
+        #save-banner.show { transform:translateY(0); }
+        #login { min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 0%,#3a000f 0%,#0d0d0d 65%);padding:20px; }
+        .login-card { background:var(--surf);border:1px solid var(--border);border-radius:24px;padding:40px 28px;width:100%;max-width:360px;text-align:center; }
+        .login-logo { width:160px;margin-bottom:20px; }
+        .login-h { font-size:24px;font-weight:700;color:var(--red);margin-bottom:4px; }
+        .login-sub { font-size:14px;color:var(--muted);margin-bottom:28px;font-weight:500; }
+        .dots { display:flex;gap:14px;justify-content:center;margin-bottom:22px; }
+        .dot { width:16px;height:16px;border-radius:50%;border:2.5px solid var(--border);background:transparent;transition:all .2s; }
+        .dot.on { background:var(--red);border-color:var(--red); }
+        .pad { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px; }
+        .pad-btn { background:var(--surf2);border:1.5px solid var(--border);border-radius:14px;color:var(--text);font-family:var(--ff);font-size:26px;font-weight:700;padding:18px 10px;cursor:pointer;transition:background .15s,transform .1s;user-select:none; }
+        .pad-btn:active { background:var(--red);border-color:var(--red);transform:scale(.93); }
+        .pad-del { font-size:19px;color:var(--muted); }
+        #pin-err { color:#ff4d4d;font-size:13px;min-height:18px;font-weight:600; }
+        #dash { display:none; }
+        .topbar { background:var(--surf);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100; }
+        .topbar-left { display:flex;align-items:center;gap:12px; }
+        .topbar-logo { height:38px; }
+        .topbar-title { font-size:18px;font-weight:700;color:var(--red);line-height:1; }
+        .topbar-sub { font-size:11px;color:var(--muted);font-weight:500; }
+        .btn-out { background:transparent;border:1.5px solid var(--border);color:var(--muted);font-family:var(--ff);font-size:13px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .2s; }
+        .btn-out:active { border-color:var(--red);color:var(--red); }
+        .tabs { display:flex;overflow-x:auto;background:var(--surf);border-bottom:1px solid var(--border);-webkit-overflow-scrolling:touch;scrollbar-width:none; }
+        .tabs::-webkit-scrollbar { display:none; }
+        .tab { flex:none;padding:13px 16px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s; }
+        .tab.active { color:var(--red);border-bottom-color:var(--red); }
+        .body { padding:16px;max-width:680px;margin:0 auto;padding-bottom:90px; }
+        .tab-content { display:none; }
+        .tab-content.active { display:block; }
+        .status-row { display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);padding:14px 0 0;font-weight:500; }
+        .sdot { width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite; }
         @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
-
-        /* Bottom padding for fixed save bar */
-        .body { padding-bottom: 90px; }
-
-        /* Hidden */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .sec-hdr { font-size:18px;font-weight:700;color:var(--yellow);margin:24px 0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap; }
+        .sec-badge { background:var(--surf2);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:2px 10px;border-radius:20px;font-weight:600; }
+        .item-card { background:var(--surf);border:1.5px solid var(--border);border-radius:16px;margin-bottom:10px;overflow:hidden;transition:border-color .2s; }
+        .item-card.dirty { border-color:var(--yellow); }
+        .item-header { display:flex;align-items:center;gap:12px;padding:12px 14px 8px;cursor:pointer; }
+        .item-thumb { width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--surf2);flex-shrink:0;border:2px solid var(--border); }
+        .item-meta { flex:1;min-width:0; }
+        .item-name-disp { font-size:16px;font-weight:700;margin-bottom:2px; }
+        .item-sub-disp { font-size:12px;color:var(--muted); }
+        .item-price-disp { font-size:18px;font-weight:700;color:#00c96b;white-space:nowrap; }
+        .chevron { font-size:18px;color:var(--muted);transition:transform .25s; }
+        .chevron.open { transform:rotate(180deg); }
+        .item-fields { display:none;border-top:1px solid var(--border);padding:14px;flex-direction:column;gap:10px; }
+        .item-fields.open { display:flex; }
+        .field-row { display:flex;flex-direction:column;gap:4px; }
+        .field-label { font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px; }
+        .field-input { background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--ff);font-size:16px;font-weight:600;padding:10px 12px;outline:none;width:100%;transition:border-color .2s,box-shadow .2s; }
+        .field-input:focus { border-color:var(--red);box-shadow:0 0 0 3px rgba(227,24,55,.15); }
+        .field-input.price-field { font-size:22px;font-weight:700;color:#00c96b; }
+        .photo-section { display:flex;flex-direction:column;gap:8px; }
+        .photo-row { display:flex;gap:10px;align-items:flex-start; }
+        .photo-big { width:90px;height:90px;border-radius:12px;object-fit:contain;background:var(--surf2);flex-shrink:0;border:2px dashed var(--border); }
+        .photo-right { flex:1;display:flex;flex-direction:column;gap:6px; }
+        .url-input { background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--ff);font-size:13px;font-weight:500;padding:9px 12px;outline:none;width:100%;resize:none;min-height:72px;word-break:break-all;transition:border-color .2s; }
+        .url-input:focus { border-color:var(--red); }
+        .photo-btns { display:flex;gap:8px;flex-wrap:wrap; }
+        .btn-sm { font-family:var(--ff);font-size:13px;font-weight:700;padding:8px 16px;border-radius:10px;cursor:pointer;border:none;transition:all .15s; }
+        .btn-green { background:var(--green);color:white; }
+        .btn-green:active { background:var(--green-dk); }
+        .btn-ghost { background:var(--surf);border:1.5px solid var(--border);color:var(--muted); }
+        .btn-ghost:active { border-color:#ff4d4d;color:#ff4d4d; }
+        .photo-hint { font-size:11px;color:var(--muted);line-height:1.4; }
+        .carne-row { display:flex;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--border);align-items:center; }
+        .carne-row:last-child { border-bottom:none; }
+        .carne-es { font-size:15px;font-weight:700; }
+        .carne-en { font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase; }
+        .layout-card { background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px; }
+        .layout-card h3 { font-size:16px;font-weight:700;margin-bottom:14px;color:var(--yellow); }
+        .ctrl-row { display:flex;flex-direction:column;gap:4px;margin-bottom:12px; }
+        .ctrl-label { font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center; }
+        .ctrl-val { color:var(--text);font-size:13px; }
+        input[type=range] { -webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:var(--border);outline:none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--red);cursor:pointer; }
+        input[type=color] { -webkit-appearance:none;width:44px;height:36px;border:none;border-radius:8px;cursor:pointer;background:transparent;padding:0; }
+        .color-row { display:flex;align-items:center;gap:10px; }
+        .color-hex { background:var(--surf2);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--ff);font-size:14px;font-weight:600;padding:7px 10px;width:100px;outline:none; }
+        /* LIVE PREVIEW */
+        .preview-toggle-btn { width:100%;background:var(--surf);border:1.5px solid var(--border);color:var(--yellow);font-family:var(--ff);font-size:14px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer;text-align:center;transition:all .2s;margin-bottom:8px; }
+        .preview-wrap { display:none;background:#000;border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-bottom:12px; }
+        .preview-wrap.open { display:block; }
+        .preview-label { font-size:11px;color:var(--muted);padding:6px 10px;background:var(--surf2);font-weight:700;text-transform:uppercase;letter-spacing:.5px; }
+        .preview-iframe-wrap { position:relative;width:100%;padding-bottom:56.25%; }
+        .preview-iframe-wrap iframe { position:absolute;top:0;left:0;width:100%;height:100%;border:none; }
+        .preview-notice { font-size:11px;color:var(--muted);padding:6px 10px;background:var(--surf2);border-top:1px solid var(--border);line-height:1.4; }
+        .img-ctrl-item { background:var(--surf2);border-radius:12px;padding:12px;margin-bottom:10px; }
+        .img-ctrl-name { font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px; }
+        .extra-screen-card { background:var(--surf);border:1.5px solid var(--border);border-radius:16px;margin-bottom:12px; }
+        .extra-screen-hdr { display:flex;align-items:center;justify-content:space-between;padding:14px 16px; }
+        .extra-screen-title { font-size:16px;font-weight:700; }
+        .extra-screen-url { font-size:11px;color:var(--muted);margin-top:2px; }
+        .btn-del-screen { background:transparent;border:1.5px solid #555;color:#888;font-size:13px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer; }
+        .btn-del-screen:active { border-color:#ff4d4d;color:#ff4d4d; }
+        .add-screen-form { background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:12px; }
+        .add-screen-form h3 { font-size:15px;font-weight:700;margin-bottom:12px;color:var(--yellow); }
+        .btn-add-screen { width:100%;background:var(--surf2);border:2px dashed var(--border);color:var(--muted);font-family:var(--ff);font-size:15px;font-weight:700;padding:16px;border-radius:14px;cursor:pointer;margin-top:8px;transition:all .2s; }
+        .btn-add-screen:active { border-color:var(--red);color:var(--red); }
+        .save-bar { position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:var(--bg);border-top:1px solid var(--border);z-index:50; }
+        .btn-save { width:100%;background:var(--green);color:white;border:none;font-family:var(--ff);font-size:20px;font-weight:700;padding:17px;border-radius:16px;cursor:pointer;box-shadow:0 8px 24px rgba(0,132,61,.35);transition:all .2s; }
+        .btn-save:active { background:var(--green-dk);transform:scale(.98); }
+        .btn-save:disabled { background:#444;box-shadow:none; }
     </style>
 </head>
 <body>
-
 <div id="save-banner">✅ ¡Guardado! Las pantallas se actualizan en menos de 1 minuto.</div>
-
-<!-- ── LOGIN ── -->
 <div id="login">
     <div class="login-card">
         <img class="login-logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="Logo">
         <div class="login-h">Editor de Menú</div>
         <div class="login-sub">Ingresa tu PIN para continuar</div>
-        <div class="dots">
-            <div class="dot" id="d0"></div>
-            <div class="dot" id="d1"></div>
-            <div class="dot" id="d2"></div>
-            <div class="dot" id="d3"></div>
-        </div>
+        <div class="dots"><div class="dot" id="d0"></div><div class="dot" id="d1"></div><div class="dot" id="d2"></div><div class="dot" id="d3"></div></div>
         <div class="pad">
-            <button class="pad-btn" onclick="kp('1')">1</button>
-            <button class="pad-btn" onclick="kp('2')">2</button>
-            <button class="pad-btn" onclick="kp('3')">3</button>
-            <button class="pad-btn" onclick="kp('4')">4</button>
-            <button class="pad-btn" onclick="kp('5')">5</button>
-            <button class="pad-btn" onclick="kp('6')">6</button>
-            <button class="pad-btn" onclick="kp('7')">7</button>
-            <button class="pad-btn" onclick="kp('8')">8</button>
-            <button class="pad-btn" onclick="kp('9')">9</button>
-            <button class="pad-btn pad-del" onclick="kd()">⌫</button>
-            <button class="pad-btn" onclick="kp('0')">0</button>
-            <button class="pad-btn pad-del" onclick="kc()">✕</button>
+            <button class="pad-btn" onclick="kp('1')">1</button><button class="pad-btn" onclick="kp('2')">2</button><button class="pad-btn" onclick="kp('3')">3</button>
+            <button class="pad-btn" onclick="kp('4')">4</button><button class="pad-btn" onclick="kp('5')">5</button><button class="pad-btn" onclick="kp('6')">6</button>
+            <button class="pad-btn" onclick="kp('7')">7</button><button class="pad-btn" onclick="kp('8')">8</button><button class="pad-btn" onclick="kp('9')">9</button>
+            <button class="pad-btn pad-del" onclick="kd()">&#9003;</button><button class="pad-btn" onclick="kp('0')">0</button><button class="pad-btn pad-del" onclick="kc()">&#10005;</button>
         </div>
         <div id="pin-err"></div>
     </div>
 </div>
-
-<!-- ── DASHBOARD ── -->
 <div id="dash">
     <div class="topbar">
         <div class="topbar-left">
             <img class="topbar-logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="">
-            <div>
-                <div class="topbar-title">Editor de Menú</div>
-                <div class="topbar-sub">Emilio's Grocery</div>
-            </div>
+            <div><div class="topbar-title">Editor de Menú</div><div class="topbar-sub">Emilio's Grocery</div></div>
         </div>
         <button class="btn-out" onclick="logout()">Salir</button>
     </div>
-
     <div class="tabs">
         <div class="tab active" onclick="switchTab(0)">🌮 Estilos</div>
         <div class="tab" onclick="switchTab(1)">🥩 Carnes</div>
         <div class="tab" onclick="switchTab(2)">⭐ Especialidades</div>
         <div class="tab" onclick="switchTab(3)">🔥 Fajitas</div>
+        <div class="tab" onclick="switchTab(4)">🎨 Layout</div>
+        <div class="tab" onclick="switchTab(5)">➕ Pantallas</div>
     </div>
-
     <div class="body">
         <div class="status-row"><div class="sdot"></div>Las pantallas se actualizan cada 30 segundos</div>
-
-        <!-- TAB 0: ESTILOS -->
-        <div class="tab-content active" id="tc0">
-            <div class="sec-hdr">🌮 Pick Your Style <span class="sec-badge">PANTALLA 1</span></div>
-            <div id="list-estilos"></div>
+        <div class="tab-content active" id="tc0"><div class="sec-hdr">🌮 Pick Your Style <span class="sec-badge">PANTALLA 1</span></div><div id="list-estilos"></div></div>
+        <div class="tab-content" id="tc1"><div class="sec-hdr">🥩 Pick Your Meat <span class="sec-badge">PANTALLA 1</span></div><div class="item-card" id="carnes-table"></div><p style="font-size:12px;color:var(--muted);margin-top:8px;font-style:italic;">* Sin precio individual.</p></div>
+        <div class="tab-content" id="tc2"><div class="sec-hdr">⭐ Especialidades <span class="sec-badge">PANTALLA 2</span></div><div id="list-espec"></div></div>
+        <div class="tab-content" id="tc3"><div class="sec-hdr">🔥 Fajitas <span class="sec-badge">PANTALLA 2</span></div><div id="list-fajitas"></div></div>
+        <div class="tab-content" id="tc4">
+            <div class="sec-hdr">🎨 Layout y Fotos</div>
+            <button class="preview-toggle-btn" onclick="togglePreview('p1')">👁 Preview Pantalla 1 en vivo</button>
+            <div class="preview-wrap" id="preview-p1">
+                <div class="preview-label">PANTALLA 1 — Pick Your Style</div>
+                <div class="preview-iframe-wrap"><iframe id="iframe-p1" src="" loading="lazy"></iframe></div>
+                <div class="preview-notice">⚡ Mueve los sliders de imagen y se actualiza al instante.</div>
+            </div>
+            <button class="preview-toggle-btn" onclick="togglePreview('p2')">👁 Preview Pantalla 2 en vivo</button>
+            <div class="preview-wrap" id="preview-p2">
+                <div class="preview-label">PANTALLA 2 — Especialidades</div>
+                <div class="preview-iframe-wrap"><iframe id="iframe-p2" src="" loading="lazy"></iframe></div>
+                <div class="preview-notice">⚡ Mueve los sliders de imagen y se actualiza al instante.</div>
+            </div>
+            <div class="layout-card"><h3>🖥 Pantalla 1 — Colores</h3>
+                <div class="ctrl-row"><div class="ctrl-label">Color fondo <span class="ctrl-val" id="lbl-p1-red">#E31837</span></div><div class="color-row"><input type="color" id="p1-red" value="#E31837" oninput="syncColor('p1-red','lbl-p1-red')"><input class="color-hex" id="p1-red-hex" value="#E31837" oninput="syncHex('p1-red','p1-red-hex','lbl-p1-red')"></div></div>
+                <div class="ctrl-row"><div class="ctrl-label">Color sidebar <span class="ctrl-val" id="lbl-p1-sb">#ffde59</span></div><div class="color-row"><input type="color" id="p1-sb" value="#ffde59" oninput="syncColor('p1-sb','lbl-p1-sb')"><input class="color-hex" id="p1-sb-hex" value="#ffde59" oninput="syncHex('p1-sb','p1-sb-hex','lbl-p1-sb')"></div></div>
+                <div class="ctrl-row"><div class="ctrl-label">Ancho sidebar <span class="ctrl-val" id="lbl-p1-sw">550px</span></div><input type="range" id="p1-sw" min="380" max="700" value="550" oninput="document.getElementById('lbl-p1-sw').textContent=this.value+'px'"></div>
+                <div class="ctrl-row"><div class="ctrl-label">Grosor línea divisoria <span class="ctrl-val" id="lbl-div">10px</span></div><input type="range" id="p1-div" min="0" max="30" value="10" oninput="document.getElementById('lbl-div').textContent=this.value+'px'"></div>
+                <div class="ctrl-row"><div class="ctrl-label">Color línea <span class="ctrl-val" id="lbl-div-col">#ffffff</span></div><div class="color-row"><input type="color" id="p1-divcol" value="#ffffff" oninput="syncColor('p1-divcol','lbl-div-col')"><input class="color-hex" id="p1-divcol-hex" value="#ffffff" oninput="syncHex('p1-divcol','p1-divcol-hex','lbl-div-col')"></div></div>
+                <div class="ctrl-row"><div class="ctrl-label">Redondez tarjetas <span class="ctrl-val" id="lbl-rad">26px</span></div><input type="range" id="p1-rad" min="0" max="50" value="26" oninput="document.getElementById('lbl-rad').textContent=this.value+'px'"></div>
+            </div>
+            <div class="layout-card"><h3>🖥 Pantalla 2 — Color</h3>
+                <div class="ctrl-row"><div class="ctrl-label">Color fondo <span class="ctrl-val" id="lbl-p2-red">#E31837</span></div><div class="color-row"><input type="color" id="p2-red" value="#E31837" oninput="syncColor('p2-red','lbl-p2-red')"><input class="color-hex" id="p2-red-hex" value="#E31837" oninput="syncHex('p2-red','p2-red-hex','lbl-p2-red')"></div></div>
+            </div>
+            <div class="layout-card"><h3>✏️ Títulos</h3>
+                <div class="ctrl-row"><div class="ctrl-label">P1 — Título inglés</div><input class="field-input" id="t-p1-en" value="PICK YOUR STYLE"></div>
+                <div class="ctrl-row"><div class="ctrl-label">P1 — Título español</div><input class="field-input" id="t-p1-es" value="ELIGE TU ESTILO"></div>
+                <div class="ctrl-row"><div class="ctrl-label">P1 — Sidebar inglés</div><input class="field-input" id="t-meat-en" value="PICK YOUR MEAT"></div>
+                <div class="ctrl-row"><div class="ctrl-label">P1 — Sidebar español</div><input class="field-input" id="t-meat-es" value="ELIGE TU CARNE"></div>
+                <div class="ctrl-row"><div class="ctrl-label">P1 — Website</div><input class="field-input" id="t-website" value="EMILIOSGROCERY.COM"></div>
+                <div class="ctrl-row"><div class="ctrl-label">P2 — Título</div><input class="field-input" id="t-p2-en" value="ESPECIALIDADES"></div>
+                <div class="ctrl-row"><div class="ctrl-label">P2 — Subtítulo</div><input class="field-input" id="t-p2-es" value="SIGNATURE PLATES"></div>
+            </div>
+            <div class="layout-card"><h3>🖼 Imágenes Pantalla 1</h3>
+                <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">Tamaño, arriba/abajo, izq/der por imagen. Se actualiza en el preview al instante.</div>
+                <div id="img-ctrl-p1"></div>
+                <div style="margin-top:12px;padding:12px;background:var(--surf2);border-radius:10px;">
+                    <div style="font-size:12px;color:var(--yellow);font-weight:700;margin-bottom:8px;">Ajuste global P1</div>
+                    <div class="ctrl-row"><div class="ctrl-label">Todas — Arriba/Abajo <span class="ctrl-val" id="lbl-g1b">0</span></div><input type="range" id="g1b" min="-120" max="120" value="0" oninput="document.getElementById('lbl-g1b').textContent=this.value"></div>
+                    <div class="ctrl-row"><div class="ctrl-label">Todas — Tamaño <span class="ctrl-val" id="lbl-g1s">0</span></div><input type="range" id="g1s" min="-200" max="200" value="0" oninput="document.getElementById('lbl-g1s').textContent=this.value"></div>
+                    <button class="btn-sm btn-green" style="margin-top:8px;" onclick="applyGlobalP1()">✓ Aplicar</button>
+                </div>
+            </div>
+            <div class="layout-card"><h3>🖼 Imágenes Pantalla 2</h3>
+                <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">Tamaño, arriba/abajo, izq/der. Se envía al preview en tiempo real.</div>
+                <div id="img-ctrl-p2"></div>
+                <div style="margin-top:12px;padding:12px;background:var(--surf2);border-radius:10px;">
+                    <div style="font-size:12px;color:var(--yellow);font-weight:700;margin-bottom:8px;">Ajuste global P2</div>
+                    <div class="ctrl-row"><div class="ctrl-label">Todas — Tamaño <span class="ctrl-val" id="lbl-g2s">0</span></div><input type="range" id="g2s" min="-100" max="200" value="0" oninput="document.getElementById('lbl-g2s').textContent=this.value"></div>
+                    <div class="ctrl-row"><div class="ctrl-label">Todas — Horizontal <span class="ctrl-val" id="lbl-g2x">0</span></div><input type="range" id="g2x" min="-150" max="150" value="0" oninput="document.getElementById('lbl-g2x').textContent=this.value"></div>
+                    <button class="btn-sm btn-green" style="margin-top:8px;" onclick="applyGlobalP2()">✓ Aplicar</button>
+                </div>
+            </div>
+            <div class="layout-card"><h3>🔥 Imagen Fajitas — Pantalla 2</h3>
+                <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">La imagen que sobresale arriba de la card de Fajitas. "Subir/Bajar" controla cuánto sobresale.</div>
+                <div id="img-ctrl-faj"></div>
+            </div>
         </div>
-
-        <!-- TAB 1: CARNES -->
-        <div class="tab-content" id="tc1">
-            <div class="sec-hdr">🥩 Pick Your Meat <span class="sec-badge">PANTALLA 1 · SIDEBAR</span></div>
-            <div class="carnes-table" id="list-carnes"></div>
-            <p class="carnes-note">* Las carnes son informativas, no tienen precio individual.</p>
-        </div>
-
-        <!-- TAB 2: ESPECIALIDADES -->
-        <div class="tab-content" id="tc2">
-            <div class="sec-hdr">⭐ Especialidades <span class="sec-badge">PANTALLA 2</span></div>
-            <div id="list-espec"></div>
-        </div>
-
-        <!-- TAB 3: FAJITAS -->
-        <div class="tab-content" id="tc3">
-            <div class="sec-hdr">🔥 Fajitas <span class="sec-badge">PANTALLA 2 · SIDEBAR</span></div>
-            <div id="list-fajitas"></div>
+        <div class="tab-content" id="tc5">
+            <div class="sec-hdr">➕ Pantallas Adicionales</div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5;">Agrega pantallas extra con su URL de AbleSign.</div>
+            <div id="extra-screens-list"></div>
+            <div class="add-screen-form"><h3>Agregar pantalla</h3>
+                <div class="ctrl-row"><div class="ctrl-label">Nombre</div><input class="field-input" id="new-screen-name" placeholder="Ej: Pantalla 3 — Bebidas"></div>
+                <div class="ctrl-row"><div class="ctrl-label">URL</div><input class="field-input" id="new-screen-url" placeholder="https://tuusuario.github.io/repo/pantalla3.html"></div>
+                <div class="ctrl-row"><div class="ctrl-label">Notas</div><input class="field-input" id="new-screen-notes" placeholder="Opcional"></div>
+                <button class="btn-add-screen" onclick="addScreen()">➕ Agregar</button>
+            </div>
         </div>
     </div>
-
-    <div class="save-bar">
-        <button class="btn-save" id="btn-save" onclick="saveAll()">💾 GUARDAR CAMBIOS</button>
-    </div>
+    <div class="save-bar"><button class="btn-save" id="btn-save" onclick="saveAll()">💾 GUARDAR CAMBIOS</button></div>
 </div>
-
 <script>
-// ============================================================
-//  ⚠️ CONFIGURACIÓN — cambia estos dos valores
-// ============================================================
-const PIN  = "1234";                   // ← tu PIN de 4 dígitos
-const URL  = "https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec";           // ← URL de Apps Script
-// ============================================================
-
-let cache = null;
-let cur = '';
-
-/* ── PIN ── */
-function kp(d) {
-    if (cur.length >= 4) return;
-    cur += d;
-    updDots();
-    if (cur.length === 4) setTimeout(checkPin, 180);
+const PIN="1234";
+const URL="https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec";
+const P1_URL="./pantalla1.html";
+const P2_URL="./pantalla2.html";
+let cache=null,cur='';
+let extraScreens=JSON.parse(localStorage.getItem('extra_screens')||'[]');
+const P1N=['Tacos','Burritos','Tortas','Gorditas','Sopes','Quesadillas','Huaraches','Platillo'];
+const P2N=['Chilaquiles','Torta Cubana','Empanadas','Molcajete','Pechuga plancha','Carne Asada plancha','Quesabirria','Enchiladas','Flautas','Tacos Birria'];
+const DP1=P1N.map(()=>({bottom:160,width:400,offsetX:0}));
+const DP2=P2N.map(()=>({width:160,tx:0,ty:0}));
+const DFAJ={width:420,tx:0,mb:-60};
+let imgP1=JSON.parse(localStorage.getItem('imgCfgP1')||'null')||DP1.map(c=>({...c}));
+let imgP2=JSON.parse(localStorage.getItem('imgCfgP2')||'null')||DP2.map(c=>({...c}));
+let imgFaj=JSON.parse(localStorage.getItem('imgCfgFaj')||'null')||{...DFAJ};
+function kp(d){if(cur.length>=4)return;cur+=d;updDots();if(cur.length===4)setTimeout(checkPin,180);}
+function kd(){cur=cur.slice(0,-1);updDots();document.getElementById('pin-err').textContent='';}
+function kc(){cur='';updDots();document.getElementById('pin-err').textContent='';}
+function updDots(){for(let i=0;i<4;i++)document.getElementById('d'+i).classList.toggle('on',i<cur.length);}
+function checkPin(){if(cur===PIN){document.getElementById('login').style.display='none';document.getElementById('dash').style.display='block';loadData();}else{document.getElementById('pin-err').textContent='❌ PIN incorrecto';cur='';updDots();}}
+function logout(){cur='';updDots();cache=null;document.getElementById('login').style.display='flex';document.getElementById('dash').style.display='none';}
+function switchTab(n){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===n));document.querySelectorAll('.tab-content').forEach((c,i)=>c.classList.toggle('active',i===n));}
+function togglePreview(id){
+    const wrap=document.getElementById('preview-'+id);
+    const iframe=document.getElementById('iframe-'+id);
+    const isOpen=wrap.classList.toggle('open');
+    if(isOpen&&!iframe.src){iframe.src=(id==='p1')?P1_URL:P2_URL;}
 }
-function kd() { cur = cur.slice(0,-1); updDots(); document.getElementById('pin-err').textContent=''; }
-function kc() { cur=''; updDots(); document.getElementById('pin-err').textContent=''; }
-function updDots() {
-    for(let i=0;i<4;i++) document.getElementById('d'+i).classList.toggle('on', i<cur.length);
+function liveP2(type,cfg){const f=document.getElementById('iframe-p2');if(f&&f.contentWindow){try{f.contentWindow.postMessage({source:'emilios-admin',type,cfg},'*');}catch(e){}}}
+function liveP1(){localStorage.setItem('imgCfgP1',JSON.stringify(imgP1));}
+async function loadData(){
+    try{const r=await fetch(URL+'?t='+Date.now());cache=await r.json();renderAll();loadLayoutValues();buildCtrlP1();buildCtrlP2();buildCtrlFaj();renderExtraScreens();}
+    catch(e){alert('No se pudo conectar.');}
 }
-function checkPin() {
-    if (cur === PIN) {
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('dash').style.display  = 'block';
-        loadData();
-    } else {
-        document.getElementById('pin-err').textContent = '❌ PIN incorrecto';
-        cur = ''; updDots();
+function dollar(v){const s=String(v||'').trim();return s.startsWith('$')?s:'$'+s;}
+function markDirty(id){document.getElementById(id)?.classList.add('dirty');}
+function renderAll(){renderList('list-estilos',cache.estilos||[],'e');renderCarnes();renderList('list-espec',cache.especialidades||[],'sp');renderFajitas();}
+function renderList(cid,items,px){
+    const el=document.getElementById(cid);el.innerHTML='';
+    items.forEach((item,i)=>{
+        const img=item.img||'';
+        el.innerHTML+=`<div class="item-card" id="icard-${px}-${i}">
+        <div class="item-header" onclick="toggleCard('${px}',${i})">
+            <img class="item-thumb" id="ithumb-${px}-${i}" src="${img||'https://placehold.co/52x52/333/888?text=+'}" alt="" onerror="this.src='https://placehold.co/52x52/333/888?text=?'">
+            <div class="item-meta"><div class="item-name-disp" id="idisp-name-${px}-${i}">${item.nombre}</div><div class="item-sub-disp" id="idisp-sub-${px}-${i}">${item.sub||''}</div></div>
+            <div class="item-price-disp">${dollar(item.precio)}</div>
+            <span class="chevron" id="chev-${px}-${i}">&#9660;</span>
+        </div>
+        <div class="item-fields" id="ifields-${px}-${i}">
+            <div class="field-row"><div class="field-label">Nombre</div><input class="field-input" id="iname-${px}-${i}" value="${item.nombre}" oninput="document.getElementById('idisp-name-${px}-${i}').textContent=this.value;markDirty('icard-${px}-${i}')"></div>
+            <div class="field-row"><div class="field-label">Descripcion</div><input class="field-input" id="isub-${px}-${i}" value="${item.sub||''}" oninput="document.getElementById('idisp-sub-${px}-${i}').textContent=this.value;markDirty('icard-${px}-${i}')"></div>
+            <div class="field-row"><div class="field-label">Precio</div><input class="field-input price-field" id="iprice-${px}-${i}" value="${dollar(item.precio)}" inputmode="decimal" oninput="markDirty('icard-${px}-${i}')"></div>
+            <div class="photo-section"><div class="field-label">Foto</div>
+            <div class="photo-row"><img class="photo-big" id="ibig-${px}-${i}" src="${img||''}" onerror="this.src='https://placehold.co/90x90/333/888?text=?'">
+            <div class="photo-right"><textarea class="url-input" id="iurl-${px}-${i}" placeholder="Pega el link de la foto aqui" oninput="prevImg('${px}',${i})">${img}</textarea></div></div>
+            <div class="photo-btns"><button class="btn-sm btn-green" onclick="applyImg('${px}',${i})">Aplicar</button><button class="btn-sm btn-ghost" onclick="removeImg('${px}',${i})">Quitar</button></div>
+            <div class="photo-hint">Sube en postimages.org y copia Direct link</div></div>
+        </div></div>`;
+    });
+}
+function renderCarnes(){const el=document.getElementById('carnes-table');el.innerHTML=(cache.carnes||[]).map(c=>`<div class="carne-row"><span class="carne-es">${c.es}</span><span class="carne-en">${c.en}</span></div>`).join('');}
+function renderFajitas(){
+    const el=document.getElementById('list-fajitas');el.innerHTML='';
+    const fi=(cache.fajitas?.[0]?.img)||'';
+    el.innerHTML+=`<div class="item-card" id="fajita-img-card">
+    <div class="item-header" onclick="toggleFajImg()"><img class="item-thumb" id="faj-main-thumb" src="${fi||'https://placehold.co/52x52/333/888?text=+'}" alt="">
+    <div class="item-meta"><div class="item-name-disp">Foto principal Fajitas</div><div class="item-sub-disp">Imagen grande sobre la card</div></div>
+    <span class="chevron" id="chev-faj-img">&#9660;</span></div>
+    <div class="item-fields" id="ifields-faj-img">
+    <div class="photo-row"><img class="photo-big" id="faj-big-img" src="${fi||''}" onerror="this.src='https://placehold.co/90x90/333/888?text=?'">
+    <div class="photo-right"><textarea class="url-input" id="faj-url-img" placeholder="Link foto fajitas" oninput="prevFajImg()">${fi}</textarea></div></div>
+    <div class="photo-btns"><button class="btn-sm btn-green" onclick="applyFajImg()">Aplicar</button><button class="btn-sm btn-ghost" onclick="removeFajImg()">Quitar</button></div>
+    </div></div>`;
+    (cache.fajitas||[]).forEach((f,i)=>{
+        el.innerHTML+=`<div class="item-card" id="icard-faj-${i}">
+        <div class="item-header" onclick="toggleCard('faj',${i})">
+        <div class="item-meta"><div class="item-name-disp" id="idisp-name-faj-${i}">${f.nombre}</div></div>
+        <div class="item-price-disp">${dollar(f.precio)}</div>
+        <span class="chevron" id="chev-faj-${i}">&#9660;</span></div>
+        <div class="item-fields" id="ifields-faj-${i}">
+        <div class="field-row"><div class="field-label">Nombre</div><input class="field-input" id="iname-faj-${i}" value="${f.nombre}" oninput="document.getElementById('idisp-name-faj-${i}').textContent=this.value;markDirty('icard-faj-${i}')"></div>
+        <div class="field-row"><div class="field-label">Precio</div><input class="field-input price-field" id="iprice-faj-${i}" value="${dollar(f.precio)}" inputmode="decimal" oninput="markDirty('icard-faj-${i}')"></div>
+        </div></div>`;
+    });
+}
+function toggleCard(p,i){const f=document.getElementById(`ifields-${p}-${i}`),c=document.getElementById(`chev-${p}-${i}`);const o=f.classList.toggle('open');c.classList.toggle('open',o);}
+function toggleFajImg(){const f=document.getElementById('ifields-faj-img'),c=document.getElementById('chev-faj-img');const o=f.classList.toggle('open');c.classList.toggle('open',o);}
+function prevImg(p,i){const u=document.getElementById(`iurl-${p}-${i}`).value.trim();if(u)document.getElementById(`ibig-${p}-${i}`).src=u;}
+function applyImg(p,i){const u=document.getElementById(`iurl-${p}-${i}`).value.trim();if(!u){alert('Pega un link primero.');return;}document.getElementById(`ithumb-${p}-${i}`).src=u;document.getElementById(`ibig-${p}-${i}`).src=u;updCacheImg(p,i,u);markDirty(`icard-${p}-${i}`);toggleCard(p,i);}
+function removeImg(p,i){const ph='https://placehold.co/52x52/333/888?text=+';document.getElementById(`iurl-${p}-${i}`).value='';document.getElementById(`ithumb-${p}-${i}`).src=ph;document.getElementById(`ibig-${p}-${i}`).src=ph;updCacheImg(p,i,'');markDirty(`icard-${p}-${i}`);}
+function updCacheImg(p,i,u){if(p==='e')cache.estilos[i].img=u;if(p==='sp')cache.especialidades[i].img=u;}
+function prevFajImg(){const u=document.getElementById('faj-url-img').value.trim();if(u)document.getElementById('faj-big-img').src=u;}
+function applyFajImg(){const u=document.getElementById('faj-url-img').value.trim();if(!u){alert('Pega un link primero.');return;}document.getElementById('faj-main-thumb').src=u;document.getElementById('faj-big-img').src=u;if(cache.fajitas[0])cache.fajitas[0].img=u;document.getElementById('fajita-img-card').classList.add('dirty');toggleFajImg();}
+function removeFajImg(){document.getElementById('faj-url-img').value='';document.getElementById('faj-main-thumb').src='https://placehold.co/52x52/333/888?text=+';document.getElementById('faj-big-img').src='https://placehold.co/90x90/333/888?text=?';if(cache.fajitas[0])cache.fajitas[0].img='';}
+function buildCtrlP1(){
+    const el=document.getElementById('img-ctrl-p1');if(!el)return;el.innerHTML='';
+    imgP1.forEach((cfg,i)=>{el.innerHTML+=`<div class="img-ctrl-item"><div class="img-ctrl-name">${P1N[i]}</div>
+    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lp1w${i}">${cfg.width}px</span></div><input type="range" min="150" max="600" value="${cfg.width}" oninput="imgP1[${i}].width=+this.value;document.getElementById('lp1w${i}').textContent=this.value+'px';liveP1()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Arriba / Abajo <span class="ctrl-val" id="lp1b${i}">${cfg.bottom}px</span></div><input type="range" min="80" max="360" value="${cfg.bottom}" oninput="imgP1[${i}].bottom=+this.value;document.getElementById('lp1b${i}').textContent=this.value+'px';liveP1()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Izq / Der <span class="ctrl-val" id="lp1x${i}">${cfg.offsetX}px</span></div><input type="range" min="-150" max="150" value="${cfg.offsetX}" oninput="imgP1[${i}].offsetX=+this.value;document.getElementById('lp1x${i}').textContent=this.value+'px';liveP1()"></div>
+    </div>`;});
+}
+function buildCtrlP2(){
+    const el=document.getElementById('img-ctrl-p2');if(!el)return;el.innerHTML='';
+    imgP2.forEach((cfg,i)=>{el.innerHTML+=`<div class="img-ctrl-item"><div class="img-ctrl-name">${P2N[i]||'Item '+(i+1)}</div>
+    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lp2w${i}">${cfg.width}px</span></div><input type="range" min="60" max="380" value="${cfg.width}" oninput="imgP2[${i}].width=+this.value;document.getElementById('lp2w${i}').textContent=this.value+'px';sendP2Live()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Arriba / Abajo <span class="ctrl-val" id="lp2y${i}">${cfg.ty||0}px</span></div><input type="range" min="-80" max="80" value="${cfg.ty||0}" oninput="imgP2[${i}].ty=+this.value;document.getElementById('lp2y${i}').textContent=this.value+'px';sendP2Live()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Izq / Der <span class="ctrl-val" id="lp2x${i}">${cfg.tx||0}px</span></div><input type="range" min="-150" max="150" value="${cfg.tx||0}" oninput="imgP2[${i}].tx=+this.value;document.getElementById('lp2x${i}').textContent=this.value+'px';sendP2Live()"></div>
+    </div>`;});
+}
+function buildCtrlFaj(){
+    const el=document.getElementById('img-ctrl-faj');if(!el)return;
+    el.innerHTML=`<div class="img-ctrl-item">
+    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lfajw">${imgFaj.width}px</span></div><input type="range" min="200" max="700" value="${imgFaj.width}" oninput="imgFaj.width=+this.value;document.getElementById('lfajw').textContent=this.value+'px';sendFajLive()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Subir (cuanto sobresale) <span class="ctrl-val" id="lfajmb">${imgFaj.mb}px</span></div><input type="range" min="-280" max="0" value="${imgFaj.mb}" oninput="imgFaj.mb=+this.value;document.getElementById('lfajmb').textContent=this.value+'px';sendFajLive()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Izq / Der <span class="ctrl-val" id="lfajtx">${imgFaj.tx||0}px</span></div><input type="range" min="-200" max="200" value="${imgFaj.tx||0}" oninput="imgFaj.tx=+this.value;document.getElementById('lfajtx').textContent=this.value+'px';sendFajLive()"></div>
+    </div>`;
+}
+function sendP2Live(){liveP2('imgCfgP2',imgP2);localStorage.setItem('imgCfgP2',JSON.stringify(imgP2));}
+function sendFajLive(){liveP2('imgCfgFaj',imgFaj);localStorage.setItem('imgCfgFaj',JSON.stringify(imgFaj));}
+function applyGlobalP1(){
+    const bd=+document.getElementById('g1b').value||0,sd=+document.getElementById('g1s').value||0;
+    imgP1.forEach(c=>{c.bottom=Math.max(80,Math.min(360,c.bottom+bd));c.width=Math.max(150,Math.min(600,c.width+sd));});
+    document.getElementById('g1b').value='0';document.getElementById('lbl-g1b').textContent='0';
+    document.getElementById('g1s').value='0';document.getElementById('lbl-g1s').textContent='0';
+    buildCtrlP1();liveP1();
+}
+function applyGlobalP2(){
+    const sd=+document.getElementById('g2s').value||0,xd=+document.getElementById('g2x').value||0;
+    imgP2.forEach(c=>{c.width=Math.max(60,Math.min(380,c.width+sd));c.tx=(c.tx||0)+xd;});
+    document.getElementById('g2s').value='0';document.getElementById('lbl-g2s').textContent='0';
+    document.getElementById('g2x').value='0';document.getElementById('lbl-g2x').textContent='0';
+    buildCtrlP2();sendP2Live();
+}
+function syncColor(id,lid){const v=document.getElementById(id).value;document.getElementById(lid).textContent=v;const h=document.getElementById(id+'-hex');if(h)h.value=v;}
+function syncHex(cid,hid,lid){const v=document.getElementById(hid).value;if(/^#[0-9a-fA-F]{6}$/.test(v)){document.getElementById(cid).value=v;document.getElementById(lid).textContent=v;}}
+function loadLayoutValues(){
+    const s=JSON.parse(localStorage.getItem('layout_cfg')||'{}');
+    if(s.p1Red){document.getElementById('p1-red').value=s.p1Red;document.getElementById('p1-red-hex').value=s.p1Red;document.getElementById('lbl-p1-red').textContent=s.p1Red;}
+    if(s.p1Sb){document.getElementById('p1-sb').value=s.p1Sb;document.getElementById('p1-sb-hex').value=s.p1Sb;document.getElementById('lbl-p1-sb').textContent=s.p1Sb;}
+    if(s.p1Sw){document.getElementById('p1-sw').value=s.p1Sw;document.getElementById('lbl-p1-sw').textContent=s.p1Sw+'px';}
+    if(s.p1Div){document.getElementById('p1-div').value=s.p1Div;document.getElementById('lbl-div').textContent=s.p1Div+'px';}
+    if(s.p1DivCol){document.getElementById('p1-divcol').value=s.p1DivCol;document.getElementById('p1-divcol-hex').value=s.p1DivCol;document.getElementById('lbl-div-col').textContent=s.p1DivCol;}
+    if(s.p1Rad){document.getElementById('p1-rad').value=s.p1Rad;document.getElementById('lbl-rad').textContent=s.p1Rad+'px';}
+    if(s.p2Red){document.getElementById('p2-red').value=s.p2Red;document.getElementById('p2-red-hex').value=s.p2Red;document.getElementById('lbl-p2-red').textContent=s.p2Red;}
+    if(s.titles){
+        if(s.titles.styleEn)document.getElementById('t-p1-en').value=s.titles.styleEn;
+        if(s.titles.styleEs)document.getElementById('t-p1-es').value=s.titles.styleEs;
+        if(s.titles.meatEn)document.getElementById('t-meat-en').value=s.titles.meatEn;
+        if(s.titles.meatEs)document.getElementById('t-meat-es').value=s.titles.meatEs;
+        if(s.titles.website)document.getElementById('t-website').value=s.titles.website;
+        if(s.titles.titleEn)document.getElementById('t-p2-en').value=s.titles.titleEn;
+        if(s.titles.titleEs)document.getElementById('t-p2-es').value=s.titles.titleEs;
     }
 }
-function logout() {
-    cur = ''; updDots();
-    cache = null;
-    document.getElementById('login').style.display = 'flex';
-    document.getElementById('dash').style.display  = 'none';
-}
-
-/* ── TABS ── */
-function switchTab(n) {
-    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===n));
-    document.querySelectorAll('.tab-content').forEach((c,i) => c.classList.toggle('active', i===n));
-}
-
-/* ── LOAD ── */
-async function loadData() {
-    try {
-        const r = await fetch(URL + '?t=' + Date.now());
-        cache   = await r.json();
-        renderAll();
-    } catch(e) {
-        alert('No se pudo conectar. Verifica tu internet.');
-    }
-}
-
-function dollar(v) {
-    const s = String(v||'').trim();
-    return s.startsWith('$') ? s : '$'+s;
-}
-
-function renderAll() {
-    renderList('list-estilos',  cache.estilos,        'estilo',  true);
-    renderCarnes();
-    renderList('list-espec',    cache.especialidades,  'espec',   true);
-    renderFajitas();
-}
-
-function renderList(containerId, items, prefix, hasImg) {
-    const el = document.getElementById(containerId);
-    el.innerHTML = '';
-    (items||[]).forEach((item, i) => {
-        const img = item.img || '';
-        el.innerHTML += `
-        <div class="item-card" id="card-${prefix}-${i}">
-            <div class="item-top">
-                ${hasImg ? `<img class="item-thumb" id="thumb-${prefix}-${i}"
-                    src="${img||'https://via.placeholder.com/56x56/333/888?text=foto'}"
-                    alt="" onerror="this.src='https://via.placeholder.com/56x56/333/888?text=?'"
-                    onclick="togglePhoto('${prefix}',${i})" title="Toca para cambiar foto">` : ''}
-                <div class="item-info">
-                    <div class="item-name">${item.nombre}</div>
-                    <div class="item-sub">${item.sub||''}${hasImg ? ' · <span style="color:#ffde59">Toca la foto para cambiarla</span>' : ''}</div>
-                </div>
-            </div>
-            <div class="price-row">
-                <span class="price-label">Precio:</span>
-                <input class="price-input" id="price-${prefix}-${i}"
-                    value="${dollar(item.precio)}"
-                    oninput="markDirty('${prefix}',${i})"
-                    inputmode="decimal" placeholder="$0.00">
-            </div>
-            <div class="photo-panel" id="photo-${prefix}-${i}">
-                <div class="photo-label">📸 Foto del platillo</div>
-                <div class="photo-preview-wrap">
-                    <img class="photo-preview" id="preview-${prefix}-${i}"
-                        src="${img||''}"
-                        onerror="this.src='https://via.placeholder.com/80x80/333/888?text=?'">
-                    <textarea class="photo-url-input" id="url-${prefix}-${i}"
-                        placeholder="Pega aquí el link de la foto (URL)&#10;Ejemplo: https://i.postimg.cc/..."
-                        oninput="previewPhoto('${prefix}',${i})">${img}</textarea>
-                </div>
-                <div class="photo-actions">
-                    <button class="btn-sm btn-apply" onclick="applyPhoto('${prefix}',${i})">✓ Aplicar foto</button>
-                    <button class="btn-sm btn-remove" onclick="removePhoto('${prefix}',${i})">🗑 Quitar foto</button>
-                </div>
-                <div class="photo-hint">💡 Sube tu foto a <strong>postimages.org</strong> o <strong>imgur.com</strong> gratis, copia el link "Direct link" y pégalo aquí.</div>
-            </div>
-        </div>`;
-    });
-}
-
-function renderCarnes() {
-    const el = document.getElementById('list-carnes');
-    el.innerHTML = '';
-    (cache.carnes||[]).forEach(c => {
-        el.innerHTML += `<div class="carne-row">
-            <span class="carne-es">${c.es}</span>
-            <span class="carne-en">${c.en}</span>
-        </div>`;
-    });
-}
-
-function renderFajitas() {
-    const el = document.getElementById('list-fajitas');
-    el.innerHTML = '';
-    (cache.fajitas||[]).forEach((f,i) => {
-        el.innerHTML += `
-        <div class="item-card" id="card-fajita-${i}">
-            <div class="item-top">
-                <div class="item-info">
-                    <div class="item-name">${f.nombre}</div>
-                </div>
-            </div>
-            <div class="price-row">
-                <span class="price-label">Precio:</span>
-                <input class="price-input" id="price-fajita-${i}"
-                    value="${dollar(f.precio)}"
-                    oninput="markDirty('fajita',${i})"
-                    inputmode="decimal" placeholder="$0.00">
-            </div>
-        </div>`;
-    });
-}
-
-/* ── PHOTO MGMT ── */
-function togglePhoto(prefix, i) {
-    const panel = document.getElementById(`photo-${prefix}-${i}`);
-    const isOpen = panel.classList.contains('open');
-    // Close all
-    document.querySelectorAll('.photo-panel.open').forEach(p => p.classList.remove('open'));
-    if (!isOpen) panel.classList.add('open');
-}
-
-function previewPhoto(prefix, i) {
-    const url = document.getElementById(`url-${prefix}-${i}`).value.trim();
-    const prev = document.getElementById(`preview-${prefix}-${i}`);
-    if (url) { prev.src = url; }
-}
-
-function applyPhoto(prefix, i) {
-    const url = document.getElementById(`url-${prefix}-${i}`).value.trim();
-    if (!url) { alert('Pega un link de foto primero.'); return; }
-    // Update thumb
-    document.getElementById(`thumb-${prefix}-${i}`).src = url;
-    document.getElementById(`preview-${prefix}-${i}`).src = url;
-    // Save to cache
-    updateCacheImg(prefix, i, url);
-    markDirty(prefix, i);
-    document.getElementById(`photo-${prefix}-${i}`).classList.remove('open');
-}
-
-function removePhoto(prefix, i) {
-    document.getElementById(`url-${prefix}-${i}`).value = '';
-    document.getElementById(`thumb-${prefix}-${i}`).src = 'https://via.placeholder.com/56x56/333/888?text=foto';
-    document.getElementById(`preview-${prefix}-${i}`).src = 'https://via.placeholder.com/80x80/333/888?text=?';
-    updateCacheImg(prefix, i, '');
-    markDirty(prefix, i);
-}
-
-function updateCacheImg(prefix, i, url) {
-    if (prefix === 'estilo') cache.estilos[i].img = url;
-    else if (prefix === 'espec') cache.especialidades[i].img = url;
-}
-
-function markDirty(prefix, i) {
-    document.getElementById(`card-${prefix}-${i}`).classList.add('dirty');
-}
-
-/* ── SAVE ── */
-async function saveAll() {
-    const btn = document.getElementById('btn-save');
-    btn.disabled = true;
-    btn.textContent = '⏳ Guardando...';
-
-    const estilos = (cache.estilos||[]).map((item,i) => ({
-        nombre: item.nombre, sub: item.sub,
-        precio: document.getElementById(`price-estilo-${i}`).value,
-        img:    item.img || ''
-    }));
-    const espec = (cache.especialidades||[]).map((item,i) => ({
-        nombre: item.nombre, sub: item.sub,
-        precio: document.getElementById(`price-espec-${i}`).value,
-        img:    item.img || ''
-    }));
-    const fajitas = (cache.fajitas||[]).map((item,i) => ({
-        nombre: item.nombre,
-        precio: document.getElementById(`price-fajita-${i}`).value
-    }));
-
-    try {
-        await fetch(URL, {
-            method: 'POST',
-            body: JSON.stringify({ estilos, especialidades: espec, fajitas })
-        });
-
-        // Flash banner
-        const b = document.getElementById('save-banner');
-        b.classList.add('show');
-        setTimeout(()=>b.classList.remove('show'), 4000);
-
-        // Clear dirty
+function buildLC(){return{p1Red:document.getElementById('p1-red').value,p1Sb:document.getElementById('p1-sb').value,p1Sw:+document.getElementById('p1-sw').value,p1Div:+document.getElementById('p1-div').value,p1DivCol:document.getElementById('p1-divcol').value,p1Rad:+document.getElementById('p1-rad').value,p2Red:document.getElementById('p2-red').value,titles:{styleEn:document.getElementById('t-p1-en').value,styleEs:document.getElementById('t-p1-es').value,meatEn:document.getElementById('t-meat-en').value,meatEs:document.getElementById('t-meat-es').value,website:document.getElementById('t-website').value,titleEn:document.getElementById('t-p2-en').value,titleEs:document.getElementById('t-p2-es').value}};}
+function renderExtraScreens(){const el=document.getElementById('extra-screens-list');if(!extraScreens.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px 0;">No hay pantallas adicionales.</div>';return;}el.innerHTML=extraScreens.map((s,i)=>`<div class="extra-screen-card"><div class="extra-screen-hdr"><div><div class="extra-screen-title">${s.name}</div><div class="extra-screen-url">${s.url}</div>${s.notes?`<div class="extra-screen-url" style="color:#ffde59">${s.notes}</div>`:''}</div><button class="btn-del-screen" onclick="delScreen(${i})">&#10005;</button></div></div>`).join('');}
+function addScreen(){const n=document.getElementById('new-screen-name').value.trim(),u=document.getElementById('new-screen-url').value.trim(),no=document.getElementById('new-screen-notes').value.trim();if(!n||!u){alert('Nombre y URL requeridos.');return;}extraScreens.push({name:n,url:u,notes:no});localStorage.setItem('extra_screens',JSON.stringify(extraScreens));document.getElementById('new-screen-name').value='';document.getElementById('new-screen-url').value='';document.getElementById('new-screen-notes').value='';renderExtraScreens();}
+function delScreen(i){extraScreens.splice(i,1);localStorage.setItem('extra_screens',JSON.stringify(extraScreens));renderExtraScreens();}
+async function saveAll(){
+    const btn=document.getElementById('btn-save');btn.disabled=true;btn.textContent='Guardando...';
+    const estilos=(cache.estilos||[]).map((item,i)=>({nombre:document.getElementById(`iname-e-${i}`).value||item.nombre,sub:document.getElementById(`isub-e-${i}`).value,precio:document.getElementById(`iprice-e-${i}`).value,img:item.img||''}));
+    const especialidades=(cache.especialidades||[]).map((item,i)=>({nombre:document.getElementById(`iname-sp-${i}`).value||item.nombre,sub:document.getElementById(`isub-sp-${i}`).value,precio:document.getElementById(`iprice-sp-${i}`).value,img:item.img||''}));
+    const fajitas=(cache.fajitas||[]).map((f,i)=>({nombre:document.getElementById(`iname-faj-${i}`).value||f.nombre,precio:document.getElementById(`iprice-faj-${i}`).value,img:i===0?(document.getElementById('faj-url-img').value.trim()||f.img||''):(f.img||'')}));
+    localStorage.setItem('imgCfgP1',JSON.stringify(imgP1));localStorage.setItem('imgCfgP2',JSON.stringify(imgP2));localStorage.setItem('imgCfgFaj',JSON.stringify(imgFaj));
+    const lc=buildLC();localStorage.setItem('layout_cfg',JSON.stringify(lc));
+    const lp1={redMain:lc.p1Red,sidebarBg:lc.p1Sb,sidebarWidth:lc.p1Sw,dividerW:lc.p1Div,dividerColor:lc.p1DivCol,cardRadius:lc.p1Rad};
+    const lp2={redMain:lc.p2Red};
+    const tp1={styleEn:lc.titles.styleEn,styleEs:lc.titles.styleEs,meatEn:lc.titles.meatEn.replace(/\n/g,'<br>'),meatEs:lc.titles.meatEs,website:lc.titles.website};
+    const tp2={titleEn:lc.titles.titleEn,titleEs:lc.titles.titleEs};
+    try{
+        await fetch(URL,{method:'POST',body:JSON.stringify({estilos,especialidades,fajitas,layoutP1:lp1,layoutP2:lp2,titlesP1:tp1,titlesP2:tp2,imgCfgP1:imgP1,imgCfgP2:imgP2,imgCfgFaj:imgFaj})});
+        const b=document.getElementById('save-banner');b.classList.add('show');setTimeout(()=>b.classList.remove('show'),4000);
         document.querySelectorAll('.item-card.dirty').forEach(el=>el.classList.remove('dirty'));
-
-        // Update cache
-        cache.estilos = estilos;
-        cache.especialidades = espec;
-        cache.fajitas = fajitas;
-
-    } catch(e) { alert('Error al guardar. Intenta de nuevo.'); }
-
-    btn.disabled = false;
-    btn.textContent = '💾 GUARDAR CAMBIOS';
+        cache.estilos=estilos;cache.especialidades=especialidades;cache.fajitas=fajitas;
+    }catch(e){alert('Error al guardar.');}
+    btn.disabled=false;btn.textContent='💾 GUARDAR CAMBIOS';
 }
 </script>
 </body>
