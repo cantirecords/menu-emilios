@@ -1,249 +1,300 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Emilio's — Editor de Menú</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-        :root{--red:#E31837;--red-dk:#b5102a;--yellow:#ffde59;--green:#00843D;--green-dk:#006830;--bg:#0d0d0d;--surf:#1c1c1c;--surf2:#252525;--border:#333;--text:#f0f0f0;--muted:#888;--ff:'Fredoka',sans-serif;}
-        html{font-size:16px;}
-        body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100vh;}
-        #save-banner{position:fixed;top:0;left:0;right:0;background:var(--green);color:white;font-size:15px;font-weight:700;text-align:center;padding:15px;transform:translateY(-100%);transition:transform .35s;z-index:3000;}
-        #save-banner.show{transform:translateY(0);}
-        #login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 0%,#3a000f 0%,#0d0d0d 65%);padding:20px;}
-        .login-card{background:var(--surf);border:1px solid var(--border);border-radius:24px;padding:40px 28px;width:100%;max-width:360px;text-align:center;}
-        .login-logo{width:160px;margin-bottom:20px;}
-        .login-h{font-size:24px;font-weight:700;color:var(--red);margin-bottom:4px;}
-        .login-sub{font-size:14px;color:var(--muted);margin-bottom:28px;font-weight:500;}
-        .dots{display:flex;gap:14px;justify-content:center;margin-bottom:22px;}
-        .dot{width:16px;height:16px;border-radius:50%;border:2.5px solid var(--border);background:transparent;transition:all .2s;}
-        .dot.on{background:var(--red);border-color:var(--red);}
-        .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
-        .pad-btn{background:var(--surf2);border:1.5px solid var(--border);border-radius:14px;color:var(--text);font-family:var(--ff);font-size:26px;font-weight:700;padding:18px 10px;cursor:pointer;transition:background .15s,transform .1s;user-select:none;}
-        .pad-btn:active{background:var(--red);border-color:var(--red);transform:scale(.93);}
-        .pad-del{font-size:19px;color:var(--muted);}
-        #pin-err{color:#ff4d4d;font-size:13px;min-height:18px;font-weight:600;}
-        /* Access level badge */
-        .access-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:13px;font-weight:700;margin-bottom:20px;}
-        .access-badge.owner{background:rgba(255,222,89,.15);color:var(--yellow);border:1.5px solid rgba(255,222,89,.3);}
-        .access-badge.client{background:rgba(0,132,61,.15);color:#4ecb7a;border:1.5px solid rgba(0,132,61,.3);}
-        /* Locked field overlay */
-        .field-locked{position:relative;}
-        .field-locked .field-input{opacity:.45;pointer-events:none;cursor:not-allowed;border-style:dashed;}
-        .lock-label{font-size:11px;color:var(--muted);font-style:italic;margin-top:3px;display:flex;align-items:center;gap:4px;}
-        #dash{display:none;}
-        .topbar{background:var(--surf);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-        .topbar-left{display:flex;align-items:center;gap:12px;}.topbar-logo{height:38px;}
-        .topbar-title{font-size:18px;font-weight:700;color:var(--red);line-height:1;}.topbar-sub{font-size:11px;color:var(--muted);font-weight:500;}
-        .topbar-right{display:flex;align-items:center;gap:10px;}
-        .role-pill{font-size:12px;font-weight:700;padding:5px 12px;border-radius:16px;}
-        .role-pill.owner{background:rgba(255,222,89,.15);color:var(--yellow);}
-        .role-pill.client{background:rgba(0,132,61,.15);color:#4ecb7a;}
-        .btn-out{background:transparent;border:1.5px solid var(--border);color:var(--muted);font-family:var(--ff);font-size:13px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;}
-        .btn-out:active{border-color:var(--red);color:var(--red);}
-        .tabs{display:flex;overflow-x:auto;background:var(--surf);border-bottom:1px solid var(--border);-webkit-overflow-scrolling:touch;scrollbar-width:none;}
-        .tabs::-webkit-scrollbar{display:none;}
-        .tab{flex:none;padding:13px 16px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;}
-        .tab.active{color:var(--red);border-bottom-color:var(--red);}
-        .tab.hidden{display:none;}
-        .body{padding:16px;max-width:680px;margin:0 auto;padding-bottom:90px;}
-        .tab-content{display:none;}.tab-content.active{display:block;}
-        .status-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);padding:14px 0 0;font-weight:500;}
-        .sdot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-        .sec-hdr{font-size:18px;font-weight:700;color:var(--yellow);margin:24px 0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-        .sec-badge{background:var(--surf2);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:2px 10px;border-radius:20px;font-weight:600;}
-        .item-card{background:var(--surf);border:1.5px solid var(--border);border-radius:16px;margin-bottom:10px;overflow:hidden;transition:border-color .2s;}
-        .item-card.dirty{border-color:var(--yellow);}
-        .item-header{display:flex;align-items:center;gap:12px;padding:12px 14px 8px;cursor:pointer;}
-        .item-thumb{width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--surf2);flex-shrink:0;border:2px solid var(--border);}
-        .item-meta{flex:1;min-width:0;}.item-name-disp{font-size:16px;font-weight:700;margin-bottom:2px;}.item-sub-disp{font-size:12px;color:var(--muted);}
-        .item-price-disp{font-size:18px;font-weight:700;color:#00c96b;white-space:nowrap;}
-        .chevron{font-size:18px;color:var(--muted);transition:transform .25s;}.chevron.open{transform:rotate(180deg);}
-        .item-fields{display:none;border-top:1px solid var(--border);padding:14px;flex-direction:column;gap:10px;}.item-fields.open{display:flex;}
-        .field-row{display:flex;flex-direction:column;gap:4px;}
-        .field-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
-        .field-input{background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--ff);font-size:16px;font-weight:600;padding:10px 12px;outline:none;width:100%;transition:border-color .2s,box-shadow .2s;}
-        .field-input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(227,24,55,.15);}
-        .field-input.price-field{font-size:22px;font-weight:700;color:#00c96b;}
-        .photo-section{display:flex;flex-direction:column;gap:8px;}.photo-row{display:flex;gap:10px;align-items:flex-start;}
-        .photo-big{width:90px;height:90px;border-radius:12px;object-fit:contain;background:var(--surf2);flex-shrink:0;border:2px dashed var(--border);}
-        .photo-right{flex:1;display:flex;flex-direction:column;gap:6px;}
-        .url-input{background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--ff);font-size:13px;font-weight:500;padding:9px 12px;outline:none;width:100%;resize:none;min-height:72px;word-break:break-all;transition:border-color .2s;}
-        .url-input:focus{border-color:var(--red);}
-        .photo-btns{display:flex;gap:8px;flex-wrap:wrap;}
-        .btn-sm{font-family:var(--ff);font-size:13px;font-weight:700;padding:8px 16px;border-radius:10px;cursor:pointer;border:none;transition:all .15s;}
-        .btn-green{background:var(--green);color:white;}.btn-green:active{background:var(--green-dk);}
-        .btn-ghost{background:var(--surf);border:1.5px solid var(--border);color:var(--muted);}.btn-ghost:active{border-color:#ff4d4d;color:#ff4d4d;}
-        .photo-hint{font-size:11px;color:var(--muted);line-height:1.4;}
-        .carne-row{display:flex;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--border);align-items:center;}.carne-row:last-child{border-bottom:none;}
-        .carne-es{font-size:15px;font-weight:700;}.carne-en{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;}
-        .layout-card{background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;}
-        .layout-card h3{font-size:16px;font-weight:700;margin-bottom:14px;color:var(--yellow);}
-        .ctrl-row{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
-        .ctrl-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center;}
-        .ctrl-val{color:var(--text);font-size:13px;}
-        input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:var(--border);outline:none;}
-        input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--red);cursor:pointer;}
-        input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;border-radius:8px;cursor:pointer;background:transparent;padding:0;}
-        .color-row{display:flex;align-items:center;gap:10px;}
-        .color-hex{background:var(--surf2);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--ff);font-size:14px;font-weight:600;padding:7px 10px;width:100px;outline:none;}
-        .url-config-box{background:#1a1a00;border:2px solid var(--yellow);border-radius:14px;padding:14px;margin-bottom:16px;}
-        .url-config-box h4{font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:8px;}
-        .url-config-box p{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5;}
-        .url-config-box input{background:var(--surf2);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--ff);font-size:13px;font-weight:500;padding:9px 12px;outline:none;width:100%;margin-bottom:6px;}
-        .url-config-box input:focus{border-color:var(--yellow);}
-        .preview-toggle-btn{width:100%;background:var(--surf);border:1.5px solid var(--border);color:var(--yellow);font-family:var(--ff);font-size:14px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer;text-align:center;transition:all .2s;margin-bottom:8px;}
-        .preview-wrap{display:none;background:#000;border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-bottom:12px;}
-        .preview-wrap.open{display:block;}
-        .preview-label{font-size:11px;color:var(--muted);padding:6px 10px;background:var(--surf2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
-        .preview-iframe-wrap{position:relative;width:100%;padding-bottom:56.25%;}
-        .preview-iframe-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
-        .preview-notice{font-size:11px;color:var(--muted);padding:6px 10px;background:var(--surf2);border-top:1px solid var(--border);line-height:1.4;}
-        .img-ctrl-item{background:var(--surf2);border-radius:12px;padding:12px;margin-bottom:10px;}
-        .img-ctrl-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px;}
-        .extra-screen-card{background:var(--surf);border:1.5px solid var(--border);border-radius:16px;margin-bottom:12px;}
-        .extra-screen-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;}
-        .extra-screen-title{font-size:16px;font-weight:700;}.extra-screen-url{font-size:11px;color:var(--muted);margin-top:2px;}
-        .btn-del-screen{background:transparent;border:1.5px solid #555;color:#888;font-size:13px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;}
-        .btn-del-screen:active{border-color:#ff4d4d;color:#ff4d4d;}
-        .add-screen-form{background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:12px;}
-        .add-screen-form h3{font-size:15px;font-weight:700;margin-bottom:12px;color:var(--yellow);}
-        .btn-add-screen{width:100%;background:var(--surf2);border:2px dashed var(--border);color:var(--muted);font-family:var(--ff);font-size:15px;font-weight:700;padding:16px;border-radius:14px;cursor:pointer;margin-top:8px;transition:all .2s;}
-        .btn-add-screen:active{border-color:var(--red);color:var(--red);}
-        .save-bar{position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:var(--bg);border-top:1px solid var(--border);z-index:50;}
-        .btn-save{width:100%;background:var(--green);color:white;border:none;font-family:var(--ff);font-size:20px;font-weight:700;padding:17px;border-radius:16px;cursor:pointer;box-shadow:0 8px 24px rgba(0,132,61,.35);transition:all .2s;}
-        .btn-save:active{background:var(--green-dk);transform:scale(.98);}.btn-save:disabled{background:#444;box-shadow:none;}
-        /* Client mode banner */
-        #client-banner{display:none;background:#1a2a1a;border:1.5px solid #4ecb7a;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#4ecb7a;line-height:1.5;}
-        #client-banner.show{display:block;}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Emilio's — Editor de Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{--red:#E31837;--red-dk:#b5102a;--yellow:#ffde59;--green:#00843D;--green-dk:#006830;--bg:#0d0d0d;--surf:#1c1c1c;--surf2:#252525;--border:#333;--text:#f0f0f0;--muted:#888;--ff:'Fredoka',sans-serif;}
+html{font-size:16px;}
+body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100vh;}
+#save-banner{position:fixed;top:0;left:0;right:0;background:var(--green);color:white;font-size:15px;font-weight:700;text-align:center;padding:15px;transform:translateY(-100%);transition:transform .35s;z-index:3000;}
+#save-banner.show{transform:translateY(0);}
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 0%,#3a000f 0%,#0d0d0d 65%);padding:20px;}
+.login-card{background:var(--surf);border:1px solid var(--border);border-radius:24px;padding:40px 28px;width:100%;max-width:360px;text-align:center;}
+.login-logo{width:160px;margin-bottom:20px;}
+.login-h{font-size:24px;font-weight:700;color:var(--red);margin-bottom:4px;}
+.login-sub{font-size:14px;color:var(--muted);margin-bottom:28px;font-weight:500;}
+.dots{display:flex;gap:14px;justify-content:center;margin-bottom:22px;}
+.dot{width:16px;height:16px;border-radius:50%;border:2.5px solid var(--border);background:transparent;transition:all .2s;}
+.dot.on{background:var(--red);border-color:var(--red);}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.pad-btn{background:var(--surf2);border:1.5px solid var(--border);border-radius:14px;color:var(--text);font-family:var(--ff);font-size:26px;font-weight:700;padding:18px 10px;cursor:pointer;transition:background .15s,transform .1s;user-select:none;}
+.pad-btn:active{background:var(--red);border-color:var(--red);transform:scale(.93);}
+.pad-del{font-size:19px;color:var(--muted);}
+#pin-err{color:#ff4d4d;font-size:13px;min-height:18px;font-weight:600;}
+#dash{display:none;}
+.topbar{background:var(--surf);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar-left{display:flex;align-items:center;gap:12px;}.topbar-logo{height:38px;}
+.topbar-title{font-size:18px;font-weight:700;color:var(--red);line-height:1;}.topbar-sub{font-size:11px;color:var(--muted);font-weight:500;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.role-pill{font-size:12px;font-weight:700;padding:5px 12px;border-radius:16px;}
+.role-pill.owner{background:rgba(255,222,89,.15);color:var(--yellow);}
+.role-pill.client{background:rgba(0,132,61,.15);color:#4ecb7a;}
+.btn-out{background:transparent;border:1.5px solid var(--border);color:var(--muted);font-family:var(--ff);font-size:13px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;}
+.btn-out:active{border-color:var(--red);color:var(--red);}
+.tabs{display:flex;overflow-x:auto;background:var(--surf);border-bottom:1px solid var(--border);-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:none;padding:13px 16px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;}
+.tab.active{color:var(--red);border-bottom-color:var(--red);}
+.tab.hidden{display:none;}
+.body{padding:16px;max-width:680px;margin:0 auto;padding-bottom:90px;}
+.tab-content{display:none;}.tab-content.active{display:block;}
+.status-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);padding:14px 0 0;font-weight:500;}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sec-hdr{font-size:18px;font-weight:700;color:var(--yellow);margin:24px 0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.sec-badge{background:var(--surf2);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:2px 10px;border-radius:20px;font-weight:600;}
+.item-card{background:var(--surf);border:1.5px solid var(--border);border-radius:16px;margin-bottom:10px;overflow:hidden;transition:border-color .2s;}
+.item-card.dirty{border-color:var(--yellow);}
+.item-header{display:flex;align-items:center;gap:12px;padding:12px 14px 8px;cursor:pointer;}
+.item-thumb{width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--surf2);flex-shrink:0;border:2px solid var(--border);}
+.item-meta{flex:1;min-width:0;}.item-name-disp{font-size:16px;font-weight:700;margin-bottom:2px;}.item-sub-disp{font-size:12px;color:var(--muted);}
+.item-price-disp{font-size:18px;font-weight:700;color:#00c96b;white-space:nowrap;}
+.chevron{font-size:18px;color:var(--muted);transition:transform .25s;}.chevron.open{transform:rotate(180deg);}
+.item-fields{display:none;border-top:1px solid var(--border);padding:14px;flex-direction:column;gap:10px;}.item-fields.open{display:flex;}
+.field-row{display:flex;flex-direction:column;gap:4px;}
+.field-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.field-input{background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--ff);font-size:16px;font-weight:600;padding:10px 12px;outline:none;width:100%;transition:border-color .2s,box-shadow .2s;}
+.field-input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(227,24,55,.15);}
+.field-input.price-field{font-size:22px;font-weight:700;color:#00c96b;}
+/* Locked field — no message, just visual disable */
+.field-input[readonly]{opacity:.35;cursor:not-allowed;border-style:dashed;}
+.photo-section{display:flex;flex-direction:column;gap:8px;}.photo-row{display:flex;gap:10px;align-items:flex-start;}
+.photo-big{width:90px;height:90px;border-radius:12px;object-fit:contain;background:var(--surf2);flex-shrink:0;border:2px dashed var(--border);}
+.photo-right{flex:1;display:flex;flex-direction:column;gap:6px;}
+.url-input{background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--ff);font-size:13px;font-weight:500;padding:9px 12px;outline:none;width:100%;resize:none;min-height:72px;word-break:break-all;transition:border-color .2s;}
+.url-input:focus{border-color:var(--red);}
+.photo-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-sm{font-family:var(--ff);font-size:13px;font-weight:700;padding:8px 16px;border-radius:10px;cursor:pointer;border:none;transition:all .15s;}
+.btn-green{background:var(--green);color:white;}.btn-green:active{background:var(--green-dk);}
+.btn-ghost{background:var(--surf);border:1.5px solid var(--border);color:var(--muted);}.btn-ghost:active{border-color:#ff4d4d;color:#ff4d4d;}
+.photo-hint{font-size:11px;color:var(--muted);line-height:1.4;}
+.carne-row{display:flex;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--border);align-items:center;}.carne-row:last-child{border-bottom:none;}
+.carne-es{font-size:15px;font-weight:700;}.carne-en{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;}
+.layout-card{background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;}
+.layout-card h3{font-size:16px;font-weight:700;margin-bottom:14px;color:var(--yellow);}
+.ctrl-row{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+.ctrl-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center;}
+.ctrl-val{color:var(--text);font-size:13px;}
+input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:var(--border);outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--red);cursor:pointer;}
+input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;border-radius:8px;cursor:pointer;background:transparent;padding:0;}
+.color-row{display:flex;align-items:center;gap:10px;}
+.color-hex{background:var(--surf2);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--ff);font-size:14px;font-weight:600;padding:7px 10px;width:100px;outline:none;}
+.url-config-box{background:#1a1a00;border:2px solid var(--yellow);border-radius:14px;padding:14px;margin-bottom:16px;}
+.url-config-box h4{font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:8px;}
+.url-config-box p{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5;}
+.url-config-box input{background:var(--surf2);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--ff);font-size:13px;font-weight:500;padding:9px 12px;outline:none;width:100%;margin-bottom:6px;}
+.url-config-box input:focus{border-color:var(--yellow);}
+.preview-toggle-btn{width:100%;background:var(--surf);border:1.5px solid var(--border);color:var(--yellow);font-family:var(--ff);font-size:14px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer;text-align:center;transition:all .2s;margin-bottom:8px;}
+.preview-wrap{display:none;background:#000;border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-bottom:12px;}
+.preview-wrap.open{display:block;}
+.preview-label{font-size:11px;color:var(--muted);padding:6px 10px;background:var(--surf2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.preview-iframe-wrap{position:relative;width:100%;padding-bottom:56.25%;}
+.preview-iframe-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
+.preview-notice{font-size:11px;color:var(--muted);padding:6px 10px;background:var(--surf2);border-top:1px solid var(--border);line-height:1.4;}
+.img-ctrl-item{background:var(--surf2);border-radius:12px;padding:12px;margin-bottom:10px;}
+.img-ctrl-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px;}
+.extra-screen-card{background:var(--surf);border:1.5px solid var(--border);border-radius:16px;margin-bottom:12px;}
+.extra-screen-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;}
+.extra-screen-title{font-size:16px;font-weight:700;}.extra-screen-url{font-size:11px;color:var(--muted);margin-top:2px;}
+.btn-del-screen{background:transparent;border:1.5px solid #555;color:#888;font-size:13px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;}
+.btn-del-screen:active{border-color:#ff4d4d;color:#ff4d4d;}
+.add-screen-form{background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:12px;}
+.add-screen-form h3{font-size:15px;font-weight:700;margin-bottom:12px;color:var(--yellow);}
+.btn-add-screen{width:100%;background:var(--surf2);border:2px dashed var(--border);color:var(--muted);font-family:var(--ff);font-size:15px;font-weight:700;padding:16px;border-radius:14px;cursor:pointer;margin-top:8px;transition:all .2s;}
+.btn-add-screen:active{border-color:var(--red);color:var(--red);}
+.save-bar{position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:var(--bg);border-top:1px solid var(--border);z-index:50;}
+.btn-save{width:100%;background:var(--green);color:white;border:none;font-family:var(--ff);font-size:20px;font-weight:700;padding:17px;border-radius:16px;cursor:pointer;box-shadow:0 8px 24px rgba(0,132,61,.35);transition:all .2s;}
+.btn-save:active{background:var(--green-dk);transform:scale(.98);}.btn-save:disabled{background:#444;box-shadow:none;}
+/* P3 slide editor */
+.slide-editor{background:var(--surf2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;}
+.slide-editor h4{font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+</style>
 </head>
 <body>
-<div id="save-banner">&#x2705; &#xA1;Guardado! Pantallas actualizadas en menos de 1 minuto.</div>
+<div id="save-banner">Guardado! Pantallas actualizadas en menos de 1 minuto.</div>
 
-<!-- LOGIN -->
 <div id="login">
-    <div class="login-card">
-        <img class="login-logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="Logo">
-        <div class="login-h">Editor de Men&#xFA;</div>
-        <div class="login-sub">Ingresa tu PIN</div>
-        <div class="dots"><div class="dot" id="d0"></div><div class="dot" id="d1"></div><div class="dot" id="d2"></div><div class="dot" id="d3"></div></div>
-        <div class="pad">
-            <button class="pad-btn" onclick="kp('1')">1</button><button class="pad-btn" onclick="kp('2')">2</button><button class="pad-btn" onclick="kp('3')">3</button>
-            <button class="pad-btn" onclick="kp('4')">4</button><button class="pad-btn" onclick="kp('5')">5</button><button class="pad-btn" onclick="kp('6')">6</button>
-            <button class="pad-btn" onclick="kp('7')">7</button><button class="pad-btn" onclick="kp('8')">8</button><button class="pad-btn" onclick="kp('9')">9</button>
-            <button class="pad-btn pad-del" onclick="kd()">&#9003;</button><button class="pad-btn" onclick="kp('0')">0</button><button class="pad-btn pad-del" onclick="kc()">&#10005;</button>
-        </div>
-        <div id="pin-err"></div>
+  <div class="login-card">
+    <img class="login-logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="Logo">
+    <div class="login-h">Editor de Menu</div>
+    <div class="login-sub">Ingresa tu PIN</div>
+    <div class="dots"><div class="dot" id="d0"></div><div class="dot" id="d1"></div><div class="dot" id="d2"></div><div class="dot" id="d3"></div></div>
+    <div class="pad">
+      <button class="pad-btn" onclick="kp('1')">1</button><button class="pad-btn" onclick="kp('2')">2</button><button class="pad-btn" onclick="kp('3')">3</button>
+      <button class="pad-btn" onclick="kp('4')">4</button><button class="pad-btn" onclick="kp('5')">5</button><button class="pad-btn" onclick="kp('6')">6</button>
+      <button class="pad-btn" onclick="kp('7')">7</button><button class="pad-btn" onclick="kp('8')">8</button><button class="pad-btn" onclick="kp('9')">9</button>
+      <button class="pad-btn pad-del" onclick="kd()">&#x232B;</button><button class="pad-btn" onclick="kp('0')">0</button><button class="pad-btn pad-del" onclick="kc()">&#x2715;</button>
     </div>
+    <div id="pin-err"></div>
+  </div>
 </div>
 
-<!-- DASHBOARD -->
 <div id="dash">
-    <div class="topbar">
-        <div class="topbar-left"><img class="topbar-logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt=""><div><div class="topbar-title">Editor de Men&#xFA;</div><div class="topbar-sub">Emilio's Grocery</div></div></div>
-        <div class="topbar-right">
-            <div class="role-pill" id="role-pill"></div>
-            <button class="btn-out" onclick="logout()">Salir</button>
-        </div>
+  <div class="topbar">
+    <div class="topbar-left">
+      <img class="topbar-logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="">
+      <div><div class="topbar-title">Editor de Menu</div><div class="topbar-sub">Emilio's Grocery</div></div>
     </div>
-    <div class="tabs" id="tabs-bar">
-        <div class="tab active" onclick="switchTab(0)">&#x1F32E; Estilos</div>
-        <div class="tab" onclick="switchTab(1)">&#x1F969; Carnes</div>
-        <div class="tab" onclick="switchTab(2)">&#x2B50; Especialidades</div>
-        <div class="tab" onclick="switchTab(3)">&#x1F525; Fajitas</div>
-        <div class="tab owner-tab" onclick="switchTab(4)">&#x1F3A8; Layout</div>
-        <div class="tab owner-tab" onclick="switchTab(5)">&#x2795; Pantallas</div>
+    <div class="topbar-right">
+      <div class="role-pill" id="role-pill"></div>
+      <button class="btn-out" onclick="logout()">Salir</button>
     </div>
-    <div class="body">
-        <div class="status-row"><div class="sdot"></div>Las pantallas se actualizan cada 30 segundos</div>
-        <div id="client-banner">&#x1F512; Modo Cliente: Solo puedes editar <strong>Precio</strong> y <strong>Descripci&#xF3;n</strong>. Los dem&#xE1;s campos est&#xE1;n bloqueados.</div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(0)">Estilos</div>
+    <div class="tab" onclick="switchTab(1)">Carnes</div>
+    <div class="tab" onclick="switchTab(2)">Especialidades</div>
+    <div class="tab" onclick="switchTab(3)">Fajitas</div>
+    <div class="tab owner-tab" onclick="switchTab(4)">Layout</div>
+    <div class="tab owner-tab" onclick="switchTab(5)">Pantalla 3</div>
+    <div class="tab owner-tab" onclick="switchTab(6)">Pantallas</div>
+  </div>
+  <div class="body">
+    <div class="status-row"><div class="sdot"></div>Las pantallas se actualizan cada 30 segundos</div>
 
-        <div class="tab-content active" id="tc0"><div class="sec-hdr">&#x1F32E; Pick Your Style <span class="sec-badge">PANTALLA 1</span></div><div id="list-estilos"></div></div>
-        <div class="tab-content" id="tc1"><div class="sec-hdr">&#x1F969; Pick Your Meat <span class="sec-badge">PANTALLA 1</span></div><div class="item-card" id="carnes-table"></div></div>
-        <div class="tab-content" id="tc2"><div class="sec-hdr">&#x2B50; Especialidades <span class="sec-badge">PANTALLA 2</span></div><div id="list-espec"></div></div>
-        <div class="tab-content" id="tc3"><div class="sec-hdr">&#x1F525; Fajitas <span class="sec-badge">PANTALLA 2</span></div><div id="list-fajitas"></div></div>
-        <div class="tab-content" id="tc4">
-            <div class="sec-hdr">&#x1F3A8; Layout y Fotos</div>
-            <div class="url-config-box">
-                <h4>&#x1F517; URLs de GitHub Pages</h4>
-                <p>Pon las URLs exactas de tus pantallas una sola vez.</p>
-                <input type="url" id="cfg-p1-url" placeholder="https://...github.io/.../pantalla1.html" oninput="saveURLs()">
-                <input type="url" id="cfg-p2-url" placeholder="https://...github.io/.../pantalla2.html" oninput="saveURLs()">
-                <input type="url" id="cfg-p3-url" placeholder="https://...github.io/.../pantalla3.html" oninput="saveURLs()">
-            </div>
-            <button class="preview-toggle-btn" onclick="togglePreview('p1')">&#x1F441; Preview Pantalla 1</button>
-            <div class="preview-wrap" id="preview-p1"><div class="preview-label">PANTALLA 1</div><div class="preview-iframe-wrap"><iframe id="iframe-p1" src="" loading="lazy"></iframe></div><div class="preview-notice">&#x26A1; Los sliders se ven al instante.</div></div>
-            <button class="preview-toggle-btn" onclick="togglePreview('p2')">&#x1F441; Preview Pantalla 2</button>
-            <div class="preview-wrap" id="preview-p2"><div class="preview-label">PANTALLA 2</div><div class="preview-iframe-wrap"><iframe id="iframe-p2" src="" loading="lazy"></iframe></div><div class="preview-notice">&#x26A1; Los sliders se ven al instante.</div></div>
-            <button class="preview-toggle-btn" onclick="togglePreview('p3')">&#x1F441; Preview Pantalla 3 (Promos)</button>
-            <div class="preview-wrap" id="preview-p3"><div class="preview-label">PANTALLA 3 — PROMOS</div><div class="preview-iframe-wrap"><iframe id="iframe-p3" src="" loading="lazy"></iframe></div><div class="preview-notice">Vista previa del slideshow de promociones.</div></div>
-            <div class="layout-card"><h3>&#x1F5A5; Pantalla 1 — Colores</h3>
-                <div class="ctrl-row"><div class="ctrl-label">Color fondo <span class="ctrl-val" id="lbl-p1-red">#E31837</span></div><div class="color-row"><input type="color" id="p1-red" value="#E31837" oninput="syncColor('p1-red','lbl-p1-red')"><input class="color-hex" id="p1-red-hex" value="#E31837" oninput="syncHex('p1-red','p1-red-hex','lbl-p1-red')"></div></div>
-                <div class="ctrl-row"><div class="ctrl-label">Color sidebar <span class="ctrl-val" id="lbl-p1-sb">#ffde59</span></div><div class="color-row"><input type="color" id="p1-sb" value="#ffde59" oninput="syncColor('p1-sb','lbl-p1-sb')"><input class="color-hex" id="p1-sb-hex" value="#ffde59" oninput="syncHex('p1-sb','p1-sb-hex','lbl-p1-sb')"></div></div>
-                <div class="ctrl-row"><div class="ctrl-label">Ancho sidebar <span class="ctrl-val" id="lbl-p1-sw">550px</span></div><input type="range" id="p1-sw" min="380" max="700" value="550" oninput="document.getElementById('lbl-p1-sw').textContent=this.value+'px'"></div>
-                <div class="ctrl-row"><div class="ctrl-label">Grosor l&#xED;nea <span class="ctrl-val" id="lbl-div">10px</span></div><input type="range" id="p1-div" min="0" max="30" value="10" oninput="document.getElementById('lbl-div').textContent=this.value+'px'"></div>
-                <div class="ctrl-row"><div class="ctrl-label">Color l&#xED;nea <span class="ctrl-val" id="lbl-div-col">#ffffff</span></div><div class="color-row"><input type="color" id="p1-divcol" value="#ffffff" oninput="syncColor('p1-divcol','lbl-div-col')"><input class="color-hex" id="p1-divcol-hex" value="#ffffff" oninput="syncHex('p1-divcol','p1-divcol-hex','lbl-div-col')"></div></div>
-                <div class="ctrl-row"><div class="ctrl-label">Redondez tarjetas <span class="ctrl-val" id="lbl-rad">26px</span></div><input type="range" id="p1-rad" min="0" max="50" value="26" oninput="document.getElementById('lbl-rad').textContent=this.value+'px'"></div>
-            </div>
-            <div class="layout-card"><h3>&#x270F;&#xFE0F; T&#xED;tulos</h3>
-                <div class="ctrl-row"><div class="ctrl-label">P1 — T&#xED;tulo ingl&#xE9;s</div><input class="field-input" id="t-p1-en" value="PICK YOUR STYLE"></div>
-                <div class="ctrl-row"><div class="ctrl-label">P1 — T&#xED;tulo espa&#xF1;ol</div><input class="field-input" id="t-p1-es" value="ELIGE TU ESTILO"></div>
-                <div class="ctrl-row"><div class="ctrl-label">P1 — Sidebar ingl&#xE9;s</div><input class="field-input" id="t-meat-en" value="PICK YOUR MEAT"></div>
-                <div class="ctrl-row"><div class="ctrl-label">P1 — Sidebar espa&#xF1;ol</div><input class="field-input" id="t-meat-es" value="ELIGE TU CARNE"></div>
-                <div class="ctrl-row"><div class="ctrl-label">P1 — Website</div><input class="field-input" id="t-website" value="EMILIOSGROCERY.COM"></div>
-                <div class="ctrl-row"><div class="ctrl-label">P2 — T&#xED;tulo</div><input class="field-input" id="t-p2-en" value="ESPECIALIDADES"></div>
-                <div class="ctrl-row"><div class="ctrl-label">P2 — Subt&#xED;tulo</div><input class="field-input" id="t-p2-es" value="SIGNATURE PLATES"></div>
-            </div>
-            <div class="layout-card"><h3>&#x1F5BC;&#xFE0F; Im&#xE1;genes Pantalla 1</h3>
-                <div id="img-ctrl-p1"></div>
-                <div style="margin-top:12px;padding:12px;background:var(--surf2);border-radius:10px;">
-                    <div style="font-size:12px;color:var(--yellow);font-weight:700;margin-bottom:8px;">Ajuste global P1</div>
-                    <div class="ctrl-row"><div class="ctrl-label">Arriba/Abajo <span class="ctrl-val" id="lbl-g1b">0</span></div><input type="range" id="g1b" min="-120" max="120" value="0" oninput="document.getElementById('lbl-g1b').textContent=this.value"></div>
-                    <div class="ctrl-row"><div class="ctrl-label">Tama&#xF1;o <span class="ctrl-val" id="lbl-g1s">0</span></div><input type="range" id="g1s" min="-200" max="200" value="0" oninput="document.getElementById('lbl-g1s').textContent=this.value"></div>
-                    <button class="btn-sm btn-green" style="margin-top:8px;" onclick="applyGlobalP1()">&#x2713; Aplicar</button>
-                </div>
-            </div>
-            <div class="layout-card"><h3>&#x1F5BC;&#xFE0F; Im&#xE1;genes Pantalla 2</h3>
-                <div id="img-ctrl-p2"></div>
-                <div style="margin-top:12px;padding:12px;background:var(--surf2);border-radius:10px;">
-                    <div style="font-size:12px;color:var(--yellow);font-weight:700;margin-bottom:8px;">Ajuste global P2</div>
-                    <div class="ctrl-row"><div class="ctrl-label">Tama&#xF1;o <span class="ctrl-val" id="lbl-g2s">0</span></div><input type="range" id="g2s" min="-100" max="200" value="0" oninput="document.getElementById('lbl-g2s').textContent=this.value"></div>
-                    <div class="ctrl-row"><div class="ctrl-label">Horizontal <span class="ctrl-val" id="lbl-g2x">0</span></div><input type="range" id="g2x" min="-150" max="150" value="0" oninput="document.getElementById('lbl-g2x').textContent=this.value"></div>
-                    <button class="btn-sm btn-green" style="margin-top:8px;" onclick="applyGlobalP2()">&#x2713; Aplicar</button>
-                </div>
-            </div>
-            <div class="layout-card"><h3>&#x1F525; Imagen Fajitas</h3><div id="img-ctrl-faj"></div></div>
+    <div class="tab-content active" id="tc0"><div class="sec-hdr">Pick Your Style <span class="sec-badge">PANTALLA 1</span></div><div id="list-estilos"></div></div>
+    <div class="tab-content" id="tc1"><div class="sec-hdr">Pick Your Meat <span class="sec-badge">PANTALLA 1</span></div><div class="item-card" id="carnes-table"></div></div>
+    <div class="tab-content" id="tc2"><div class="sec-hdr">Especialidades <span class="sec-badge">PANTALLA 2</span></div><div id="list-espec"></div></div>
+    <div class="tab-content" id="tc3"><div class="sec-hdr">Fajitas <span class="sec-badge">PANTALLA 2</span></div><div id="list-fajitas"></div></div>
+
+    <div class="tab-content" id="tc4">
+      <div class="sec-hdr">Layout y Fotos</div>
+      <div class="url-config-box">
+        <h4>URLs de GitHub Pages</h4>
+        <p>Pon las URLs exactas de tus pantallas una sola vez.</p>
+        <input type="url" id="cfg-p1-url" placeholder="https://...github.io/.../pantalla1.html" oninput="saveURLs()">
+        <input type="url" id="cfg-p2-url" placeholder="https://...github.io/.../pantalla2.html" oninput="saveURLs()">
+        <input type="url" id="cfg-p3-url" placeholder="https://...github.io/.../pantalla3.html" oninput="saveURLs()">
+      </div>
+      <button class="preview-toggle-btn" onclick="togglePreview('p1')">Ver Pantalla 1 en vivo</button>
+      <div class="preview-wrap" id="preview-p1"><div class="preview-label">PANTALLA 1</div><div class="preview-iframe-wrap"><iframe id="iframe-p1" src="" loading="lazy"></iframe></div><div class="preview-notice">Los sliders se actualizan al instante.</div></div>
+      <button class="preview-toggle-btn" onclick="togglePreview('p2')">Ver Pantalla 2 en vivo</button>
+      <div class="preview-wrap" id="preview-p2"><div class="preview-label">PANTALLA 2</div><div class="preview-iframe-wrap"><iframe id="iframe-p2" src="" loading="lazy"></iframe></div><div class="preview-notice">Los sliders se actualizan al instante.</div></div>
+      <div class="layout-card"><h3>Pantalla 1 — Colores</h3>
+        <div class="ctrl-row"><div class="ctrl-label">Color fondo <span class="ctrl-val" id="lbl-p1-red">#E31837</span></div><div class="color-row"><input type="color" id="p1-red" value="#E31837" oninput="syncColor('p1-red','lbl-p1-red')"><input class="color-hex" id="p1-red-hex" value="#E31837" oninput="syncHex('p1-red','p1-red-hex','lbl-p1-red')"></div></div>
+        <div class="ctrl-row"><div class="ctrl-label">Color sidebar <span class="ctrl-val" id="lbl-p1-sb">#ffde59</span></div><div class="color-row"><input type="color" id="p1-sb" value="#ffde59" oninput="syncColor('p1-sb','lbl-p1-sb')"><input class="color-hex" id="p1-sb-hex" value="#ffde59" oninput="syncHex('p1-sb','p1-sb-hex','lbl-p1-sb')"></div></div>
+        <div class="ctrl-row"><div class="ctrl-label">Ancho sidebar <span class="ctrl-val" id="lbl-p1-sw">550px</span></div><input type="range" id="p1-sw" min="380" max="700" value="550" oninput="document.getElementById('lbl-p1-sw').textContent=this.value+'px'"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Grosor linea <span class="ctrl-val" id="lbl-div">10px</span></div><input type="range" id="p1-div" min="0" max="30" value="10" oninput="document.getElementById('lbl-div').textContent=this.value+'px'"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Color linea <span class="ctrl-val" id="lbl-div-col">#ffffff</span></div><div class="color-row"><input type="color" id="p1-divcol" value="#ffffff" oninput="syncColor('p1-divcol','lbl-div-col')"><input class="color-hex" id="p1-divcol-hex" value="#ffffff" oninput="syncHex('p1-divcol','p1-divcol-hex','lbl-div-col')"></div></div>
+        <div class="ctrl-row"><div class="ctrl-label">Redondez tarjetas <span class="ctrl-val" id="lbl-rad">26px</span></div><input type="range" id="p1-rad" min="0" max="50" value="26" oninput="document.getElementById('lbl-rad').textContent=this.value+'px'"></div>
+      </div>
+      <div class="layout-card"><h3>Titulos</h3>
+        <div class="ctrl-row"><div class="ctrl-label">P1 titulo ingles</div><input class="field-input" id="t-p1-en" value="PICK YOUR STYLE"></div>
+        <div class="ctrl-row"><div class="ctrl-label">P1 titulo espanol</div><input class="field-input" id="t-p1-es" value="ELIGE TU ESTILO"></div>
+        <div class="ctrl-row"><div class="ctrl-label">P1 sidebar ingles</div><input class="field-input" id="t-meat-en" value="PICK YOUR MEAT"></div>
+        <div class="ctrl-row"><div class="ctrl-label">P1 sidebar espanol</div><input class="field-input" id="t-meat-es" value="ELIGE TU CARNE"></div>
+        <div class="ctrl-row"><div class="ctrl-label">P1 website</div><input class="field-input" id="t-website" value="EMILIOSGROCERY.COM"></div>
+        <div class="ctrl-row"><div class="ctrl-label">P2 titulo</div><input class="field-input" id="t-p2-en" value="ESPECIALIDADES"></div>
+        <div class="ctrl-row"><div class="ctrl-label">P2 subtitulo</div><input class="field-input" id="t-p2-es" value="SIGNATURE PLATES"></div>
+      </div>
+      <div class="layout-card"><h3>Imagenes Pantalla 1</h3>
+        <div id="img-ctrl-p1"></div>
+        <div style="margin-top:12px;padding:12px;background:var(--surf2);border-radius:10px;">
+          <div style="font-size:12px;color:var(--yellow);font-weight:700;margin-bottom:8px;">Ajuste global P1</div>
+          <div class="ctrl-row"><div class="ctrl-label">Arriba/Abajo <span class="ctrl-val" id="lbl-g1b">0</span></div><input type="range" id="g1b" min="-120" max="120" value="0" oninput="document.getElementById('lbl-g1b').textContent=this.value"></div>
+          <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lbl-g1s">0</span></div><input type="range" id="g1s" min="-200" max="200" value="0" oninput="document.getElementById('lbl-g1s').textContent=this.value"></div>
+          <button class="btn-sm btn-green" style="margin-top:8px;" onclick="applyGlobalP1()">Aplicar</button>
         </div>
-        <div class="tab-content" id="tc5">
-            <div class="sec-hdr">&#x2795; Pantallas Adicionales</div>
-            <div id="extra-screens-list"></div>
-            <div class="add-screen-form"><h3>Agregar pantalla</h3>
-                <div class="ctrl-row"><div class="ctrl-label">Nombre</div><input class="field-input" id="new-screen-name" placeholder="Ej: Pantalla 3 — Promos"></div>
-                <div class="ctrl-row"><div class="ctrl-label">URL</div><input class="field-input" id="new-screen-url" placeholder="https://..."></div>
-                <div class="ctrl-row"><div class="ctrl-label">Notas</div><input class="field-input" id="new-screen-notes" placeholder="Opcional"></div>
-                <button class="btn-add-screen" onclick="addScreen()">&#x2795; Agregar</button>
-            </div>
+      </div>
+      <div class="layout-card"><h3>Imagenes Pantalla 2</h3>
+        <div id="img-ctrl-p2"></div>
+        <div style="margin-top:12px;padding:12px;background:var(--surf2);border-radius:10px;">
+          <div style="font-size:12px;color:var(--yellow);font-weight:700;margin-bottom:8px;">Ajuste global P2</div>
+          <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lbl-g2s">0</span></div><input type="range" id="g2s" min="-100" max="200" value="0" oninput="document.getElementById('lbl-g2s').textContent=this.value"></div>
+          <div class="ctrl-row"><div class="ctrl-label">Horizontal <span class="ctrl-val" id="lbl-g2x">0</span></div><input type="range" id="g2x" min="-150" max="150" value="0" oninput="document.getElementById('lbl-g2x').textContent=this.value"></div>
+          <button class="btn-sm btn-green" style="margin-top:8px;" onclick="applyGlobalP2()">Aplicar</button>
         </div>
+      </div>
+      <div class="layout-card"><h3>Imagen Fajitas</h3><div id="img-ctrl-faj"></div></div>
     </div>
-    <div class="save-bar"><button class="btn-save" id="btn-save" onclick="saveAll()">&#x1F4BE; GUARDAR CAMBIOS</button></div>
+
+    <!-- TAB 5: PANTALLA 3 EDITOR -->
+    <div class="tab-content" id="tc5">
+      <div class="sec-hdr">Pantalla 3 — Promos <span class="sec-badge">SLIDESHOW</span></div>
+      <button class="preview-toggle-btn" onclick="togglePreview('p3')">Ver Pantalla 3 en vivo</button>
+      <div class="preview-wrap" id="preview-p3"><div class="preview-label">PANTALLA 3 — PROMOS</div><div class="preview-iframe-wrap"><iframe id="iframe-p3" src="" loading="lazy"></iframe></div><div class="preview-notice">Los cambios de texto se aplican al instante.</div></div>
+
+      <div class="slide-editor">
+        <h4>Slide 1 — Gift Cards</h4>
+        <div class="ctrl-row"><div class="ctrl-label">Titulo principal</div><input class="field-input" id="p3-s1-headline" value="GIFT CARDS" oninput="sendP3('s1-headline',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Tagline</div><input class="field-input" id="p3-s1-tagline" value="Dale el sabor de Emilio's a quien mas quieres" oninput="sendP3('s1-tagline',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Monto ejemplo en tarjeta</div><input class="field-input" id="p3-s1-amount" value="$25" oninput="sendP3('s1-amount',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Denominaciones (4)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <input class="field-input" id="p3-s1-d1" value="$10" oninput="sendP3('s1-d1',this.value)">
+            <input class="field-input" id="p3-s1-d2" value="$25" oninput="sendP3('s1-d2',this.value)">
+            <input class="field-input" id="p3-s1-d3" value="$50" oninput="sendP3('s1-d3',this.value)">
+            <input class="field-input" id="p3-s1-d4" value="$100" oninput="sendP3('s1-d4',this.value)">
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-editor">
+        <h4>Slide 2 — Order Online</h4>
+        <div class="ctrl-row"><div class="ctrl-label">Linea 1</div><input class="field-input" id="p3-s2-line1" value="ORDER" oninput="sendP3('s2-line1',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Linea 2 (color acento)</div><input class="field-input" id="p3-s2-line2" value="ONLINE" oninput="sendP3('s2-line2',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Website URL</div><input class="field-input" id="p3-s2-url" value="EMILIOSGROCERY.COM" oninput="sendP3('s2-url',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Paso 1</div><input class="field-input" id="p3-s2-st1" value="Elige tu comida" oninput="sendP3('s2-st1',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Paso 2</div><input class="field-input" id="p3-s2-st2" value="Paga en linea" oninput="sendP3('s2-st2',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Paso 3</div><input class="field-input" id="p3-s2-st3" value="Recibe en casa" oninput="sendP3('s2-st3',this.value)"></div>
+      </div>
+
+      <div class="slide-editor">
+        <h4>Slide 3 — Bebidas</h4>
+        <div class="ctrl-row"><div class="ctrl-label">Precio</div><input class="field-input" id="p3-s3-price" value="$5" oninput="sendP3('s3-price',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Unidad</div><input class="field-input" id="p3-s3-unit" value="por vaso" oninput="sendP3('s3-unit',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Nombre</div><input class="field-input" id="p3-s3-name" value="Bebidas Frescas del Dia" oninput="sendP3('s3-name',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Variedad 1</div><input class="field-input" id="p3-s3-v1" value="Horchata" oninput="sendP3('s3-v1',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Variedad 2</div><input class="field-input" id="p3-s3-v2" value="Jamaica" oninput="sendP3('s3-v2',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Variedad 3</div><input class="field-input" id="p3-s3-v3" value="Tamarindo" oninput="sendP3('s3-v3',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Variedad 4</div><input class="field-input" id="p3-s3-v4" value="Pepino Limon" oninput="sendP3('s3-v4',this.value)"></div>
+      </div>
+
+      <div class="slide-editor">
+        <h4>Slide 4 — Gana Premios</h4>
+        <div class="ctrl-row"><div class="ctrl-label">Numero de texto</div><input class="field-input" id="p3-s4-number" value="(901) 555-0000" oninput="sendP3('s4-number',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Keyword</div><input class="field-input" id="p3-s4-keyword" value="Escribe: EMILIOS" oninput="sendP3('s4-keyword',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Premio 1</div><input class="field-input" id="p3-s4-p1" value="Comida gratis" oninput="sendP3('s4-p1',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Premio 2</div><input class="field-input" id="p3-s4-p2" value="Descuentos exclusivos" oninput="sendP3('s4-p2',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Premio 3</div><input class="field-input" id="p3-s4-p3" value="Gift Cards" oninput="sendP3('s4-p3',this.value)"></div>
+      </div>
+
+      <div class="slide-editor">
+        <h4>Slide 5 — Redes Sociales</h4>
+        <div class="ctrl-row"><div class="ctrl-label">Handle Facebook</div><input class="field-input" id="p3-s5-fb" value="@EmiliosGrocery" oninput="sendP3('s5-fb',this.value)"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Handle Instagram</div><input class="field-input" id="p3-s5-ig" value="@EmiliosGrocery" oninput="sendP3('s5-ig',this.value)"></div>
+      </div>
+    </div>
+
+    <!-- TAB 6: EXTRA SCREENS -->
+    <div class="tab-content" id="tc6">
+      <div class="sec-hdr">Pantallas Adicionales</div>
+      <div id="extra-screens-list"></div>
+      <div class="add-screen-form"><h3>Agregar pantalla</h3>
+        <div class="ctrl-row"><div class="ctrl-label">Nombre</div><input class="field-input" id="new-screen-name" placeholder="Ej: Pantalla 3"></div>
+        <div class="ctrl-row"><div class="ctrl-label">URL</div><input class="field-input" id="new-screen-url" placeholder="https://..."></div>
+        <div class="ctrl-row"><div class="ctrl-label">Notas</div><input class="field-input" id="new-screen-notes" placeholder="Opcional"></div>
+        <button class="btn-add-screen" onclick="addScreen()">+ Agregar</button>
+      </div>
+    </div>
+  </div>
+  <div class="save-bar"><button class="btn-save" id="btn-save" onclick="saveAll()">GUARDAR CAMBIOS</button></div>
 </div>
 
 <script>
 // ============================================================
-//  ⚠️ CONFIGURA TUS PINES AQUÍ
-const OWNER_PIN  = "5678";   // ← PIN del dueño (acceso total)
-const CLIENT_PIN = "1234";   // ← PIN del cliente (solo precio + sub)
-//  ⚠️ Apps Script URL
+const OWNER_PIN  = "5678";   // Dueno — acceso total
+const CLIENT_PIN = "1234";   // Cliente — solo precio + sub
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec";
 // ============================================================
 
-let role = null; // 'owner' | 'client'
-let cache = null, cur = '';
-let extraScreens = JSON.parse(localStorage.getItem('extra_screens')||'[]');
+let role=null,cache=null,cur='';
+let extraScreens=JSON.parse(localStorage.getItem('extra_screens')||'[]');
 let ghP1=localStorage.getItem('gh_p1_url')||'';
 let ghP2=localStorage.getItem('gh_p2_url')||'';
 let ghP3=localStorage.getItem('gh_p3_url')||'';
@@ -263,41 +314,23 @@ function kd(){cur=cur.slice(0,-1);updDots();document.getElementById('pin-err').t
 function kc(){cur='';updDots();document.getElementById('pin-err').textContent='';}
 function updDots(){for(let i=0;i<4;i++)document.getElementById('d'+i).classList.toggle('on',i<cur.length);}
 function checkPin(){
-    if(cur===OWNER_PIN){ role='owner'; enter(); }
-    else if(cur===CLIENT_PIN){ role='client'; enter(); }
-    else{ document.getElementById('pin-err').textContent='PIN incorrecto'; cur=''; updDots(); }
+    if(cur===OWNER_PIN){role='owner';enter();}
+    else if(cur===CLIENT_PIN){role='client';enter();}
+    else{document.getElementById('pin-err').textContent='PIN incorrecto';cur='';updDots();}
 }
-function enter(){
-    document.getElementById('login').style.display='none';
-    document.getElementById('dash').style.display='block';
-    applyRole();
-    initDash();
-}
+function enter(){document.getElementById('login').style.display='none';document.getElementById('dash').style.display='block';applyRole();initDash();}
 function logout(){cur='';role=null;updDots();cache=null;document.getElementById('login').style.display='flex';document.getElementById('dash').style.display='none';}
+function isOwner(){return role==='owner';}
 
-// Role application
 function applyRole(){
     const pill=document.getElementById('role-pill');
-    const banner=document.getElementById('client-banner');
-    // Owner tabs
-    document.querySelectorAll('.owner-tab').forEach(t=>t.classList.toggle('hidden',role!=='owner'));
-    if(role==='owner'){
-        pill.className='role-pill owner';pill.textContent='&#x1F451; Due&#xF1;o — Acceso Total';
-        banner.classList.remove('show');
-    } else {
-        pill.className='role-pill client';pill.textContent='&#x1F512; Cliente — Acceso Limitado';
-        banner.classList.add('show');
-    }
+    document.querySelectorAll('.owner-tab').forEach(t=>t.classList.toggle('hidden',!isOwner()));
+    if(isOwner()){pill.className='role-pill owner';pill.textContent='Dueno — Acceso Total';}
+    else{pill.className='role-pill client';pill.textContent='Cliente';}
 }
 
-function isOwner(){ return role==='owner'; }
+function switchTab(n){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===n));document.querySelectorAll('.tab-content').forEach((c,i)=>c.classList.toggle('active',i===n));}
 
-function switchTab(n){
-    document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===n));
-    document.querySelectorAll('.tab-content').forEach((c,i)=>c.classList.toggle('active',i===n));
-}
-
-// URLs
 function saveURLs(){
     ghP1=document.getElementById('cfg-p1-url').value.trim();
     ghP2=document.getElementById('cfg-p2-url').value.trim();
@@ -305,28 +338,44 @@ function saveURLs(){
     localStorage.setItem('gh_p1_url',ghP1);localStorage.setItem('gh_p2_url',ghP2);localStorage.setItem('gh_p3_url',ghP3);
 }
 function loadURLs(){
-    const p1=document.getElementById('cfg-p1-url'),p2=document.getElementById('cfg-p2-url'),p3=document.getElementById('cfg-p3-url');
-    if(p1)p1.value=ghP1;if(p2)p2.value=ghP2;if(p3)p3.value=ghP3;
+    ['cfg-p1-url','cfg-p2-url','cfg-p3-url'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.value=[ghP1,ghP2,ghP3][i];});
 }
 
-// Preview
 function togglePreview(id){
     const wrap=document.getElementById('preview-'+id);
     const iframe=document.getElementById('iframe-'+id);
     const isOpen=wrap.classList.toggle('open');
     if(isOpen){
         const url=id==='p1'?ghP1:id==='p2'?ghP2:ghP3;
-        if(!url){alert('Primero pon la URL de la pantalla en la caja amarilla arriba.');wrap.classList.remove('open');return;}
+        if(!url){alert('Primero pon la URL de la pantalla en la caja de URLs.');wrap.classList.remove('open');return;}
         if(iframe.src!==url)iframe.src=url;
     }
 }
+
 function sendMsg(iframeId,type,cfg){const f=document.getElementById(iframeId);if(f&&f.contentWindow){try{f.contentWindow.postMessage({source:'emilios-admin',type,cfg},'*');}catch(e){}}}
 function liveP1(){sendMsg('iframe-p1','imgCfgP1',imgP1);}
 function liveP2(){sendMsg('iframe-p2','imgCfgP2',imgP2);}
 function liveFaj(){sendMsg('iframe-p2','imgCfgFaj',imgFaj);}
 
+// Pantalla 3 text live update
+function sendP3(key,val){
+    localStorage.setItem('p3_'+key,val);
+    sendMsg('iframe-p3','p3texts',{[key]:val});
+}
+function loadP3Fields(){
+    const fields=['s1-headline','s1-tagline','s1-amount','s1-d1','s1-d2','s1-d3','s1-d4',
+        's2-line1','s2-line2','s2-url','s2-st1','s2-st2','s2-st3',
+        's3-price','s3-unit','s3-name','s3-v1','s3-v2','s3-v3','s3-v4',
+        's4-number','s4-keyword','s4-p1','s4-p2','s4-p3',
+        's5-fb','s5-ig'];
+    fields.forEach(k=>{
+        const saved=localStorage.getItem('p3_'+k);
+        if(saved){const el=document.getElementById('p3-'+k);if(el)el.value=saved;}
+    });
+}
+
 async function initDash(){
-    loadURLs();
+    loadURLs();loadP3Fields();
     try{
         const r=await fetch(SCRIPT_URL+'?t='+Date.now());cache=await r.json();
         renderAll();loadLayoutValues();
@@ -335,42 +384,49 @@ async function initDash(){
     }catch(e){alert('No se pudo conectar.');}
 }
 
-function dollar(v){const s=String(v||'').trim();return s.startsWith('$')?s:'$'+s;}
+// FIX: dollar enforces 2 decimal places only when it's a pure number
+// But stores exactly what user types — just ensures $ prefix
+function dollar(v){
+    const s=String(v||'').trim();
+    return s.startsWith('$')?s:'$'+s;
+}
+
 function markDirty(id){document.getElementById(id)?.classList.add('dirty');}
 function renderAll(){renderList('list-estilos',cache.estilos||[],'e');renderCarnes();renderList('list-espec',cache.especialidades||[],'sp');renderFajitas();}
 
-// Render list — client sees locked fields for nombre and photo
 function renderList(cid,items,px){
     const el=document.getElementById(cid);el.innerHTML='';
     const own=isOwner();
     items.forEach((item,i)=>{
         const img=item.img||'';
-        const nameField=own
-            ?`<input class="field-input" id="iname-${px}-${i}" value="${item.nombre}" oninput="document.getElementById('idisp-name-${px}-${i}').textContent=this.value;markDirty('icard-${px}-${i}')">`
-            :`<div class="field-locked"><input class="field-input" id="iname-${px}-${i}" value="${item.nombre}" readonly><div class="lock-label">&#x1F512; No editable en modo cliente</div></div>`;
-        const photoSection=own?`
-            <div class="photo-section"><div class="field-label">Foto</div>
+        // Price: always text input so user can type "ea", "c/u", etc.
+        const priceInput=`<input class="field-input price-field" id="iprice-${px}-${i}" value="${dollar(item.precio)}" inputmode="text" autocomplete="off" oninput="markDirty('icard-${px}-${i}')">`;
+        const nameInput=own
+            ?`<input class="field-input" id="iname-${px}-${i}" value="${escHtml(item.nombre)}" oninput="document.getElementById('idisp-name-${px}-${i}').textContent=this.value;markDirty('icard-${px}-${i}')">`
+            :`<input class="field-input" id="iname-${px}-${i}" value="${escHtml(item.nombre)}" readonly>`;
+        const photoSection=own?`<div class="photo-section"><div class="field-label">Foto</div>
             <div class="photo-row"><img class="photo-big" id="ibig-${px}-${i}" src="${img||''}" onerror="this.src='https://placehold.co/90x90/333/888?text=?'">
             <div class="photo-right"><textarea class="url-input" id="iurl-${px}-${i}" placeholder="Link de la foto" oninput="prevImg('${px}',${i})">${img}</textarea></div></div>
             <div class="photo-btns"><button class="btn-sm btn-green" onclick="applyImg('${px}',${i})">Aplicar</button><button class="btn-sm btn-ghost" onclick="removeImg('${px}',${i})">Quitar</button></div>
-            <div class="photo-hint">Sube en postimages.org &#x2192; Direct link</div></div>`:
-            `<div class="field-locked" style="font-size:12px;color:var(--muted);padding:4px 0;">&#x1F512; Las fotos solo las puede cambiar el administrador principal.</div>`;
+            <div class="photo-hint">Sube en postimages.org > Direct link</div></div>`:
+            `<div style="height:4px;"></div>`;
         el.innerHTML+=`<div class="item-card" id="icard-${px}-${i}">
         <div class="item-header" onclick="toggleCard('${px}',${i})">
             <img class="item-thumb" id="ithumb-${px}-${i}" src="${img||'https://placehold.co/52x52/333/888?text=+'}" alt="" onerror="this.src='https://placehold.co/52x52/333/888?text=?'">
-            <div class="item-meta"><div class="item-name-disp" id="idisp-name-${px}-${i}">${item.nombre}</div><div class="item-sub-disp" id="idisp-sub-${px}-${i}">${item.sub||''}</div></div>
+            <div class="item-meta"><div class="item-name-disp" id="idisp-name-${px}-${i}">${escHtml(item.nombre)}</div><div class="item-sub-disp" id="idisp-sub-${px}-${i}">${escHtml(item.sub||'')}</div></div>
             <div class="item-price-disp">${dollar(item.precio)}</div><span class="chevron" id="chev-${px}-${i}">&#9660;</span>
         </div>
         <div class="item-fields" id="ifields-${px}-${i}">
-            <div class="field-row"><div class="field-label">Nombre</div>${nameField}</div>
-            <div class="field-row"><div class="field-label">Descripci&#xF3;n / Subline &#x2705;</div><input class="field-input" id="isub-${px}-${i}" value="${item.sub||''}" oninput="document.getElementById('idisp-sub-${px}-${i}').textContent=this.value;markDirty('icard-${px}-${i}')"></div>
-            <div class="field-row"><div class="field-label">Precio &#x2705;</div><input class="field-input price-field" id="iprice-${px}-${i}" value="${dollar(item.precio)}" inputmode="decimal" oninput="markDirty('icard-${px}-${i}')"></div>
+            <div class="field-row"><div class="field-label">Nombre</div>${nameInput}</div>
+            <div class="field-row"><div class="field-label">Descripcion / Subline</div><input class="field-input" id="isub-${px}-${i}" value="${escHtml(item.sub||'')}" oninput="document.getElementById('idisp-sub-${px}-${i}').textContent=this.value;markDirty('icard-${px}-${i}')"></div>
+            <div class="field-row"><div class="field-label">Precio</div>${priceInput}</div>
             ${photoSection}
         </div></div>`;
     });
 }
 
-function renderCarnes(){const el=document.getElementById('carnes-table');el.innerHTML=(cache.carnes||[]).map(c=>`<div class="carne-row"><span class="carne-es">${c.es}</span><span class="carne-en">${c.en}</span></div>`).join('');}
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function renderCarnes(){const el=document.getElementById('carnes-table');el.innerHTML=(cache.carnes||[]).map(c=>`<div class="carne-row"><span class="carne-es">${escHtml(c.es)}</span><span class="carne-en">${escHtml(c.en)}</span></div>`).join('');}
 
 function renderFajitas(){
     const el=document.getElementById('list-fajitas');el.innerHTML='';
@@ -390,11 +446,11 @@ function renderFajitas(){
     (cache.fajitas||[]).forEach((f,i)=>{
         el.innerHTML+=`<div class="item-card" id="icard-faj-${i}">
         <div class="item-header" onclick="toggleCard('faj',${i})">
-        <div class="item-meta"><div class="item-name-disp" id="idisp-name-faj-${i}">${f.nombre}</div></div>
+        <div class="item-meta"><div class="item-name-disp" id="idisp-name-faj-${i}">${escHtml(f.nombre)}</div></div>
         <div class="item-price-disp">${dollar(f.precio)}</div><span class="chevron" id="chev-faj-${i}">&#9660;</span></div>
         <div class="item-fields" id="ifields-faj-${i}">
-        ${own?`<div class="field-row"><div class="field-label">Nombre</div><input class="field-input" id="iname-faj-${i}" value="${f.nombre}" oninput="document.getElementById('idisp-name-faj-${i}').textContent=this.value;markDirty('icard-faj-${i}')"></div>`:`<div class="field-row"><div class="field-label">Nombre</div><div class="field-locked"><input class="field-input" id="iname-faj-${i}" value="${f.nombre}" readonly><div class="lock-label">&#x1F512; No editable</div></div></div>`}
-        <div class="field-row"><div class="field-label">Precio &#x2705;</div><input class="field-input price-field" id="iprice-faj-${i}" value="${dollar(f.precio)}" inputmode="decimal" oninput="markDirty('icard-faj-${i}')"></div>
+        ${own?`<div class="field-row"><div class="field-label">Nombre</div><input class="field-input" id="iname-faj-${i}" value="${escHtml(f.nombre)}" oninput="document.getElementById('idisp-name-faj-${i}').textContent=this.value;markDirty('icard-faj-${i}')"></div>`:`<div class="field-row"><div class="field-label">Nombre</div><input class="field-input" id="iname-faj-${i}" value="${escHtml(f.nombre)}" readonly></div>`}
+        <div class="field-row"><div class="field-label">Precio</div><input class="field-input price-field" id="iprice-faj-${i}" value="${dollar(f.precio)}" inputmode="text" autocomplete="off" oninput="markDirty('icard-faj-${i}')"></div>
         </div></div>`;
     });
 }
@@ -409,11 +465,10 @@ function prevFajImg(){const u=document.getElementById('faj-url-img').value.trim(
 function applyFajImg(){const u=document.getElementById('faj-url-img').value.trim();if(!u){alert('Pega un link primero.');return;}document.getElementById('faj-main-thumb').src=u;document.getElementById('faj-big-img').src=u;if(cache.fajitas[0])cache.fajitas[0].img=u;document.getElementById('fajita-img-card').classList.add('dirty');toggleFajImg();}
 function removeFajImg(){document.getElementById('faj-url-img').value='';document.getElementById('faj-main-thumb').src='https://placehold.co/52x52/333/888?text=+';document.getElementById('faj-big-img').src='https://placehold.co/90x90/333/888?text=?';if(cache.fajitas[0])cache.fajitas[0].img='';}
 
-// IMAGE CONTROLS (owner only)
 function buildCtrlP1(){
     const el=document.getElementById('img-ctrl-p1');if(!el)return;el.innerHTML='';
     imgP1.forEach((cfg,i)=>{el.innerHTML+=`<div class="img-ctrl-item"><div class="img-ctrl-name">${P1N[i]}</div>
-    <div class="ctrl-row"><div class="ctrl-label">Tama&#xF1;o <span class="ctrl-val" id="lp1w${i}">${cfg.width}px</span></div><input type="range" min="150" max="600" value="${cfg.width}" oninput="imgP1[${i}].width=+this.value;document.getElementById('lp1w${i}').textContent=this.value+'px';liveP1()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lp1w${i}">${cfg.width}px</span></div><input type="range" min="150" max="600" value="${cfg.width}" oninput="imgP1[${i}].width=+this.value;document.getElementById('lp1w${i}').textContent=this.value+'px';liveP1()"></div>
     <div class="ctrl-row"><div class="ctrl-label">Arriba/Abajo <span class="ctrl-val" id="lp1b${i}">${cfg.bottom}px</span></div><input type="range" min="80" max="360" value="${cfg.bottom}" oninput="imgP1[${i}].bottom=+this.value;document.getElementById('lp1b${i}').textContent=this.value+'px';liveP1()"></div>
     <div class="ctrl-row"><div class="ctrl-label">Izq/Der <span class="ctrl-val" id="lp1x${i}">${cfg.offsetX}px</span></div><input type="range" min="-150" max="150" value="${cfg.offsetX}" oninput="imgP1[${i}].offsetX=+this.value;document.getElementById('lp1x${i}').textContent=this.value+'px';liveP1()"></div>
     </div>`;});
@@ -421,7 +476,7 @@ function buildCtrlP1(){
 function buildCtrlP2(){
     const el=document.getElementById('img-ctrl-p2');if(!el)return;el.innerHTML='';
     imgP2.forEach((cfg,i)=>{el.innerHTML+=`<div class="img-ctrl-item"><div class="img-ctrl-name">${P2N[i]||'Item '+(i+1)}</div>
-    <div class="ctrl-row"><div class="ctrl-label">Tama&#xF1;o <span class="ctrl-val" id="lp2w${i}">${cfg.width}px</span></div><input type="range" min="60" max="400" value="${cfg.width}" oninput="imgP2[${i}].width=+this.value;document.getElementById('lp2w${i}').textContent=this.value+'px';liveP2()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lp2w${i}">${cfg.width}px</span></div><input type="range" min="60" max="400" value="${cfg.width}" oninput="imgP2[${i}].width=+this.value;document.getElementById('lp2w${i}').textContent=this.value+'px';liveP2()"></div>
     <div class="ctrl-row"><div class="ctrl-label">Arriba/Abajo <span class="ctrl-val" id="lp2y${i}">${cfg.ty||0}px</span></div><input type="range" min="-80" max="80" value="${cfg.ty||0}" oninput="imgP2[${i}].ty=+this.value;document.getElementById('lp2y${i}').textContent=this.value+'px';liveP2()"></div>
     <div class="ctrl-row"><div class="ctrl-label">Izq/Der <span class="ctrl-val" id="lp2x${i}">${cfg.tx||0}px</span></div><input type="range" min="-150" max="150" value="${cfg.tx||0}" oninput="imgP2[${i}].tx=+this.value;document.getElementById('lp2x${i}').textContent=this.value+'px';liveP2()"></div>
     </div>`;});
@@ -429,14 +484,13 @@ function buildCtrlP2(){
 function buildCtrlFaj(){
     const el=document.getElementById('img-ctrl-faj');if(!el)return;
     el.innerHTML=`<div class="img-ctrl-item">
-    <div class="ctrl-row"><div class="ctrl-label">Tama&#xF1;o <span class="ctrl-val" id="lfajw">${imgFaj.width}px</span></div><input type="range" min="200" max="700" value="${imgFaj.width}" oninput="imgFaj.width=+this.value;document.getElementById('lfajw').textContent=this.value+'px';liveFaj()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lfajw">${imgFaj.width}px</span></div><input type="range" min="200" max="700" value="${imgFaj.width}" oninput="imgFaj.width=+this.value;document.getElementById('lfajw').textContent=this.value+'px';liveFaj()"></div>
     <div class="ctrl-row"><div class="ctrl-label">Subir/Bajar <span class="ctrl-val" id="lfajt">${imgFaj.top}px</span></div><input type="range" min="-300" max="0" value="${imgFaj.top}" oninput="imgFaj.top=+this.value;document.getElementById('lfajt').textContent=this.value+'px';liveFaj()"></div>
     <div class="ctrl-row"><div class="ctrl-label">Izq/Der <span class="ctrl-val" id="lfajtx">${imgFaj.tx||0}px</span></div><input type="range" min="-200" max="200" value="${imgFaj.tx||0}" oninput="imgFaj.tx=+this.value;document.getElementById('lfajtx').textContent=this.value+'px';liveFaj()"></div>
     </div>`;
 }
 function applyGlobalP1(){const bd=+document.getElementById('g1b').value||0,sd=+document.getElementById('g1s').value||0;imgP1.forEach(c=>{c.bottom=Math.max(80,Math.min(360,c.bottom+bd));c.width=Math.max(150,Math.min(600,c.width+sd));});document.getElementById('g1b').value='0';document.getElementById('lbl-g1b').textContent='0';document.getElementById('g1s').value='0';document.getElementById('lbl-g1s').textContent='0';buildCtrlP1();liveP1();}
 function applyGlobalP2(){const sd=+document.getElementById('g2s').value||0,xd=+document.getElementById('g2x').value||0;imgP2.forEach(c=>{c.width=Math.max(60,Math.min(400,c.width+sd));c.tx=(c.tx||0)+xd;});document.getElementById('g2s').value='0';document.getElementById('lbl-g2s').textContent='0';document.getElementById('g2x').value='0';document.getElementById('lbl-g2x').textContent='0';buildCtrlP2();liveP2();}
-
 function syncColor(id,lid){const v=document.getElementById(id).value;document.getElementById(lid).textContent=v;const h=document.getElementById(id+'-hex');if(h)h.value=v;}
 function syncHex(cid,hid,lid){const v=document.getElementById(hid).value;if(/^#[0-9a-fA-F]{6}$/.test(v)){document.getElementById(cid).value=v;document.getElementById(lid).textContent=v;}}
 function loadLayoutValues(){
@@ -450,30 +504,14 @@ function loadLayoutValues(){
     if(s.titles){if(s.titles.styleEn)document.getElementById('t-p1-en').value=s.titles.styleEn;if(s.titles.styleEs)document.getElementById('t-p1-es').value=s.titles.styleEs;if(s.titles.meatEn)document.getElementById('t-meat-en').value=s.titles.meatEn;if(s.titles.meatEs)document.getElementById('t-meat-es').value=s.titles.meatEs;if(s.titles.website)document.getElementById('t-website').value=s.titles.website;if(s.titles.titleEn)document.getElementById('t-p2-en').value=s.titles.titleEn;if(s.titles.titleEs)document.getElementById('t-p2-es').value=s.titles.titleEs;}
 }
 function buildLC(){return{p1Red:document.getElementById('p1-red').value,p1Sb:document.getElementById('p1-sb').value,p1Sw:+document.getElementById('p1-sw').value,p1Div:+document.getElementById('p1-div').value,p1DivCol:document.getElementById('p1-divcol').value,p1Rad:+document.getElementById('p1-rad').value,titles:{styleEn:document.getElementById('t-p1-en').value,styleEs:document.getElementById('t-p1-es').value,meatEn:document.getElementById('t-meat-en').value,meatEs:document.getElementById('t-meat-es').value,website:document.getElementById('t-website').value,titleEn:document.getElementById('t-p2-en').value,titleEs:document.getElementById('t-p2-es').value}};}
-
-function renderExtraScreens(){const el=document.getElementById('extra-screens-list');if(!extraScreens.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px 0;">No hay pantallas adicionales.</div>';return;}el.innerHTML=extraScreens.map((s,i)=>`<div class="extra-screen-card"><div class="extra-screen-hdr"><div><div class="extra-screen-title">${s.name}</div><div class="extra-screen-url">${s.url}</div></div><button class="btn-del-screen" onclick="delScreen(${i})">&#10005;</button></div></div>`).join('');}
+function renderExtraScreens(){const el=document.getElementById('extra-screens-list');if(!extraScreens.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px 0;">No hay pantallas adicionales.</div>';return;}el.innerHTML=extraScreens.map((s,i)=>`<div class="extra-screen-card"><div class="extra-screen-hdr"><div><div class="extra-screen-title">${escHtml(s.name)}</div><div class="extra-screen-url">${escHtml(s.url)}</div></div><button class="btn-del-screen" onclick="delScreen(${i})">X</button></div></div>`).join('');}
 function addScreen(){const n=document.getElementById('new-screen-name').value.trim(),u=document.getElementById('new-screen-url').value.trim(),no=document.getElementById('new-screen-notes').value.trim();if(!n||!u){alert('Nombre y URL requeridos.');return;}extraScreens.push({name:n,url:u,notes:no});localStorage.setItem('extra_screens',JSON.stringify(extraScreens));document.getElementById('new-screen-name').value='';document.getElementById('new-screen-url').value='';document.getElementById('new-screen-notes').value='';renderExtraScreens();}
 function delScreen(i){extraScreens.splice(i,1);localStorage.setItem('extra_screens',JSON.stringify(extraScreens));renderExtraScreens();}
-
 async function saveAll(){
     const btn=document.getElementById('btn-save');btn.disabled=true;btn.textContent='Guardando...';
-    const estilos=(cache.estilos||[]).map((item,i)=>({
-        nombre:document.getElementById(`iname-e-${i}`).value||item.nombre,
-        sub:document.getElementById(`isub-e-${i}`).value,
-        precio:document.getElementById(`iprice-e-${i}`).value,
-        img:item.img||''
-    }));
-    const especialidades=(cache.especialidades||[]).map((item,i)=>({
-        nombre:document.getElementById(`iname-sp-${i}`).value||item.nombre,
-        sub:document.getElementById(`isub-sp-${i}`).value,
-        precio:document.getElementById(`iprice-sp-${i}`).value,
-        img:item.img||''
-    }));
-    const fajitas=(cache.fajitas||[]).map((f,i)=>({
-        nombre:document.getElementById(`iname-faj-${i}`).value||f.nombre,
-        precio:document.getElementById(`iprice-faj-${i}`).value,
-        img:i===0?(isOwner()?(document.getElementById('faj-url-img').value.trim()||f.img||''):(f.img||'')):(f.img||'')
-    }));
+    const estilos=(cache.estilos||[]).map((item,i)=>({nombre:document.getElementById(`iname-e-${i}`).value||item.nombre,sub:document.getElementById(`isub-e-${i}`).value,precio:document.getElementById(`iprice-e-${i}`).value,img:item.img||''}));
+    const especialidades=(cache.especialidades||[]).map((item,i)=>({nombre:document.getElementById(`iname-sp-${i}`).value||item.nombre,sub:document.getElementById(`isub-sp-${i}`).value,precio:document.getElementById(`iprice-sp-${i}`).value,img:item.img||''}));
+    const fajitas=(cache.fajitas||[]).map((f,i)=>({nombre:document.getElementById(`iname-faj-${i}`).value||f.nombre,precio:document.getElementById(`iprice-faj-${i}`).value,img:i===0?(isOwner()?(document.getElementById('faj-url-img').value.trim()||f.img||''):(f.img||'')):(f.img||'')}));
     localStorage.setItem('imgCfgP1',JSON.stringify(imgP1));localStorage.setItem('imgCfgP2',JSON.stringify(imgP2));localStorage.setItem('imgCfgFaj',JSON.stringify(imgFaj));
     const lc=buildLC();localStorage.setItem('layout_cfg',JSON.stringify(lc));
     const lp1={redMain:lc.p1Red,sidebarBg:lc.p1Sb,sidebarWidth:lc.p1Sw,dividerW:lc.p1Div,dividerColor:lc.p1DivCol,cardRadius:lc.p1Rad};
@@ -485,7 +523,7 @@ async function saveAll(){
         document.querySelectorAll('.item-card.dirty').forEach(el=>el.classList.remove('dirty'));
         cache.estilos=estilos;cache.especialidades=especialidades;cache.fajitas=fajitas;
     }catch(e){alert('Error al guardar.');}
-    btn.disabled=false;btn.textContent='&#x1F4BE; GUARDAR CAMBIOS';
+    btn.disabled=false;btn.textContent='GUARDAR CAMBIOS';
 }
 </script>
 </body>
