@@ -45,9 +45,12 @@
         .sidebar-price-note{font-family:var(--ff);font-size:18px;color:var(--red-dk);text-align:center;margin-top:10px;font-style:italic;font-weight:600;flex-shrink:0;line-height:1.3;}
         #toast{position:fixed;bottom:22px;right:22px;background:var(--green);color:var(--white);font-family:var(--ff);font-size:16px;font-weight:700;padding:10px 22px;border-radius:40px;box-shadow:0 8px 24px rgba(0,0,0,0.4);opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s;pointer-events:none;z-index:9999;}
         #toast.show{opacity:1;transform:translateY(0);}
+        /* Sidebar notes dynamic sizing */
+        #sidebar-notes-wrap *{transition:font-size .3s;}
     </style>
 </head>
 <body>
+<div id="staging-banner" style="position:fixed;top:0;left:0;right:0;background:#ff8c00;color:#fff;font-family:Fredoka,sans-serif;font-size:18px;font-weight:700;text-align:center;padding:8px;z-index:99999;letter-spacing:1px;">STAGING — SOLO PRUEBAS — Los clientes NO ven esto</div>
 <div id="toast">✓ Precios actualizados</div>
 <div id="root">
     <div class="left">
@@ -70,11 +73,15 @@
         <div class="sidebar-title-gap"></div>
         <div class="s-es" id="meat-title-es">ELIGE TU CARNE</div>
         <div class="meat-box" id="list-carnes"></div>
-        <div class="sidebar-price-note">* Lengua &amp; Camar&oacute;n = market price<br>* Prices may change</div>
+        <div id="sidebar-notes-wrap" style="width:100%;flex-shrink:0;margin-top:10px;display:flex;flex-direction:column;gap:4px;text-align:center;">
+            <div id="sidebar-note-doble" style="font-family:var(--ff);font-size:22px;font-weight:700;color:var(--red-dk);line-height:1.2;">Doble carne disponible</div>
+            <div id="sidebar-note-libra" style="font-family:var(--ff);font-size:17px;font-weight:600;color:var(--red-dk);font-style:italic;line-height:1.3;">Pregunta por nuestras carnes por libra</div>
+            <div id="sidebar-note-price" style="font-family:var(--ff);font-size:16px;font-weight:600;color:rgba(180,80,40,0.8);font-style:italic;">Prices may change</div>
+        </div>
     </div>
 </div>
 <script>
-const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec";
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbzALLWnYC4GVS23_Zg45GNbKB8F3Ru1iFgKXN-3i8BzKyW0RrVn6Ea-qYVkdIfeYw3N/exec";
 const FALLBACK_IMGS=["https://i.postimg.cc/fL53f5Vt/TACOS.png","https://i.postimg.cc/SRDWjk6g/BURRITOS.png","https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png","https://i.postimg.cc/8cK6NwGw/GORDITAS.png","https://i.postimg.cc/7L3JfqDh/SOPES.png","https://i.postimg.cc/BvTPXJs3/QUESADILLAS.png","https://i.postimg.cc/SQD86Q96/HUARACHES.png","https://i.postimg.cc/cL8nGQbc/PLATILLO.png"];
 const DEF_CFG=FALLBACK_IMGS.map(()=>({bottom:160,width:400,offsetX:0}));
 let imgCfg=JSON.parse(localStorage.getItem('imgCfgP1')||'null')||DEF_CFG.map(c=>({...c}));
@@ -162,7 +169,30 @@ window.addEventListener('message',(e)=>{
         imgCfg.forEach((cfg,i)=>applyImgCfg(cfg,i));
     }
     if(d.type==='layoutP1'&&d.cfg){applyLayout(d.cfg);}
+    if(d.type==='sidebarNotes'&&d.cfg){applySidebarNotes(d.cfg);}
 });
+
+function applySidebarNotes(sn){
+    if(!sn)return;
+    const nd=document.getElementById('sidebar-note-doble');
+    const nl=document.getElementById('sidebar-note-libra');
+    const np=document.getElementById('sidebar-note-price');
+    if(nd){
+        if(sn.dobleText!==undefined)nd.innerHTML=sn.dobleText;
+        if(sn.dobleSize)nd.style.fontSize=sn.dobleSize+'px';
+        if(sn.dobleVisible!==undefined)nd.style.display=sn.dobleVisible?'block':'none';
+    }
+    if(nl){
+        if(sn.libraText!==undefined)nl.textContent=sn.libraText;
+        if(sn.libraSize)nl.style.fontSize=sn.libraSize+'px';
+        if(sn.libraVisible!==undefined)nl.style.display=sn.libraVisible?'block':'none';
+    }
+    if(np){
+        if(sn.priceText!==undefined)np.textContent=sn.priceText;
+        if(sn.priceSize)np.style.fontSize=sn.priceSize+'px';
+        if(sn.priceVisible!==undefined)np.style.display=sn.priceVisible?'block':'none';
+    }
+}
 
 async function load(){
     try{
@@ -177,6 +207,7 @@ async function load(){
             if(ms&&data.titlesP1.meatEs)ms.textContent=data.titlesP1.meatEs;
             if(wp&&data.titlesP1.website)wp.textContent=data.titlesP1.website;
         }
+        if(data.sidebarNotes)applySidebarNotes(data.sidebarNotes);
         if(data.imgCfgP1){imgCfg=data.imgCfgP1;localStorage.setItem('imgCfgP1',JSON.stringify(imgCfg));}
         updateEstilos(data.estilos||[]);
         updateCarnes(data.carnes||[]);
