@@ -16,33 +16,42 @@
         .t-es{font-size:32px;font-weight:600;color:var(--yellow);letter-spacing:3px;margin-top:5px;}
         .logo-icon{height:120px;filter:drop-shadow(0 6px 12px rgba(0,0,0,0.3));}
         .body{flex:1;display:flex;gap:25px;min-height:0;margin-top:10px;}
-        .items-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(5,1fr);gap:18px;}
-        .card{position:relative;background:var(--white);border-radius:var(--card-radius);box-shadow:0 12px 35px rgba(0,0,0,0.25);display:flex;flex-direction:row;align-items:center;padding:10px 25px;overflow:visible;}
-        .card-img-wrap{flex-shrink:0;width:180px;height:140px;display:flex;align-items:center;justify-content:center;position:relative;z-index:10;margin-left:-15px;}
-        .card-img{object-fit:contain;filter:drop-shadow(0 10px 15px rgba(0,0,0,0.4));animation:floatCard 10s ease-in-out infinite;width:250px;}
-        @keyframes floatCard{0%,100%{transform:translate(var(--tx,0px),var(--ty,0px)) rotate(0deg);}50%{transform:translate(var(--tx,0px),calc(var(--ty,0px) - 8px)) rotate(2deg);}}
-        .card-text{flex:1;display:flex;flex-direction:column;justify-content:center;padding-left:15px;gap:2px;}
-        .c-name{font-size:40px;font-weight:700;color:var(--red);line-height:1;}
-        .c-sub{font-size:24px;font-weight:500;color:var(--grey);line-height:1.2;min-height:28px;}
-        .c-price{font-size:48px;font-weight:700;color:var(--green);line-height:1;}
+        .items-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(5,1fr);gap:12px;}
+        .card{position:relative;background:var(--white);border-radius:var(--card-radius);box-shadow:0 8px 24px rgba(0,0,0,0.22);display:flex;flex-direction:row;align-items:center;padding:6px 18px 6px 0;overflow:visible;}
+        .card-img-wrap{flex-shrink:0;width:140px;height:110px;display:flex;align-items:center;justify-content:center;position:relative;z-index:10;}
+        .card-img{object-fit:contain;filter:drop-shadow(0 8px 12px rgba(0,0,0,0.38));animation:floatCard 10s ease-in-out infinite;width:190px;}
+        @keyframes floatCard{0%,100%{transform:translate(var(--tx,0px),var(--ty,0px)) rotate(0deg);}50%{transform:translate(var(--tx,0px),calc(var(--ty,0px) - 6px)) rotate(1.5deg);}}
+        
+        .card-text{flex:1;display:flex;flex-direction:column;justify-content:center;padding-left:8px;gap:1px;}
+        
+        /* Healthy Heart Layout Styles */
+        .name-wrapper { display: flex; align-items: center; gap: 12px; }
+        .heart-logo { height: 42px; width: auto; display: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+        .heart-logo.visible { display: inline-block; }
+
+        .c-name{font-size:47px;font-weight:700;color:var(--red);line-height:1.05;}
+        .c-sub{font-size:30px;font-weight:500;color:var(--grey);line-height:1.2;min-height:18px;}
+        .c-price{font-size:60px;font-weight:700;color:var(--green);line-height:1;}
         .fajita-col{width:380px;flex-shrink:0;display:flex;flex-direction:column;position:relative;margin-top:80px;}
         .fajita-card{background:var(--white);border-radius:var(--card-radius);box-shadow:0 15px 40px rgba(0,0,0,0.3);flex:1;display:flex;flex-direction:column;padding:20px 30px;overflow:visible;}
         .fajita-img-wrap{position:absolute;top:var(--faj-top,-110px);left:calc(50% + var(--faj-tx,0px));transform:translateX(-50%);z-index:20;}
         .fajita-img{display:block;filter:drop-shadow(0 15px 20px rgba(0,0,0,0.5));animation:floatFaj 12s ease-in-out infinite;width:var(--faj-w,450px);}
         @keyframes floatFaj{0%,100%{transform:translateY(0);}50%{transform:translateY(-15px);}}
-        .fajita-content{padding-top:var(--faj-pt,100px);display:flex;flex-direction:column;flex:1;}
-        .fajita-title{font-size:70px;font-weight:700;color:var(--red);text-align:center;margin-bottom:15px;}
+        .fajita-content{padding-top:var(--faj-pt,60px);display:flex;flex-direction:column;flex:1;}
+        .fajita-title{font-size:80px;font-weight:700;color:var(--red);text-align:center;margin-bottom:8px;}
         .f-table{display:flex;flex-direction:column;flex:1;justify-content:space-evenly;}
-        .f-row{display:flex;justify-content:space-between;align-items:center;border-bottom:2px dashed rgba(0,0,0,0.1);padding:15px 0;}
+        .f-row{display:flex;justify-content:space-between;align-items:center;border-bottom:2px dashed rgba(0,0,0,0.1);padding:10px 0;}
         .f-row:last-child{border-bottom:none;}
-        .f-name{font-size:28px;font-weight:700;color:var(--grey);}
-        .f-price{font-size:42px;font-weight:700;color:var(--green);}
+        .f-name-wrap { display: flex; align-items: center; gap: 8px; }
+        .f-name{font-size:30px;font-weight:700;color:var(--grey);}
+        .f-price{font-size:40px;font-weight:700;color:var(--green);}
         .price-note{font-size:16px;color:rgba(255,255,255,0.6);text-align:right;margin-top:15px;font-style:italic;}
         #toast{position:fixed;bottom:25px;right:25px;background:var(--green);color:var(--white);font-size:18px;font-weight:700;padding:12px 25px;border-radius:50px;box-shadow:0 10px 30px rgba(0,0,0,0.4);opacity:0;transform:translateY(15px);transition:all .5s;z-index:9999;}
         #toast.show{opacity:1;transform:translateY(0);}
     </style>
 </head>
 <body>
+
 <div id="toast">&#x2713; Men&uacute; Actualizado</div>
 <div id="root">
     <div class="content">
@@ -67,18 +76,29 @@
         <div class="price-note">* Prices may change &nbsp;/&nbsp; Los precios pueden cambiar</div>
     </div>
 </div>
+
 <script>
-const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec";
-const FALLBACK_IMGS=["https://i.postimg.cc/vBvnSbS0/CHILAQUILES.png","https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png","https://i.postimg.cc/8cK6NwGw/GORDITAS.png","https://i.postimg.cc/KjqMxQbH/MOLCAJETE.png","https://i.postimg.cc/pXrjqNQB/PECHUGA-A-LA-PLANCHA.png","https://i.postimg.cc/fLsXKJ5p/CARNE-ASADA-A-LA-PLANCHA.png","https://i.postimg.cc/pdbnWmN2/QUESABIRRIA-TACOS.png","https://i.postimg.cc/G2jDSdSg/ENCHILADAS-VERDES.png","https://i.postimg.cc/T1YDzFzy/FLAUTA-DE-POLLO.png","https://i.postimg.cc/fL53f5Vt/TACOS.png"];
-const DEF_P2=FALLBACK_IMGS.map(()=>({width:250,tx:0,ty:0}));
+// CONFIGURATION
+const HEART_LOGO_URL = "https://i.postimg.cc/RF2RPB20/AHA-LOGO.png"; // Placeholder Logo
+const HEALTHY_PLATES = ["pollo", "pechuga a la plancha", "veggie"];
+
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbzALLWnYC4GVS23_Zg45GNbKB8F3Ru1iFgKXN-3i8BzKyW0RrVn6Ea-qYVkdIfeYw3N/exec";
+const FALLBACK_IMGS=["https://i.postimg.cc/vBvnSbS0/CHILAQUILES.png","https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png","https://i.postimg.cc/8cK6NwGw/GORDITAS.png","https://i.postimg.cc/KjqMxQbH/MOLCAJETE.png","https://i.postimg.cc/pXrjqNQB/PECHUGA-A-LA-PLANCHA.png","https://i.postimg.cc/fLsXKJ5p/CARNE-ASADA-A-LA-PLANCHA.png","https://i.postimg.cc/pdbnWmN2/QUESABIRRIA-TACOS.png","https://i.postimg.cc/G2jDSdSg/ENCHILADAS-VERDES.png","https://i.postimg.cc/T1YDzFzy/FLAUTA-DE-POLLO.png","https://i.postimg.cc/8PqX8QpT/CHICHARRON.png"];
+const DEF_P2=FALLBACK_IMGS.map(()=>({width:190,tx:0,ty:0}));
 const DEF_FAJ={width:450,tx:0,top:-110};
 let imgCfgP2=JSON.parse(localStorage.getItem('imgCfgP2')||'null')||DEF_P2.map(c=>({...c}));
 let imgCfgFaj=JSON.parse(localStorage.getItem('imgCfgFaj')||'null')||{...DEF_FAJ};
 let initialized=false,lastKey='';
 
-function scaleRoot(){const el=document.getElementById('root');const s=Math.min(window.innerWidth/1920,window.innerHeight/1080);el.style.transform=`scale(${s})`;el.style.left=((window.innerWidth-1920*s)/2)+'px';el.style.top=((window.innerHeight-1080*s)/2)+'px';document.body.style.background='#E31837';}
+function scaleRoot(){const el=document.getElementById('root');const s=Math.min(window.innerWidth/1920,window.innerHeight/1080);el.style.transform=`scale(${s})`;el.style.left=((window.innerWidth-1920*s)/2)+'px';el.style.top=((window.innerHeight-1080*s)/2)+'px';}
 function dollar(v){const s=String(v||'').trim();return s.startsWith('$')?s:'$'+s;}
 function showToast(){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+
+// Check logic for the specific plates
+function checkHealthy(name) {
+    const n = (name || "").toLowerCase();
+    return HEALTHY_PLATES.some(item => n.includes(item));
+}
 
 function applyImgP2(cfg,i){
     const img=document.getElementById('cimg-p2-'+i);
@@ -98,7 +118,6 @@ function applyFajCfg(cfg){
     wrap.style.setProperty('--faj-tx',(cfg.tx||0)+'px');
     const top=cfg.top||DEF_FAJ.top;
     wrap.style.setProperty('--faj-top',top+'px');
-    // Adjust content padding so title doesn't hide under image
     if(content){const protrude=Math.abs(Math.min(0,top));content.style.setProperty('--faj-pt',(protrude+20)+'px');}
 }
 
@@ -107,9 +126,17 @@ function buildGrid(espec){
     espec.slice(0,10).forEach((item,i)=>{
         const img=item.img||FALLBACK_IMGS[i]||'';
         const cfg=imgCfgP2[i]||DEF_P2[0];
+        const isH = checkHealthy(item.nombre) ? 'visible' : '';
         const card=document.createElement('div');card.className='card';card.id='card-p2-'+i;
         card.innerHTML=`<div class="card-img-wrap"><img class="card-img" id="cimg-p2-${i}" src="${img}" alt="" style="width:${cfg.width}px;--tx:${cfg.tx||0}px;--ty:${cfg.ty||0}px;" onerror="this.style.opacity='0'"></div>
-        <div class="card-text"><div class="c-name" id="cname-p2-${i}">${item.nombre}</div><div class="c-sub" id="csub-p2-${i}">${item.sub}</div><div class="c-price" id="cprice-p2-${i}">${dollar(item.precio)}</div></div>`;
+        <div class="card-text">
+            <div class="name-wrapper">
+                <div class="c-name" id="cname-p2-${i}">${item.nombre}</div>
+                <img src="${HEART_LOGO_URL}" class="heart-logo ${isH}" id="heart-p2-${i}">
+            </div>
+            <div class="c-sub" id="csub-p2-${i}">${item.sub}</div>
+            <div class="c-price" id="cprice-p2-${i}">${dollar(item.precio)}</div>
+        </div>`;
         g.appendChild(card);
     });
 }
@@ -120,27 +147,35 @@ function buildFajitas(fajitas){
     if(fImg){fImg.src=mainImg;fImg.style.opacity='1';}
     applyFajCfg(imgCfgFaj);
     const tbl=document.getElementById('f-table');tbl.innerHTML='';
-    fajitas.forEach((f,i)=>{const row=document.createElement('div');row.className='f-row';row.id='frow-'+i;row.innerHTML=`<span class="f-name" id="fn-${i}">${f.nombre}</span><span class="f-price" id="fp-${i}">${dollar(f.precio)}</span>`;tbl.appendChild(row);});
+    fajitas.forEach((f,i)=>{
+        const isH = checkHealthy(f.nombre) ? 'visible' : '';
+        const row=document.createElement('div');row.className='f-row';row.id='frow-'+i;
+        row.innerHTML=`<div class="f-name-wrap">
+            <span class="f-name" id="fn-${i}">${f.nombre}</span>
+            <img src="${HEART_LOGO_URL}" class="heart-logo ${isH}" id="heart-f-${i}" style="height:25px;">
+        </div><span class="f-price" id="fp-${i}">${dollar(f.precio)}</span>`;
+        tbl.appendChild(row);
+    });
 }
 
 function updateInPlace(espec,fajitas){
     espec.slice(0,10).forEach((item,i)=>{
         const img=item.img||FALLBACK_IMGS[i]||'';
-        const elImg=document.getElementById('cimg-p2-'+i),elN=document.getElementById('cname-p2-'+i),elS=document.getElementById('csub-p2-'+i),elP=document.getElementById('cprice-p2-'+i);
+        const elImg=document.getElementById('cimg-p2-'+i),elN=document.getElementById('cname-p2-'+i),elS=document.getElementById('csub-p2-'+i),elP=document.getElementById('cprice-p2-'+i),elH=document.getElementById('heart-p2-'+i);
         if(elImg&&elImg.getAttribute('src')!==img){elImg.src=img;elImg.style.opacity='1';}
         if(elN&&elN.textContent!==item.nombre)elN.textContent=item.nombre;
         if(elS&&elS.textContent!==item.sub)elS.textContent=item.sub;
         if(elP){const p=dollar(item.precio);if(elP.textContent!==p)elP.textContent=p;}
+        if(elH){ if(checkHealthy(item.nombre)) elH.classList.add('visible'); else elH.classList.remove('visible'); }
     });
     fajitas.forEach((f,i)=>{
-        const elN=document.getElementById('fn-'+i),elP=document.getElementById('fp-'+i);
+        const elN=document.getElementById('fn-'+i),elP=document.getElementById('fp-'+i),elH=document.getElementById('heart-f-' + i);
         if(elN&&elN.textContent!==f.nombre)elN.textContent=f.nombre;
         if(elP){const p=dollar(f.precio);if(elP.textContent!==p)elP.textContent=p;}
-        if(i===0&&f.img){const fImg=document.getElementById('fajita-main-img');if(fImg&&fImg.getAttribute('src')!==f.img){fImg.src=f.img;fImg.style.opacity='1';}}
+        if(elH){ if(checkHealthy(f.nombre)) elH.classList.add('visible'); else elH.classList.remove('visible'); }
     });
 }
 
-// ── postMessage from admin — live updates ──
 window.addEventListener('message',(e)=>{
     const d=e.data;if(!d||d.source!=='emilios-admin')return;
     if(d.type==='imgCfgP2'&&d.cfg){
