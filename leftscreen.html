@@ -82,6 +82,7 @@
 </div>
 <script>
 const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbzALLWnYC4GVS23_Zg45GNbKB8F3Ru1iFgKXN-3i8BzKyW0RrVn6Ea-qYVkdIfeYw3N/exec";
+const _MODE=new URLSearchParams(location.search).get("mode");const _DATA_URL=APPS_SCRIPT_URL+(_MODE==="draft"?"?mode=draft&t=":"?t=");
 const FALLBACK_IMGS=["https://i.postimg.cc/fL53f5Vt/TACOS.png","https://i.postimg.cc/SRDWjk6g/BURRITOS.png","https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png","https://i.postimg.cc/8cK6NwGw/GORDITAS.png","https://i.postimg.cc/7L3JfqDh/SOPES.png","https://i.postimg.cc/BvTPXJs3/QUESADILLAS.png","https://i.postimg.cc/SQD86Q96/HUARACHES.png","https://i.postimg.cc/cL8nGQbc/PLATILLO.png"];
 const DEF_CFG=FALLBACK_IMGS.map(()=>({bottom:160,width:400,offsetX:0}));
 let imgCfg=JSON.parse(localStorage.getItem('imgCfgP1')||'null')||DEF_CFG.map(c=>({...c}));
@@ -196,7 +197,7 @@ function applySidebarNotes(sn){
 
 async function load(){
     try{
-        const r=await fetch(APPS_SCRIPT_URL+'?t='+Date.now());
+        const r=await fetch(_DATA_URL+Date.now());
         const data=await r.json();
         applyLayout(data.layoutP1);
         if(data.titlesP1){
