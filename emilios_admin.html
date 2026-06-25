@@ -121,7 +121,7 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
 <div id="login">
   <div class="login-card">
     <img class="login-logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="Logo">
-    <div class="login-h">Editor de Menu</div>
+    <div style="background:#ff8c00;color:#fff;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:700;margin-bottom:12px;letter-spacing:1px;">AMBIENTE DE PRUEBAS</div><div class="login-h">Editor de Menu</div>
     <div class="login-sub">Ingresa tu PIN</div>
     <div class="dots"><div class="dot" id="d0"></div><div class="dot" id="d1"></div><div class="dot" id="d2"></div><div class="dot" id="d3"></div></div>
     <div class="pad">
@@ -138,7 +138,7 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
   <div class="topbar">
     <div class="topbar-left">
       <img class="topbar-logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="">
-      <div><div class="topbar-title">Editor de Menu</div><div class="topbar-sub">Emilio's Grocery</div></div>
+      <div><div class="topbar-title">Editor de Menu</div><div class="topbar-sub" style="color:#ff8c00;font-weight:700;">STAGING — PRUEBAS</div></div>
     </div>
     <div class="topbar-right">
       <div class="role-pill" id="role-pill"></div>
@@ -151,14 +151,20 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
     <div class="tab" onclick="switchTab(2)">Especialidades</div>
     <div class="tab" onclick="switchTab(3)">Fajitas</div>
     <div class="tab owner-tab" onclick="switchTab(4)">Layout</div>
-    <div class="tab owner-tab" onclick="switchTab(5)">Pantalla 3</div>
-    <div class="tab owner-tab" onclick="switchTab(6)">Pantallas</div>
+    <div class="tab owner-tab" onclick="switchTab(5)">Sidebar P1</div>
+    <div class="tab owner-tab" onclick="switchTab(6)">Pantalla 3</div>
+    <div class="tab owner-tab" onclick="switchTab(7)">Pantallas</div><div class="tab" onclick="switchTab(8)">Seafood</div>
   </div>
   <div class="body">
     <div class="status-row"><div class="sdot"></div>Las pantallas se actualizan cada 30 segundos</div>
 
     <div class="tab-content active" id="tc0"><div class="sec-hdr">Pick Your Style <span class="sec-badge">PANTALLA 1</span></div><div id="list-estilos"></div></div>
-    <div class="tab-content" id="tc1"><div class="sec-hdr">Pick Your Meat <span class="sec-badge">PANTALLA 1</span></div><div class="item-card" id="carnes-table"></div></div>
+    <div class="tab-content" id="tc1">
+      <div class="sec-hdr">Pick Your Meat <span class="sec-badge">PANTALLA 1</span></div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Agrega, quita o reordena las carnes. Arrastra para reordenar. Los cambios se guardan al presionar GUARDAR.</div>
+      <div id="carnes-editor"></div>
+      <button class="btn-sm btn-green" style="margin-top:8px;width:100%;padding:14px;font-size:16px;" onclick="addCarne()">+ Agregar carne</button>
+    </div>
     <div class="tab-content" id="tc2"><div class="sec-hdr">Especialidades <span class="sec-badge">PANTALLA 2</span></div><div id="list-espec"></div></div>
     <div class="tab-content" id="tc3"><div class="sec-hdr">Fajitas <span class="sec-badge">PANTALLA 2</span></div><div id="list-fajitas"></div></div>
 
@@ -167,9 +173,9 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
       <div class="url-config-box">
         <h4>URLs de GitHub Pages</h4>
         <p>Pon las URLs exactas de tus pantallas una sola vez.</p>
-        <input type="url" id="cfg-p1-url" placeholder="https://...github.io/.../pantalla1.html" oninput="saveURLs()">
-        <input type="url" id="cfg-p2-url" placeholder="https://...github.io/.../pantalla2.html" oninput="saveURLs()">
-        <input type="url" id="cfg-p3-url" placeholder="https://...github.io/.../pantalla3.html" oninput="saveURLs()">
+        <input type="url" id="cfg-p1-url" placeholder="https://cantirecords.github.io/emilios-staging/pantalla1.html" oninput="saveURLs()">
+        <input type="url" id="cfg-p2-url" placeholder="https://cantirecords.github.io/emilios-staging/pantalla2.html" oninput="saveURLs()">
+        <input type="url" id="cfg-p3-url" placeholder="https://cantirecords.github.io/emilios-staging/pantalla3.html" oninput="saveURLs()">
       </div>
       <button class="preview-toggle-btn" onclick="togglePreview('p1')">Ver Pantalla 1 en vivo</button>
       <div class="preview-wrap" id="preview-p1"><div class="preview-label">PANTALLA 1</div><div class="preview-iframe-wrap"><iframe id="iframe-p1" src="" loading="lazy"></iframe></div><div class="preview-notice">Los sliders se actualizan al instante.</div></div>
@@ -213,8 +219,50 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
       <div class="layout-card"><h3>Imagen Fajitas</h3><div id="img-ctrl-faj"></div></div>
     </div>
 
-    <!-- TAB 5: PANTALLA 3 EDITOR -->
+    <!-- TAB 5: SIDEBAR P1 NOTES EDITOR -->
     <div class="tab-content" id="tc5">
+      <div class="sec-hdr">Sidebar — Notas y Textos <span class="sec-badge">PANTALLA 1</span></div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5;">Edita los textos que aparecen debajo de la lista de carnes. Puedes cambiar el texto, el tamano de fuente y mostrar u ocultar cada uno.</div>
+
+      <div class="layout-card">
+        <h3>Doble Carne</h3>
+        <div class="ctrl-row"><div class="ctrl-label">Texto principal</div>
+          <input class="field-input" id="sn-doble-text" value="Doble carne disponible" oninput="liveSidebarNotes()"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Tamano de fuente <span class="ctrl-val" id="lbl-sn-doble-size">22px</span></div>
+          <input type="range" id="sn-doble-size" min="12" max="36" value="22" oninput="document.getElementById('lbl-sn-doble-size').textContent=this.value+'px';liveSidebarNotes()"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Visible</div>
+          <select class="field-input" id="sn-doble-vis" onchange="liveSidebarNotes()" style="cursor:pointer;">
+            <option value="1">Si — mostrar</option><option value="0">No — ocultar</option>
+          </select></div>
+      </div>
+
+      <div class="layout-card">
+        <h3>Carnes por Libra</h3>
+        <div class="ctrl-row"><div class="ctrl-label">Texto</div>
+          <input class="field-input" id="sn-libra-text" value="Pregunta por nuestras carnes por libra" oninput="liveSidebarNotes()"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Tamano de fuente <span class="ctrl-val" id="lbl-sn-libra-size">17px</span></div>
+          <input type="range" id="sn-libra-size" min="12" max="30" value="17" oninput="document.getElementById('lbl-sn-libra-size').textContent=this.value+'px';liveSidebarNotes()"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Visible</div>
+          <select class="field-input" id="sn-libra-vis" onchange="liveSidebarNotes()" style="cursor:pointer;">
+            <option value="1">Si — mostrar</option><option value="0">No — ocultar</option>
+          </select></div>
+      </div>
+
+      <div class="layout-card">
+        <h3>Prices May Change</h3>
+        <div class="ctrl-row"><div class="ctrl-label">Texto</div>
+          <input class="field-input" id="sn-price-text" value="Prices may change" oninput="liveSidebarNotes()"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Tamano de fuente <span class="ctrl-val" id="lbl-sn-price-size">16px</span></div>
+          <input type="range" id="sn-price-size" min="10" max="28" value="16" oninput="document.getElementById('lbl-sn-price-size').textContent=this.value+'px';liveSidebarNotes()"></div>
+        <div class="ctrl-row"><div class="ctrl-label">Visible</div>
+          <select class="field-input" id="sn-price-vis" onchange="liveSidebarNotes()" style="cursor:pointer;">
+            <option value="1">Si — mostrar</option><option value="0">No — ocultar</option>
+          </select></div>
+      </div>
+    </div>
+
+    <!-- TAB 6: PANTALLA 3 EDITOR -->
+    <div class="tab-content" id="tc6">
       <div class="sec-hdr">Pantalla 3 — Promos <span class="sec-badge">SLIDESHOW</span></div>
       <button class="preview-toggle-btn" onclick="togglePreview('p3')">Ver Pantalla 3 en vivo</button>
       <div class="preview-wrap" id="preview-p3"><div class="preview-label">PANTALLA 3 — PROMOS</div><div class="preview-iframe-wrap"><iframe id="iframe-p3" src="" loading="lazy"></iframe></div><div class="preview-notice">Los cambios de texto se aplican al instante.</div></div>
@@ -271,8 +319,8 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
       </div>
     </div>
 
-    <!-- TAB 6: EXTRA SCREENS -->
-    <div class="tab-content" id="tc6">
+    <!-- TAB 7: EXTRA SCREENS -->
+    <div class="tab-content" id="tc7">
       <div class="sec-hdr">Pantallas Adicionales</div>
       <div id="extra-screens-list"></div>
       <div class="add-screen-form"><h3>Agregar pantalla</h3>
@@ -282,15 +330,15 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
         <button class="btn-add-screen" onclick="addScreen()">+ Agregar</button>
       </div>
     </div>
-  </div>
-  <div class="save-bar"><button class="btn-save" id="btn-save" onclick="saveAll()">GUARDAR CAMBIOS</button></div>
+  <div class="tab-content" id="tc8"><div class="sec-hdr">Seafood / Mariscos <span class="sec-badge">PANTALLA 2</span></div><div id="list-seafood"></div><div class="layout-card"><h3>Foto Seafood &mdash; tama&ntilde;o y posici&oacute;n</h3><div id="img-ctrl-sea"></div></div><div class="layout-card"><h3>&#10084; Tama&ntilde;o de corazones (saludables)</h3><div id="img-ctrl-hearts"></div></div></div></div>
+  </div><div class="save-bar" style="display:flex;gap:10px;"><button class="btn-save" id="btn-save" onclick="saveAll()" style="flex:1;">GUARDAR (borrador)</button><button class="btn-save" id="btn-publish" onclick="publishAll()" style="flex:1;background:var(--yellow);color:#222;">PUBLICAR</button></div>
 </div>
 
 <script>
 // ============================================================
-const OWNER_PIN  = "5678";   // Dueno — acceso total
+const OWNER_PIN  = "5678";   // Dueno — acceso total (STAGING)
 const CLIENT_PIN = "1234";   // Cliente — solo precio + sub
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO2rLqhIb9Wodhc17eSgjY6m6-b_Tphwbsbjziu3YiuP0csxtPl14PzKKiy_JW_wNssw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzALLWnYC4GVS23_Zg45GNbKB8F3Ru1iFgKXN-3i8BzKyW0RrVn6Ea-qYVkdIfeYw3N/exec";
 // ============================================================
 
 let role=null,cache=null,cur='';
@@ -300,13 +348,19 @@ let ghP2=localStorage.getItem('gh_p2_url')||'';
 let ghP3=localStorage.getItem('gh_p3_url')||'';
 
 const P1N=['Tacos','Burritos','Tortas','Gorditas','Sopes','Quesadillas','Huaraches','Platillo'];
-const P2N=['Chilaquiles','Torta Cubana','Empanadas','Molcajete','Pechuga plancha','Carne Asada plancha','Quesabirria','Enchiladas','Flautas','Tacos Birria'];
+const P2N=['Chilaquiles','Torta Cubana','Empanadas','Molcajete','Pechuga plancha','Carne Asada plancha','Quesabirria','Enchiladas','Flautas','Chicharron Bites'];
 const DP1=P1N.map(()=>({bottom:160,width:400,offsetX:0}));
 const DP2=P2N.map(()=>({width:250,tx:0,ty:0}));
 const DFAJ={width:450,tx:0,top:-110};
 let imgP1=JSON.parse(localStorage.getItem('imgCfgP1')||'null')||DP1.map(c=>({...c}));
 let imgP2=JSON.parse(localStorage.getItem('imgCfgP2')||'null')||DP2.map(c=>({...c}));
 let imgFaj=JSON.parse(localStorage.getItem('imgCfgFaj')||'null')||{...DFAJ};
+let DSEA={width:205,tx:0,top:-86},imgSea=JSON.parse(localStorage.getItem('imgCfgSea')||'null')||{...DSEA},heartSizes={};
+const HEALTHY_PLATES=["pollo","pechuga a la plancha","veggie"];
+function checkHealthy(n){n=(n||'').toLowerCase();return HEALTHY_PLATES.some(x=>n.includes(x));}
+function setHeart(name,v){heartSizes[name]=v;sendMsg('iframe-p2','heartSizes',heartSizes);}
+function buildCtrlHearts(){var el=document.getElementById('img-ctrl-hearts');if(!el)return;var all=[].concat(cache.especialidades||[],cache.fajitas||[],cache.seafood||[]);var seen={},h=[];all.forEach(function(x){var n=x.nombre;if(checkHealthy(n)&&!seen[n]){seen[n]=1;h.push(n);}});if(!h.length){el.innerHTML='<div style="color:var(--muted);font-size:12px;">No hay platos saludables (pollo, pechuga a la plancha, veggie).</div>';return;}el.innerHTML=h.map(function(n){var v=(heartSizes[n]!=null?heartSizes[n]:42);var id='hl'+Math.abs(n.split('').reduce(function(a,c){return (a*31+c.charCodeAt(0))|0;},7));return '<div class="img-ctrl-item"><div class="img-ctrl-name">&#10084; '+n+'</div><div class="ctrl-row"><span class="ctrl-label">Tama&ntilde;o</span><input type="range" min="16" max="70" value="'+v+'" oninput="setHeart(\''+n.replace(/'/g,"\\'")+'\',+this.value);document.getElementById(\''+id+'\').textContent=this.value+\'px\'"><span class="ctrl-val" id="'+id+'">'+v+'px</span></div></div>';}).join('');}
+
 
 // PIN
 function kp(d){if(cur.length>=4)return;cur+=d;updDots();if(cur.length===4)setTimeout(checkPin,180);}
@@ -357,6 +411,37 @@ function liveP1(){sendMsg('iframe-p1','imgCfgP1',imgP1);}
 function liveP2(){sendMsg('iframe-p2','imgCfgP2',imgP2);}
 function liveFaj(){sendMsg('iframe-p2','imgCfgFaj',imgFaj);}
 
+// Sidebar notes live update
+function buildSidebarNotes(){
+    return {
+        dobleText: document.getElementById('sn-doble-text')?.value || '',
+        dobleSize: +document.getElementById('sn-doble-size')?.value || 22,
+        dobleVisible: document.getElementById('sn-doble-vis')?.value==='1',
+        libraText: document.getElementById('sn-libra-text')?.value || '',
+        libraSize: +document.getElementById('sn-libra-size')?.value || 17,
+        libraVisible: document.getElementById('sn-libra-vis')?.value==='1',
+        priceText: document.getElementById('sn-price-text')?.value || '',
+        priceSize: +document.getElementById('sn-price-size')?.value || 16,
+        priceVisible: document.getElementById('sn-price-vis')?.value==='1',
+    };
+}
+function liveSidebarNotes(){
+    const cfg=buildSidebarNotes();
+    sendMsg('iframe-p1','sidebarNotes',cfg);
+}
+function loadSidebarNotesFromData(sn){
+    if(!sn)return;
+    if(sn.dobleText)document.getElementById('sn-doble-text').value=sn.dobleText;
+    if(sn.dobleSize){document.getElementById('sn-doble-size').value=sn.dobleSize;document.getElementById('lbl-sn-doble-size').textContent=sn.dobleSize+'px';}
+    if(sn.dobleVisible!==undefined)document.getElementById('sn-doble-vis').value=sn.dobleVisible?'1':'0';
+    if(sn.libraText)document.getElementById('sn-libra-text').value=sn.libraText;
+    if(sn.libraSize){document.getElementById('sn-libra-size').value=sn.libraSize;document.getElementById('lbl-sn-libra-size').textContent=sn.libraSize+'px';}
+    if(sn.libraVisible!==undefined)document.getElementById('sn-libra-vis').value=sn.libraVisible?'1':'0';
+    if(sn.priceText)document.getElementById('sn-price-text').value=sn.priceText;
+    if(sn.priceSize){document.getElementById('sn-price-size').value=sn.priceSize;document.getElementById('lbl-sn-price-size').textContent=sn.priceSize+'px';}
+    if(sn.priceVisible!==undefined)document.getElementById('sn-price-vis').value=sn.priceVisible?'1':'0';
+}
+
 // Pantalla 3 text live update
 function sendP3(key,val){
     localStorage.setItem('p3_'+key,val);
@@ -377,9 +462,10 @@ function loadP3Fields(){
 async function initDash(){
     loadURLs();loadP3Fields();
     try{
-        const r=await fetch(SCRIPT_URL+'?t='+Date.now());cache=await r.json();
+        const r=await fetch(SCRIPT_URL+'?t='+Date.now());cache=await r.json();if(!cache.seafood)cache.seafood=[];if(cache.imgCfgSea)imgSea=cache.imgCfgSea;if(cache.heartSizes)heartSizes=cache.heartSizes;
         renderAll();loadLayoutValues();
-        if(isOwner()){buildCtrlP1();buildCtrlP2();buildCtrlFaj();}
+        if(isOwner()){buildCtrlP1();buildCtrlP2();buildCtrlFaj();buildCtrlSea();buildCtrlHearts();loadP3Fields();}
+        if(cache.sidebarNotes)loadSidebarNotesFromData(cache.sidebarNotes);
         renderExtraScreens();
     }catch(e){alert('No se pudo conectar.');}
 }
@@ -392,7 +478,7 @@ function dollar(v){
 }
 
 function markDirty(id){document.getElementById(id)?.classList.add('dirty');}
-function renderAll(){renderList('list-estilos',cache.estilos||[],'e');renderCarnes();renderList('list-espec',cache.especialidades||[],'sp');renderFajitas();}
+function renderAll(){renderList('list-estilos',cache.estilos||[],'e');renderCarnes();renderList('list-espec',cache.especialidades||[],'sp');renderFajitas();renderSeafood();}
 
 function renderList(cid,items,px){
     const el=document.getElementById(cid);el.innerHTML='';
@@ -426,7 +512,44 @@ function renderList(cid,items,px){
 }
 
 function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function renderCarnes(){const el=document.getElementById('carnes-table');el.innerHTML=(cache.carnes||[]).map(c=>`<div class="carne-row"><span class="carne-es">${escHtml(c.es)}</span><span class="carne-en">${escHtml(c.en)}</span></div>`).join('');}
+function renderCarnes(){
+    const el=document.getElementById('carnes-editor');
+    if(!el)return;
+    el.innerHTML='';
+    (cache.carnes||[]).forEach((c,i)=>{
+        el.innerHTML+=`<div class="item-card" id="carne-card-${i}" style="margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+            <div style="font-size:22px;cursor:grab;color:var(--muted);flex-shrink:0;" title="Arrastrar para reordenar">:::</div>
+            <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <input class="field-input" style="font-size:15px;padding:8px 10px;" id="carne-es-${i}" value="${escHtml(c.es)}" placeholder="Espanol">
+                <input class="field-input" style="font-size:15px;padding:8px 10px;" id="carne-en-${i}" value="${escHtml(c.en)}" placeholder="English">
+            </div>
+            <button onclick="removeCarne(${i})" style="background:transparent;border:1.5px solid #555;color:#888;font-size:13px;font-weight:700;padding:6px 10px;border-radius:8px;cursor:pointer;flex-shrink:0;">X</button>
+        </div></div>`;
+    });
+}
+
+function addCarne(){
+    if(!cache.carnes)cache.carnes=[];
+    cache.carnes.push({es:'Nueva carne',en:'NEW MEAT'});
+    renderCarnes();
+    markDirty('carne-card-'+(cache.carnes.length-1));
+}
+
+function removeCarne(i){
+    cache.carnes.splice(i,1);
+    renderCarnes();
+}
+
+function getCarnesFromEditor(){
+    const result=[];
+    (cache.carnes||[]).forEach((_,i)=>{
+        const es=document.getElementById('carne-es-'+i);
+        const en=document.getElementById('carne-en-'+i);
+        if(es&&en)result.push({es:es.value.trim(),en:en.value.trim()});
+    });
+    return result;
+}
 
 function renderFajitas(){
     const el=document.getElementById('list-fajitas');el.innerHTML='';
@@ -512,19 +635,135 @@ async function saveAll(){
     const estilos=(cache.estilos||[]).map((item,i)=>({nombre:document.getElementById(`iname-e-${i}`).value||item.nombre,sub:document.getElementById(`isub-e-${i}`).value,precio:document.getElementById(`iprice-e-${i}`).value,img:item.img||''}));
     const especialidades=(cache.especialidades||[]).map((item,i)=>({nombre:document.getElementById(`iname-sp-${i}`).value||item.nombre,sub:document.getElementById(`isub-sp-${i}`).value,precio:document.getElementById(`iprice-sp-${i}`).value,img:item.img||''}));
     const fajitas=(cache.fajitas||[]).map((f,i)=>({nombre:document.getElementById(`iname-faj-${i}`).value||f.nombre,precio:document.getElementById(`iprice-faj-${i}`).value,img:i===0?(isOwner()?(document.getElementById('faj-url-img').value.trim()||f.img||''):(f.img||'')):(f.img||'')}));
+    const carnes=isOwner()?getCarnesFromEditor():(cache.carnes||[]);
+    const sidebarNotes=isOwner()?buildSidebarNotes():null;
     localStorage.setItem('imgCfgP1',JSON.stringify(imgP1));localStorage.setItem('imgCfgP2',JSON.stringify(imgP2));localStorage.setItem('imgCfgFaj',JSON.stringify(imgFaj));
     const lc=buildLC();localStorage.setItem('layout_cfg',JSON.stringify(lc));
     const lp1={redMain:lc.p1Red,sidebarBg:lc.p1Sb,sidebarWidth:lc.p1Sw,dividerW:lc.p1Div,dividerColor:lc.p1DivCol,cardRadius:lc.p1Rad};
     const tp1={styleEn:lc.titles.styleEn,styleEs:lc.titles.styleEs,meatEn:lc.titles.meatEn.replace(/\n/g,'<br>'),meatEs:lc.titles.meatEs,website:lc.titles.website};
     const tp2={titleEn:lc.titles.titleEn,titleEs:lc.titles.titleEs};
     try{
-        await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({estilos,especialidades,fajitas,layoutP1:lp1,titlesP1:tp1,titlesP2:tp2,imgCfgP1:imgP1,imgCfgP2:imgP2,imgCfgFaj:imgFaj})});
+        const seafood=(cache.seafood||[]).map(function(f,i){var nm=document.getElementById('iname-sea-'+i),pr=document.getElementById('iprice-sea-'+i);var o={nombre:nm?nm.value:f.nombre,precio:pr?pr.value:f.precio,img:f.img||''};if(i===0){var u=document.getElementById('sea-url-img');if(u)o.img=u.value.trim();}return o;});localStorage.setItem('imgCfgSea',JSON.stringify(imgSea));const postData={estilos,especialidades,fajitas,carnes,seafood,layoutP1:lp1,titlesP1:tp1,titlesP2:tp2,imgCfgP1:imgP1,imgCfgP2:imgP2,imgCfgFaj:imgFaj,imgCfgSea:imgSea,heartSizes};
+        if(sidebarNotes)postData.sidebarNotes=sidebarNotes;
+        await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(postData)});
         const b=document.getElementById('save-banner');b.classList.add('show');setTimeout(()=>b.classList.remove('show'),4000);
         document.querySelectorAll('.item-card.dirty').forEach(el=>el.classList.remove('dirty'));
-        cache.estilos=estilos;cache.especialidades=especialidades;cache.fajitas=fajitas;
+        cache.estilos=estilos;cache.especialidades=especialidades;cache.fajitas=fajitas;cache.seafood=seafood;
+        if(isOwner())cache.carnes=carnes;
     }catch(e){alert('Error al guardar.');}
     btn.disabled=false;btn.textContent='GUARDAR CAMBIOS';
 }
+
+/* ===== SEAFOOD (v2) ===== */
+function renderSeafood(){
+    const el=document.getElementById('list-seafood');el.innerHTML='';
+    const own=isOwner();
+    const fi=(cache.seafood?.[0]?.img)||'';
+    if(own){
+        el.innerHTML+=`<div class="item-card" id="seaita-img-card">
+        <div class="item-header" onclick="toggleSeaImg()"><img class="item-thumb" id="sea-main-thumb" src="${fi||'https://placehold.co/52x52/333/888?text=+'}" alt="">
+        <div class="item-meta"><div class="item-name-disp">Foto principal Seafood</div><div class="item-sub-disp">Imagen sobre la card</div></div>
+        <span class="chevron" id="chev-sea-img">&#9660;</span></div>
+        <div class="item-fields" id="ifields-sea-img">
+        <div class="photo-row"><img class="photo-big" id="sea-big-img" src="${fi||''}" onerror="this.src='https://placehold.co/90x90/333/888?text=?'">
+        <div class="photo-right"><textarea class="url-input" id="sea-url-img" placeholder="Link foto seafood" oninput="prevSeaImg()">${fi}</textarea></div></div>
+        <div class="photo-btns"><button class="btn-sm btn-green" onclick="applySeaImg()">Aplicar</button><button class="btn-sm btn-ghost" onclick="removeSeaImg()">Quitar</button></div>
+        </div></div>`;
+    }
+    (cache.seafood||[]).forEach((f,i)=>{
+        el.innerHTML+=`<div class="item-card" id="icard-sea-${i}">
+        <div class="item-header" onclick="toggleCard('sea',${i})">
+        <div class="item-meta"><div class="item-name-disp" id="idisp-name-sea-${i}">${escHtml(f.nombre)}</div></div>
+        <div class="item-price-disp">${dollar(f.precio)}</div><span class="chevron" id="chev-sea-${i}">&#9660;</span></div>
+        <div class="item-fields" id="ifields-sea-${i}">
+        ${own?`<div class="field-row"><div class="field-label">Nombre</div><input class="field-input" id="iname-sea-${i}" value="${escHtml(f.nombre)}" oninput="document.getElementById('idisp-name-sea-${i}').textContent=this.value;markDirty('icard-sea-${i}')"></div>`:`<div class="field-row"><div class="field-label">Nombre</div><input class="field-input" id="iname-sea-${i}" value="${escHtml(f.nombre)}" readonly></div>`}
+        <div class="field-row"><div class="field-label">Precio</div><input class="field-input price-field" id="iprice-sea-${i}" value="${dollar(f.precio)}" inputmode="text" autocomplete="off" oninput="markDirty('icard-sea-${i}')"></div>
+        </div></div>`;
+    });
+}
+
+function buildCtrlSea(){
+    const el=document.getElementById('img-ctrl-sea');if(!el)return;
+    el.innerHTML=`<div class="img-ctrl-item">
+    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lseaw">${imgSea.width}px</span></div><input type="range" min="200" max="700" value="${imgSea.width}" oninput="imgSea.width=+this.value;document.getElementById('lseaw').textContent=this.value+'px';liveSea()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Subir/Bajar <span class="ctrl-val" id="lseat">${imgSea.top}px</span></div><input type="range" min="-300" max="0" value="${imgSea.top}" oninput="imgSea.top=+this.value;document.getElementById('lseat').textContent=this.value+'px';liveSea()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Izq/Der <span class="ctrl-val" id="lseatx">${imgSea.tx||0}px</span></div><input type="range" min="-200" max="200" value="${imgSea.tx||0}" oninput="imgSea.tx=+this.value;document.getElementById('lseatx').textContent=this.value+'px';liveSea()"></div>
+    </div>`;
+}
+
+function toggleSeaImg(){const f=document.getElementById('ifields-sea-img'),c=document.getElementById('chev-sea-img');const o=f.classList.toggle('open');c.classList.toggle('open',o);}
+function prevImg(p,i){const u=document.getElementById(`iurl-${p}-${i}`).value.trim();if(u)document.getElementById(`ibig-${p}-${i}`).src=u;}
+function applyImg(p,i){const u=document.getElementById(`iurl-${p}-${i}`).value.trim();if(!u){alert('Pega un link primero.');return;}document.getElementById(`ithumb-${p}-${i}`).src=u;document.getElementById(`ibig-${p}-${i}`).src=u;updCacheImg(p,i,u);markDirty(`icard-${p}-${i}`);toggleCard(p,i);}
+function removeImg(p,i){const ph='https://placehold.co/52x52/333/888?text=+';document.getElementById(`iurl-${p}-${i}`).value='';document.getElementById(`ithumb-${p}-${i}`).src=ph;document.getElementById(`ibig-${p}-${i}`).src=ph;updCacheImg(p,i,'');markDirty(`icard-${p}-${i}`);}
+function updCacheImg(p,i,u){if(p==='e')cache.estilos[i].img=u;if(p==='sp')cache.especialidades[i].img=u;}
+function prevSeaImg(){const u=document.getElementById('sea-url-img').value.trim();if(u)document.getElementById('sea-big-img').src=u;}
+function applySeaImg(){const u=document.getElementById('sea-url-img').value.trim();if(!u){alert('Pega un link primero.');return;}document.getElementById('sea-main-thumb').src=u;document.getElementById('sea-big-img').src=u;if(cache.seafood[0])cache.seafood[0].img=u;document.getElementById('seaita-img-card').classList.add('dirty');toggleSeaImg();}
+function removeSeaImg(){document.getElementById('sea-url-img').value='';document.getElementById('sea-main-thumb').src='https://placehold.co/52x52/333/888?text=+';document.getElementById('sea-big-img').src='https://placehold.co/90x90/333/888?text=?';if(cache.seafood[0])cache.seafood[0].img='';}
+
+function buildCtrlP1(){
+    const el=document.getElementById('img-ctrl-p1');if(!el)return;el.innerHTML='';
+    imgP1.forEach((cfg,i)=>{el.innerHTML+=`<div class="img-ctrl-item"><div class="img-ctrl-name">${P1N[i]}</div>
+    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lp1w${i}">${cfg.width}px</span></div><input type="range" min="150" max="600" value="${cfg.width}" oninput="imgP1[${i}].width=+this.value;document.getElementById('lp1w${i}').textContent=this.value+'px';liveP1()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Arriba/Abajo <span class="ctrl-val" id="lp1b${i}">${cfg.bottom}px</span></div><input type="range" min="80" max="360" value="${cfg.bottom}" oninput="imgP1[${i}].bottom=+this.value;document.getElementById('lp1b${i}').textContent=this.value+'px';liveP1()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Izq/Der <span class="ctrl-val" id="lp1x${i}">${cfg.offsetX}px</span></div><input type="range" min="-150" max="150" value="${cfg.offsetX}" oninput="imgP1[${i}].offsetX=+this.value;document.getElementById('lp1x${i}').textContent=this.value+'px';liveP1()"></div>
+    </div>`;});
+}
+
+function prevSeaImg(){const u=document.getElementById('sea-url-img').value.trim();if(u)document.getElementById('sea-big-img').src=u;}
+function applySeaImg(){const u=document.getElementById('sea-url-img').value.trim();if(!u){alert('Pega un link primero.');return;}document.getElementById('sea-main-thumb').src=u;document.getElementById('sea-big-img').src=u;if(cache.seafood[0])cache.seafood[0].img=u;document.getElementById('seaita-img-card').classList.add('dirty');toggleSeaImg();}
+function removeSeaImg(){document.getElementById('sea-url-img').value='';document.getElementById('sea-main-thumb').src='https://placehold.co/52x52/333/888?text=+';document.getElementById('sea-big-img').src='https://placehold.co/90x90/333/888?text=?';if(cache.seafood[0])cache.seafood[0].img='';}
+
+function buildCtrlP1(){
+    const el=document.getElementById('img-ctrl-p1');if(!el)return;el.innerHTML='';
+    imgP1.forEach((cfg,i)=>{el.innerHTML+=`<div class="img-ctrl-item"><div class="img-ctrl-name">${P1N[i]}</div>
+    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lp1w${i}">${cfg.width}px</span></div><input type="range" min="150" max="600" value="${cfg.width}" oninput="imgP1[${i}].width=+this.value;document.getElementById('lp1w${i}').textContent=this.value+'px';liveP1()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Arriba/Abajo <span class="ctrl-val" id="lp1b${i}">${cfg.bottom}px</span></div><input type="range" min="80" max="360" value="${cfg.bottom}" oninput="imgP1[${i}].bottom=+this.value;document.getElementById('lp1b${i}').textContent=this.value+'px';liveP1()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Izq/Der <span class="ctrl-val" id="lp1x${i}">${cfg.offsetX}px</span></div><input type="range" min="-150" max="150" value="${cfg.offsetX}" oninput="imgP1[${i}].offsetX=+this.value;document.getElementById('lp1x${i}').textContent=this.value+'px';liveP1()"></div>
+    </div>`;});
+}
+
+function applySeaImg(){const u=document.getElementById('sea-url-img').value.trim();if(!u){alert('Pega un link primero.');return;}document.getElementById('sea-main-thumb').src=u;document.getElementById('sea-big-img').src=u;if(cache.seafood[0])cache.seafood[0].img=u;document.getElementById('seaita-img-card').classList.add('dirty');toggleSeaImg();}
+function removeSeaImg(){document.getElementById('sea-url-img').value='';document.getElementById('sea-main-thumb').src='https://placehold.co/52x52/333/888?text=+';document.getElementById('sea-big-img').src='https://placehold.co/90x90/333/888?text=?';if(cache.seafood[0])cache.seafood[0].img='';}
+
+function buildCtrlP1(){
+    const el=document.getElementById('img-ctrl-p1');if(!el)return;el.innerHTML='';
+    imgP1.forEach((cfg,i)=>{el.innerHTML+=`<div class="img-ctrl-item"><div class="img-ctrl-name">${P1N[i]}</div>
+    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lp1w${i}">${cfg.width}px</span></div><input type="range" min="150" max="600" value="${cfg.width}" oninput="imgP1[${i}].width=+this.value;document.getElementById('lp1w${i}').textContent=this.value+'px';liveP1()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Arriba/Abajo <span class="ctrl-val" id="lp1b${i}">${cfg.bottom}px</span></div><input type="range" min="80" max="360" value="${cfg.bottom}" oninput="imgP1[${i}].bottom=+this.value;document.getElementById('lp1b${i}').textContent=this.value+'px';liveP1()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Izq/Der <span class="ctrl-val" id="lp1x${i}">${cfg.offsetX}px</span></div><input type="range" min="-150" max="150" value="${cfg.offsetX}" oninput="imgP1[${i}].offsetX=+this.value;document.getElementById('lp1x${i}').textContent=this.value+'px';liveP1()"></div>
+    </div>`;});
+}
+
+function removeSeaImg(){document.getElementById('sea-url-img').value='';document.getElementById('sea-main-thumb').src='https://placehold.co/52x52/333/888?text=+';document.getElementById('sea-big-img').src='https://placehold.co/90x90/333/888?text=?';if(cache.seafood[0])cache.seafood[0].img='';}
+
+function buildCtrlP1(){
+    const el=document.getElementById('img-ctrl-p1');if(!el)return;el.innerHTML='';
+    imgP1.forEach((cfg,i)=>{el.innerHTML+=`<div class="img-ctrl-item"><div class="img-ctrl-name">${P1N[i]}</div>
+    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lp1w${i}">${cfg.width}px</span></div><input type="range" min="150" max="600" value="${cfg.width}" oninput="imgP1[${i}].width=+this.value;document.getElementById('lp1w${i}').textContent=this.value+'px';liveP1()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Arriba/Abajo <span class="ctrl-val" id="lp1b${i}">${cfg.bottom}px</span></div><input type="range" min="80" max="360" value="${cfg.bottom}" oninput="imgP1[${i}].bottom=+this.value;document.getElementById('lp1b${i}').textContent=this.value+'px';liveP1()"></div>
+    <div class="ctrl-row"><div class="ctrl-label">Izq/Der <span class="ctrl-val" id="lp1x${i}">${cfg.offsetX}px</span></div><input type="range" min="-150" max="150" value="${cfg.offsetX}" oninput="imgP1[${i}].offsetX=+this.value;document.getElementById('lp1x${i}').textContent=this.value+'px';liveP1()"></div>
+    </div>`;});
+}
+
+function liveSea(){sendMsg('iframe-p2','imgCfgSea',imgSea);}
+
+// Sidebar notes live update
+function buildSidebarNotes(){
+    return {
+        dobleText: document.getElementById('sn-doble-text')?.value || '',
+        dobleSize: +document.getElementById('sn-doble-size')?.value || 22,
+        dobleVisible: document.getElementById('sn-doble-vis')?.value==='1',
+        libraText: document.getElementById('sn-libra-text')?.value || '',
+        libraSize: +document.getElementById('sn-libra-size')?.value || 17,
+        libraVisible: document.getElementById('sn-libra-vis')?.value==='1',
+        priceText: document.getElementById('sn-price-text')?.value || '',
+        priceSize: +document.getElementById('sn-price-size')?.value || 16,
+        priceVisible: document.getElementById('sn-price-vis')?.value==='1',
+    };
+}
+
+
+async function publishAll(){try{await saveAll();var b=document.getElementById("btn-publish");if(b){b.disabled=true;b.textContent="PUBLICANDO...";}await fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({action:"publish"})});if(b){b.textContent="\u2713 PUBLICADO";setTimeout(function(){b.textContent="PUBLICAR";b.disabled=false;},2200);}}catch(e){alert("Error al publicar: "+e);}}
 </script>
 </body>
 </html>
