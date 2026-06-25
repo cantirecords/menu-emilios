@@ -57,10 +57,20 @@
         .price-note{font-size:17px;color:rgba(255,255,255,0.6);text-align:right;margin-top:3px;font-style:italic;}
         #toast{position:fixed;bottom:25px;right:25px;background:var(--green);color:var(--white);font-size:18px;font-weight:700;padding:12px 25px;border-radius:50px;box-shadow:0 10px 30px rgba(0,0,0,0.4);opacity:0;transform:translateY(15px);transition:all .5s;z-index:9999;}
         #toast.show{opacity:1;transform:translateY(0);}
-    </style>
+    
+#splash{position:fixed;inset:0;background:var(--red);display:flex;align-items:center;justify-content:center;z-index:99999;transition:opacity .8s ease;}
+#splash::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(0,0,0,0.15) 12%,transparent 15%);background-size:30px 30px;}
+#splash img{width:420px;filter:drop-shadow(0 12px 30px rgba(0,0,0,.4));animation:splashIn 1.1s cubic-bezier(.2,.8,.2,1) both, splashPulse 1.8s ease-in-out 1.1s infinite;position:relative;z-index:1;}
+@keyframes splashIn{0%{transform:scale(.6);opacity:0}60%{opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes splashPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+#splash.hide{opacity:0;pointer-events:none;}
+#root{opacity:0;transform:scale(.985);transition:opacity .7s ease,transform .7s ease;}
+#root.ready{opacity:1;transform:scale(1);}
+</style>
 </head>
 <body>
 <div id="toast">&#x2713; Men&uacute; Actualizado</div>
+<div id="splash"><img src="https://i.postimg.cc/FKtbLp6Y/Emilio-s-Logo-Icon-Transparent.png" alt="Emilios"></div>
 <div id="root">
     <div class="content">
         <div class="hdr">
@@ -214,15 +224,20 @@ async function load(){
         if(data.imgCfgFaj){imgCfgFaj=data.imgCfgFaj;localStorage.setItem('imgCfgFaj',JSON.stringify(imgCfgFaj));}
         if(data.imgCfgSea){imgCfgSea=data.imgCfgSea;localStorage.setItem('imgCfgSea',JSON.stringify(imgCfgSea));}
         if(data.heartSizes){heartSizes=data.heartSizes;}
+        if(data.legendEn){var le=document.querySelector('.lt-en');if(le)le.textContent=data.legendEn;}
+        if(data.legendEs){var ls=document.querySelector('.lt-es');if(ls)ls.textContent=data.legendEs;}
+        if(data.logoUrl){var lg=document.querySelector('.logo-icon');if(lg)lg.src=data.logoUrl;}
+        if(data.seaTitle||data.seaSub){var st=document.querySelector('#seafood-card .group-title');if(st)st.innerHTML=(data.seaTitle||'Seafood')+'<span class="group-sub">'+(data.seaSub||'Mariscos')+'</span>';}
+
         if(!initialized){
             buildGrid(espec);
             buildGroup('f-table','fajita',fajitas,imgCfgFaj,'https://i.postimg.cc/SsG9tktV/FAJITAS.png');
             buildGroup('sea-table','seafood',seafood,imgCfgSea,SEAFOOD_IMG_DEFAULT);
         } else if(key!==lastKey){updateInPlace(espec,fajitas,seafood);showToast();}
-        lastKey=key;initialized=true;
+        lastKey=key;if(!initialized){initialized=true;const _w=Math.max(0,2800-(Date.now()-(window.__T0__||0)));setTimeout(function(){var sp=document.getElementById('splash');if(sp)sp.classList.add('hide');document.getElementById('root').classList.add('ready');},_w);}
     }catch(e){console.warn(e);}
 }
-scaleRoot();window.addEventListener('resize',scaleRoot);load();setInterval(load,30000);
+window.__T0__=Date.now();scaleRoot();window.addEventListener('resize',scaleRoot);load();setInterval(load,30000);
 </script>
 </body>
 </html>
