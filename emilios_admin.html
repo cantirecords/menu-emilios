@@ -113,7 +113,7 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
 /* P3 slide editor */
 .slide-editor{background:var(--surf2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;}
 .slide-editor h4{font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
-</style>
+.save-bar{display:none;} body.logged-in .save-bar{display:flex;}</style>
 </head>
 <body>
 <div id="save-banner">Guardado! Pantallas actualizadas en menos de 1 minuto.</div>
@@ -121,7 +121,7 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
 <div id="login">
   <div class="login-card">
     <img class="login-logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="Logo">
-    <div style="background:#ff8c00;color:#fff;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:700;margin-bottom:12px;letter-spacing:1px;">AMBIENTE DE PRUEBAS</div><div class="login-h">Editor de Menu</div>
+    <div class="login-h">Editor de Menu</div>
     <div class="login-sub">Ingresa tu PIN</div>
     <div class="dots"><div class="dot" id="d0"></div><div class="dot" id="d1"></div><div class="dot" id="d2"></div><div class="dot" id="d3"></div></div>
     <div class="pad">
@@ -138,7 +138,7 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
   <div class="topbar">
     <div class="topbar-left">
       <img class="topbar-logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="">
-      <div><div class="topbar-title">Editor de Menu</div><div class="topbar-sub" style="color:#ff8c00;font-weight:700;">STAGING — PRUEBAS</div></div>
+      <div><div class="topbar-title">Editor de Menu</div></div>
     </div>
     <div class="topbar-right">
       <div class="role-pill" id="role-pill"></div>
@@ -330,14 +330,14 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
         <button class="btn-add-screen" onclick="addScreen()">+ Agregar</button>
       </div>
     </div>
-  <div class="tab-content" id="tc8"><div class="sec-hdr">Seafood / Mariscos <span class="sec-badge">PANTALLA 2</span></div><div id="list-seafood"></div><div class="layout-card"><h3>Foto Seafood &mdash; tama&ntilde;o y posici&oacute;n</h3><div id="img-ctrl-sea"></div></div><div class="layout-card"><h3>&#10084; Tama&ntilde;o de corazones (saludables)</h3><div id="img-ctrl-hearts"></div></div></div></div>
-  </div><div class="save-bar" style="display:flex;gap:10px;"><button class="btn-save" id="btn-save" onclick="saveAll()" style="flex:1;">GUARDAR (borrador)</button><button class="btn-save" id="btn-publish" onclick="publishAll()" style="flex:1;background:var(--yellow);color:#222;">PUBLICAR</button></div>
+  <div class="tab-content" id="tc8"><div class="sec-hdr">Seafood / Mariscos <span class="sec-badge">PANTALLA 2</span></div><div id="list-seafood"></div><div class="layout-card"><h3>Foto Seafood &mdash; tama&ntilde;o y posici&oacute;n</h3><div id="img-ctrl-sea"></div></div><div class="layout-card"><h3>&#10084; Tama&ntilde;o de corazones (saludables)</h3><div id="img-ctrl-hearts"></div></div><div class="layout-card"><h3>Textos Pantalla 2</h3><div class="field-row"><div class="field-label">Logo (URL)</div><input class="field-input" id="txt-logo" placeholder="link del logo (vacío = el de siempre)"></div><div class="field-row"><div class="field-label">Heart Healthy (inglés)</div><input class="field-input" id="txt-legenEn"></div><div class="field-row"><div class="field-label">Comida Saludable (español)</div><input class="field-input" id="txt-legenEs"></div><div class="field-row"><div class="field-label">Seafood &mdash; título</div><input class="field-input" id="txt-seaTitle"></div><div class="field-row"><div class="field-label">Seafood &mdash; subtítulo</div><input class="field-input" id="txt-seaSub"></div></div></div></div>
+  </div><div class="save-bar" style="gap:10px;"><button class="btn-save" id="btn-save" onclick="saveAll()" style="flex:1;">GUARDAR (borrador)</button><button class="btn-save" id="btn-publish" onclick="publishAll()" style="flex:1;background:var(--yellow);color:#222;">PUBLICAR</button></div>
 </div>
 
 <script>
 // ============================================================
-const OWNER_PIN  = "5678";   // Dueno — acceso total (STAGING)
-const CLIENT_PIN = "1234";   // Cliente — solo precio + sub
+const OWNER_PIN  = "5678";   // Dueno — acceso total 
+const CLIENT_PIN = "2757";   // Cliente — solo precio + sub
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzALLWnYC4GVS23_Zg45GNbKB8F3Ru1iFgKXN-3i8BzKyW0RrVn6Ea-qYVkdIfeYw3N/exec";
 // ============================================================
 
@@ -359,6 +359,7 @@ let DSEA={width:205,tx:0,top:-86},imgSea=JSON.parse(localStorage.getItem('imgCfg
 const HEALTHY_PLATES=["pollo","pechuga a la plancha","veggie"];
 function checkHealthy(n){n=(n||'').toLowerCase();return HEALTHY_PLATES.some(x=>n.includes(x));}
 function setHeart(name,v){heartSizes[name]=v;sendMsg('iframe-p2','heartSizes',heartSizes);}
+function loadTextsP2(){var g=function(id,v){var e=document.getElementById(id);if(e)e.value=v||'';};g('txt-logo',cache.logoUrl);g('txt-legenEn',cache.legendEn||'Heart Healthy Food');g('txt-legenEs',cache.legendEs||'Comida Saludable Para el Corazón');g('txt-seaTitle',cache.seaTitle||'Seafood');g('txt-seaSub',cache.seaSub||'Mariscos');}
 function buildCtrlHearts(){var el=document.getElementById('img-ctrl-hearts');if(!el)return;var all=[].concat(cache.especialidades||[],cache.fajitas||[],cache.seafood||[]);var seen={},h=[];all.forEach(function(x){var n=x.nombre;if(checkHealthy(n)&&!seen[n]){seen[n]=1;h.push(n);}});if(!h.length){el.innerHTML='<div style="color:var(--muted);font-size:12px;">No hay platos saludables (pollo, pechuga a la plancha, veggie).</div>';return;}el.innerHTML=h.map(function(n){var v=(heartSizes[n]!=null?heartSizes[n]:42);var id='hl'+Math.abs(n.split('').reduce(function(a,c){return (a*31+c.charCodeAt(0))|0;},7));return '<div class="img-ctrl-item"><div class="img-ctrl-name">&#10084; '+n+'</div><div class="ctrl-row"><span class="ctrl-label">Tama&ntilde;o</span><input type="range" min="16" max="70" value="'+v+'" oninput="setHeart(\''+n.replace(/'/g,"\\'")+'\',+this.value);document.getElementById(\''+id+'\').textContent=this.value+\'px\'"><span class="ctrl-val" id="'+id+'">'+v+'px</span></div></div>';}).join('');}
 
 
@@ -372,7 +373,7 @@ function checkPin(){
     else if(cur===CLIENT_PIN){role='client';enter();}
     else{document.getElementById('pin-err').textContent='PIN incorrecto';cur='';updDots();}
 }
-function enter(){document.getElementById('login').style.display='none';document.getElementById('dash').style.display='block';applyRole();initDash();}
+function enter(){document.getElementById('login').style.display='none';document.getElementById('dash').style.display='block';document.body.classList.add('logged-in');applyRole();initDash();}
 function logout(){cur='';role=null;updDots();cache=null;document.getElementById('login').style.display='flex';document.getElementById('dash').style.display='none';}
 function isOwner(){return role==='owner';}
 
@@ -395,6 +396,7 @@ function loadURLs(){
     ['cfg-p1-url','cfg-p2-url','cfg-p3-url'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.value=[ghP1,ghP2,ghP3][i];});
 }
 
+function reloadPreviews(){["p1","p2","p3"].forEach(function(id){var w=document.getElementById("preview-"+id);var f=document.getElementById("iframe-"+id);if(w&&f&&w.classList.contains("open")){var u=id==="p1"?ghP1:id==="p2"?ghP2:ghP3;if(u)f.src=u+(u.indexOf("?")>=0?"&":"?")+"mode=draft&_="+Date.now();}});}
 function togglePreview(id){
     const wrap=document.getElementById('preview-'+id);
     const iframe=document.getElementById('iframe-'+id);
@@ -402,7 +404,7 @@ function togglePreview(id){
     if(isOpen){
         const url=id==='p1'?ghP1:id==='p2'?ghP2:ghP3;
         if(!url){alert('Primero pon la URL de la pantalla en la caja de URLs.');wrap.classList.remove('open');return;}
-        if(iframe.src!==url)iframe.src=url;
+        iframe.src=url+(url.indexOf("?")>=0?"&":"?")+"mode=draft&_="+Date.now();
     }
 }
 
@@ -462,7 +464,7 @@ function loadP3Fields(){
 async function initDash(){
     loadURLs();loadP3Fields();
     try{
-        const r=await fetch(SCRIPT_URL+'?t='+Date.now());cache=await r.json();if(!cache.seafood)cache.seafood=[];if(cache.imgCfgSea)imgSea=cache.imgCfgSea;if(cache.heartSizes)heartSizes=cache.heartSizes;
+        const r=await fetch(SCRIPT_URL+'?t='+Date.now());cache=await r.json();if(!cache.seafood)cache.seafood=[];if(cache.imgCfgSea)imgSea=cache.imgCfgSea;if(cache.heartSizes)heartSizes=cache.heartSizes;loadTextsP2();
         renderAll();loadLayoutValues();
         if(isOwner()){buildCtrlP1();buildCtrlP2();buildCtrlFaj();buildCtrlSea();buildCtrlHearts();loadP3Fields();}
         if(cache.sidebarNotes)loadSidebarNotesFromData(cache.sidebarNotes);
@@ -643,12 +645,12 @@ async function saveAll(){
     const tp1={styleEn:lc.titles.styleEn,styleEs:lc.titles.styleEs,meatEn:lc.titles.meatEn.replace(/\n/g,'<br>'),meatEs:lc.titles.meatEs,website:lc.titles.website};
     const tp2={titleEn:lc.titles.titleEn,titleEs:lc.titles.titleEs};
     try{
-        const seafood=(cache.seafood||[]).map(function(f,i){var nm=document.getElementById('iname-sea-'+i),pr=document.getElementById('iprice-sea-'+i);var o={nombre:nm?nm.value:f.nombre,precio:pr?pr.value:f.precio,img:f.img||''};if(i===0){var u=document.getElementById('sea-url-img');if(u)o.img=u.value.trim();}return o;});localStorage.setItem('imgCfgSea',JSON.stringify(imgSea));const postData={estilos,especialidades,fajitas,carnes,seafood,layoutP1:lp1,titlesP1:tp1,titlesP2:tp2,imgCfgP1:imgP1,imgCfgP2:imgP2,imgCfgFaj:imgFaj,imgCfgSea:imgSea,heartSizes};
+        const seafood=(cache.seafood||[]).map(function(f,i){var nm=document.getElementById('iname-sea-'+i),pr=document.getElementById('iprice-sea-'+i);var o={nombre:nm?nm.value:f.nombre,precio:pr?pr.value:f.precio,img:f.img||''};if(i===0){var u=document.getElementById('sea-url-img');if(u)o.img=u.value.trim();}return o;});localStorage.setItem('imgCfgSea',JSON.stringify(imgSea));var _gt=function(id){var e=document.getElementById(id);return e?e.value.trim():'';};var legendEn=_gt('txt-legenEn'),legendEs=_gt('txt-legenEs'),seaTitle=_gt('txt-seaTitle'),seaSub=_gt('txt-seaSub'),logoUrl=_gt('txt-logo');const postData={estilos,especialidades,fajitas,carnes,seafood,layoutP1:lp1,titlesP1:tp1,titlesP2:tp2,imgCfgP1:imgP1,imgCfgP2:imgP2,imgCfgFaj:imgFaj,imgCfgSea:imgSea,heartSizes,legendEn,legendEs,seaTitle,seaSub,logoUrl};
         if(sidebarNotes)postData.sidebarNotes=sidebarNotes;
         await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(postData)});
         const b=document.getElementById('save-banner');b.classList.add('show');setTimeout(()=>b.classList.remove('show'),4000);
         document.querySelectorAll('.item-card.dirty').forEach(el=>el.classList.remove('dirty'));
-        cache.estilos=estilos;cache.especialidades=especialidades;cache.fajitas=fajitas;cache.seafood=seafood;
+        cache.estilos=estilos;cache.especialidades=especialidades;cache.fajitas=fajitas;cache.seafood=seafood;try{reloadPreviews();}catch(e){}
         if(isOwner())cache.carnes=carnes;
     }catch(e){alert('Error al guardar.');}
     btn.disabled=false;btn.textContent='GUARDAR CAMBIOS';
