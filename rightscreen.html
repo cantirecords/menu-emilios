@@ -28,7 +28,7 @@
         .card{position:relative;background:var(--white);border-radius:var(--card-radius);box-shadow:0 8px 24px rgba(0,0,0,0.22);display:flex;flex-direction:row;align-items:center;padding:6px 18px 6px 0;overflow:visible;}
         .card-img-wrap{flex-shrink:0;width:140px;height:110px;display:flex;align-items:center;justify-content:center;position:relative;z-index:10;}
         .card-img{object-fit:contain;filter:drop-shadow(0 8px 12px rgba(0,0,0,0.38));animation:floatCard 10s ease-in-out infinite;width:190px;}
-        @keyframes floatCard{0%,100%{transform:translate(var(--tx,0px),var(--ty,0px)) rotate(0deg);}50%{transform:translate(var(--tx,0px),calc(var(--ty,0px) - 6px)) rotate(1.5deg);}}
+        @keyframes floatCard{0%,100%{transform:translate(var(--tx,0px),var(--ty,0px));}50%{transform:translate(var(--tx,0px),calc(var(--ty,0px) - 8px));}}
 
         .card-text{flex:1;display:flex;flex-direction:column;justify-content:center;padding-left:8px;gap:1px;}
         .name-wrapper { display: flex; align-items: center; gap: 12px; }
@@ -50,8 +50,8 @@
         .f-table{display:flex;flex-direction:column;flex:1;justify-content:space-evenly;}
         .f-row{display:flex;justify-content:space-between;align-items:center;border-bottom:2px dashed rgba(0,0,0,0.12);padding:4px 0;gap:8px;}
         .f-row:last-child{border-bottom:none;}
-        .f-name-wrap{display:flex;align-items:center;gap:8px;min-width:0;}
-        .f-name{font-size:20px;font-weight:700;color:var(--grey);line-height:1.05;}
+        .f-name-wrap{display:flex;align-items:center;gap:5px;min-width:0;}.name-wrapper{display:flex;align-items:center;gap:6px;}
+        .f-name{font-size:28px;font-weight:700;color:var(--grey);line-height:1.05;}
         .f-price{font-size:36px;font-weight:700;color:var(--green);white-space:nowrap;}
 
         .price-note{font-size:17px;color:rgba(255,255,255,0.6);text-align:right;margin-top:3px;font-style:italic;}
@@ -103,17 +103,17 @@
 <script>
 // ---- CONFIG ----
 const HEART_LOGO_URL = "https://i.postimg.cc/RF2RPB20/AHA-LOGO.png";
-const HEALTHY_PLATES = ["pollo", "pechuga a la plancha", "veggie", "filete a la plancha"];
+const HEALTHY_PLATES = ["pollo", "pechuga a la plancha", "veggie"];
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzALLWnYC4GVS23_Zg45GNbKB8F3Ru1iFgKXN-3i8BzKyW0RrVn6Ea-qYVkdIfeYw3N/exec";
 const FALLBACK_IMGS=["https://i.postimg.cc/vBvnSbS0/CHILAQUILES.png","https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png","https://i.postimg.cc/8cK6NwGw/GORDITAS.png","https://i.postimg.cc/KjqMxQbH/MOLCAJETE.png","https://i.postimg.cc/pXrjqNQB/PECHUGA-A-LA-PLANCHA.png","https://i.postimg.cc/fLsXKJ5p/CARNE-ASADA-A-LA-PLANCHA.png","https://i.postimg.cc/pdbnWmN2/QUESABIRRIA-TACOS.png","https://i.postimg.cc/G2jDSdSg/ENCHILADAS-VERDES.png","https://i.postimg.cc/T1YDzFzy/FLAUTA-DE-POLLO.png","https://i.postimg.cc/8PqX8QpT/CHICHARRON.png"];
 
 // Fallbacks (se usan solo si el Sheet aún no tiene esos datos; los datos reales mandan)
-const FALLBACK_SEAFOOD=[{nombre:"Coctel de Camarón",precio:"14.99"},{nombre:"Ceviche per tostada",precio:"4.99"},{nombre:"Filete a la Plancha",precio:"13.99"}];
+const FALLBACK_SEAFOOD=[{nombre:"Coctel de Camarón",precio:"14.99"},{nombre:"Ceviche",precio:"00.00"},{nombre:"Caldo de mariscos",precio:"00.00"}];
 const SEAFOOD_IMG_DEFAULT="https://i.postimg.cc/PfR1ChWZ/COCTEL-DE-CAMARONES.png";
 
 const DEF_P2=FALLBACK_IMGS.map(()=>({width:190,tx:0,ty:0}));
 const DEF_FAJ={width:255,gx:0,top:-86};
-const DEF_SEA={width:255,gx:0,top:-86};
+const DEF_SEA={width:205,gx:0,top:-86};
 
 // ?mode=draft -> previsualiza el BORRADOR (no afecta el local)
 const MODE = new URLSearchParams(location.search).get('mode');
@@ -122,13 +122,13 @@ const DATA_URL = APPS_SCRIPT_URL + (MODE==='draft' ? '?mode=draft&t=' : '?t=');
 let imgCfgP2=JSON.parse(localStorage.getItem('imgCfgP2')||'null')||DEF_P2.map(c=>({...c}));
 let imgCfgFaj=JSON.parse(localStorage.getItem('imgCfgFaj')||'null')||{...DEF_FAJ};
 let imgCfgSea=JSON.parse(localStorage.getItem('imgCfgSea')||'null')||{...DEF_SEA};
-let heartSizes={};            // { "nombre del plato": px }  (desde el admin)
+let heartSizes={},healthyMarks={},seaTextSizes={};            // { "nombre del plato": px }  (desde el admin)
 let initialized=false,lastKey='';
 
 function scaleRoot(){const el=document.getElementById('root');const s=Math.min(window.innerWidth/1920,window.innerHeight/1080);el.style.transform=`scale(${s})`;el.style.left=((window.innerWidth-1920*s)/2)+'px';el.style.top=((window.innerHeight-1080*s)/2)+'px';}
 function dollar(v){const s=String(v||'').trim();return s.startsWith('$')?s:'$'+s;}
 function showToast(){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
-function checkHealthy(name){const n=(name||"").toLowerCase();return HEALTHY_PLATES.some(item=>n.includes(item));}
+function checkHealthy(name){const n=(name||"").toLowerCase();return HEALTHY_PLATES.some(item=>n.includes(item))||!!healthyMarks[(name||"").trim()];}
 // tamaño del corazón por plato (con default razonable)
 function heartSizePx(name,def){const k=(name||'').trim();return (heartSizes[k]!=null?heartSizes[k]:def);}
 
@@ -177,7 +177,7 @@ function buildGroup(tableId,prefix,rows,cfg,defImg){
     const tbl=document.getElementById(tableId);tbl.innerHTML='';
     rows.forEach((f,i)=>{
         const row=document.createElement('div');row.className='f-row';row.id=prefix+'-row-'+i;
-        row.innerHTML=`<div class="f-name-wrap"><span class="f-name" id="${prefix}-fn-${i}">${f.nombre}</span><span id="${prefix}-heart-${i}">${heartImg(f.nombre,25)}</span></div><span class="f-price" id="${prefix}-fp-${i}">${dollar(f.precio)}</span>`;
+        const _sz=(prefix==='seafood'&&seaTextSizes[f.nombre])?('font-size:'+seaTextSizes[f.nombre]+'px;'):'';row.innerHTML=`<div class="f-name-wrap"><span class="f-name" id="${prefix}-fn-${i}" style="${_sz}">${f.nombre}</span><span id="${prefix}-heart-${i}">${heartImg(f.nombre,25)}</span></div><span class="f-price" id="${prefix}-fp-${i}">${dollar(f.precio)}</span>`;
         tbl.appendChild(row);
     });
 }
@@ -195,7 +195,7 @@ function updateInPlace(espec,fajitas,seafood){
     [['fajita',fajitas],['seafood',seafood]].forEach(([prefix,rows])=>{
         rows.forEach((f,i)=>{
             const elN=document.getElementById(prefix+'-fn-'+i),elP=document.getElementById(prefix+'-fp-'+i),elH=document.getElementById(prefix+'-heart-'+i);
-            if(elN&&elN.textContent!==f.nombre)elN.textContent=f.nombre;
+            if(elN&&elN.textContent!==f.nombre)elN.textContent=f.nombre;if(elN&&prefix==='seafood')elN.style.fontSize=seaTextSizes[f.nombre]?seaTextSizes[f.nombre]+'px':'';
             if(elP){const p=dollar(f.precio);if(elP.textContent!==p)elP.textContent=p;}
             if(elH)elH.innerHTML=heartImg(f.nombre,25);
         });
@@ -203,12 +203,13 @@ function updateInPlace(espec,fajitas,seafood){
 }
 
 // Preview en vivo desde el admin
+function applySeaTitle(c){if(!c)return;var t=document.querySelector('#seafood-content .group-title'),s=document.querySelector('#seafood-content .group-sub');if(t&&c.titleSize!=null)t.style.fontSize=c.titleSize+'px';if(s&&c.subSize!=null)s.style.fontSize=c.subSize+'px';if(s&&c.gap!=null)s.style.marginTop=c.gap+'px';}
 window.addEventListener('message',(e)=>{
-    const d=e.data;if(!d||d.source!=='emilios-admin')return;
+    const d=e.data;if(!d||d.source!=='emilios-admin')return;if(d.type==='seaTitleCfg'&&d.cfg){applySeaTitle(d.cfg);return;}if(d.type==='liveData'&&d.cfg){var _c=d.cfg;try{updateInPlace(_c.espec||(window._last&&window._last.espec)||[],_c.fajitas||(window._last&&window._last.fajitas)||[],_c.seafood||(window._last&&window._last.seafood)||[]);}catch(_e){}return;}
     if(d.type==='imgCfgP2'&&d.cfg){imgCfgP2=d.cfg;localStorage.setItem('imgCfgP2',JSON.stringify(imgCfgP2));imgCfgP2.forEach((cfg,i)=>applyImgP2(cfg,i));}
     if(d.type==='imgCfgFaj'&&d.cfg){imgCfgFaj=d.cfg;localStorage.setItem('imgCfgFaj',JSON.stringify(imgCfgFaj));applyGroupCfg('fajita',d.cfg);}
     if(d.type==='imgCfgSea'&&d.cfg){imgCfgSea=d.cfg;localStorage.setItem('imgCfgSea',JSON.stringify(imgCfgSea));applyGroupCfg('seafood',d.cfg);}
-    if(d.type==='heartSizes'&&d.cfg){heartSizes=d.cfg;if(initialized&&window._last)updateInPlace(window._last.espec,window._last.fajitas,window._last.seafood);}
+    if(d.type==='heartSizes'&&d.cfg){heartSizes=d.cfg;}if(d.type==='healthyMarks'&&d.cfg){healthyMarks=d.cfg;}if(d.type==='seaTextSizes'&&d.cfg){seaTextSizes=d.cfg;}if((d.type==='heartSizes'||d.type==='healthyMarks'||d.type==='seaTextSizes')&&initialized&&window._last)updateInPlace(window._last.espec,window._last.fajitas,window._last.seafood);
 });
 
 async function load(){
@@ -222,8 +223,8 @@ async function load(){
         if(data.titlesP2){const te=document.getElementById('title-en'),ts=document.getElementById('title-es');if(te&&data.titlesP2.titleEn)te.textContent=data.titlesP2.titleEn;if(ts&&data.titlesP2.titleEs)ts.textContent=data.titlesP2.titleEs;}
         if(data.imgCfgP2){imgCfgP2=data.imgCfgP2;localStorage.setItem('imgCfgP2',JSON.stringify(imgCfgP2));}
         if(data.imgCfgFaj){imgCfgFaj=data.imgCfgFaj;localStorage.setItem('imgCfgFaj',JSON.stringify(imgCfgFaj));}
-        if(data.imgCfgSea){imgCfgSea=data.imgCfgSea;localStorage.setItem('imgCfgSea',JSON.stringify(imgCfgSea));}
-        if(data.heartSizes){heartSizes=data.heartSizes;}
+        if(data.imgCfgSea){imgCfgSea=data.imgCfgSea;localStorage.setItem('imgCfgSea',JSON.stringify(imgCfgSea));}applySeaTitle({titleSize:data.seaTitleSize,subSize:data.seaSubSize,gap:data.seaSubGap});
+        if(data.heartSizes){heartSizes=data.heartSizes;}if(data.healthyMarks){healthyMarks=data.healthyMarks;}if(data.seaTextSizes){seaTextSizes=data.seaTextSizes;}
         if(data.legendEn){var le=document.querySelector('.lt-en');if(le)le.textContent=data.legendEn;}
         if(data.legendEs){var ls=document.querySelector('.lt-es');if(ls)ls.textContent=data.legendEs;}
         if(data.logoUrl){var lg=document.querySelector('.logo-icon');if(lg)lg.src=data.logoUrl;}
