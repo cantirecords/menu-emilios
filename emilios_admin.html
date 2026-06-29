@@ -113,7 +113,7 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
 /* P3 slide editor */
 .slide-editor{background:var(--surf2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;}
 .slide-editor h4{font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
-.save-bar{display:none;} body.logged-in .save-bar{display:flex;}</style>
+.save-bar{display:none;} body.logged-in .save-bar{display:flex;}#sidePrev{display:none;}.sp-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000;margin-bottom:10px;flex:none;}.sp-frame iframe{width:100%;height:100%;border:0;display:block;}.sp-lbl{position:absolute;top:6px;left:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;z-index:2;}#sp-empty2{display:none;text-align:center;color:var(--muted);font-size:13px;padding:20px;}#sp-title{flex:1;color:var(--muted);font-size:12px;font-weight:700;}#sp-tabs{display:flex;gap:6px;margin-bottom:8px;align-items:center;}.sp-tab{flex:1;background:var(--surf2,#222);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;}.sp-tab.active{background:var(--yellow);color:#222;}.sp-reload{background:var(--surf2,#222);color:#fff;border:1px solid var(--border);border-radius:8px;width:38px;padding:8px;cursor:pointer;}#sp-hint{margin-top:8px;font-size:11px;color:var(--muted);text-align:center;}@media(min-width:1200px){#sidePrev{display:flex;flex-direction:column;position:fixed;top:56px;right:0;bottom:0;width:640px;overflow-y:auto;background:#0d0d0d;border-left:1px solid var(--border);z-index:60;padding:14px;}body.logged-in .body{margin-right:660px;}body.logged-in .save-bar{right:660px;}}</style>
 </head>
 <body>
 <div id="save-banner">Guardado! Pantallas actualizadas en menos de 1 minuto.</div>
@@ -134,7 +134,7 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
   </div>
 </div>
 
-<div id="dash">
+<div id="dash"><div id="sidePrev"><div id="sp-tabs"><span id="sp-title">Vista previa &middot; BORRADOR</span><button class="sp-reload" onclick="setSidePrev()" title="Recargar">&#8635;</button></div><div class="sp-frame"><div class="sp-lbl">Pantalla 1</div><iframe id="sideframe-p1" src=""></iframe></div><div class="sp-frame"><div class="sp-lbl">Pantalla 2</div><iframe id="sideframe-p2" src=""></iframe></div><div id="sp-empty2">Pon las URLs de las pantallas en el tab <b>Pantallas</b> para ver el preview.</div></div>
   <div class="topbar">
     <div class="topbar-left">
       <img class="topbar-logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="">
@@ -146,14 +146,14 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
     </div>
   </div>
   <div class="tabs">
-    <div class="tab active" onclick="switchTab(0)">Estilos</div>
-    <div class="tab" onclick="switchTab(1)">Carnes</div>
-    <div class="tab" onclick="switchTab(2)">Especialidades</div>
-    <div class="tab" onclick="switchTab(3)">Fajitas</div>
-    <div class="tab owner-tab" onclick="switchTab(4)">Layout</div>
-    <div class="tab owner-tab" onclick="switchTab(5)">Sidebar P1</div>
-    <div class="tab owner-tab" onclick="switchTab(6)">Pantalla 3</div>
-    <div class="tab owner-tab" onclick="switchTab(7)">Pantallas</div><div class="tab" onclick="switchTab(8)">Seafood</div>
+    <div style="order:1" class="tab active" onclick="switchTab(0)">Estilos</div>
+    <div style="order:2" class="tab" onclick="switchTab(1)">Carnes</div>
+    <div style="order:3" class="tab" onclick="switchTab(2)">Especialidades</div>
+    <div style="order:4" class="tab" onclick="switchTab(3)">Fajitas</div>
+    <div style="order:6" class="tab owner-tab" onclick="switchTab(4)">Layout</div>
+    <div style="order:7" class="tab owner-tab" onclick="switchTab(5)">Sidebar P1</div>
+    <div style="order:8" class="tab owner-tab" onclick="switchTab(6)">Pantalla 3</div>
+    <div style="order:9" class="tab owner-tab" onclick="switchTab(7)">Pantallas</div><div style="order:5" class="tab" onclick="switchTab(8)">Seafood</div>
   </div>
   <div class="body">
     <div class="status-row"><div class="sdot"></div>Las pantallas se actualizan cada 30 segundos</div>
@@ -330,7 +330,7 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
         <button class="btn-add-screen" onclick="addScreen()">+ Agregar</button>
       </div>
     </div>
-  <div class="tab-content" id="tc8"><div class="sec-hdr">Seafood / Mariscos <span class="sec-badge">PANTALLA 2</span></div><div id="list-seafood"></div><div class="layout-card"><h3>Foto Seafood &mdash; tama&ntilde;o y posici&oacute;n</h3><div id="img-ctrl-sea"></div></div><div class="layout-card"><h3>&#10084; Tama&ntilde;o de corazones (saludables)</h3><div id="img-ctrl-hearts"></div></div><div class="layout-card"><h3>Textos Pantalla 2</h3><div class="field-row"><div class="field-label">Logo (URL)</div><input class="field-input" id="txt-logo" placeholder="link del logo (vacío = el de siempre)"></div><div class="field-row"><div class="field-label">Heart Healthy (inglés)</div><input class="field-input" id="txt-legenEn"></div><div class="field-row"><div class="field-label">Comida Saludable (español)</div><input class="field-input" id="txt-legenEs"></div><div class="field-row"><div class="field-label">Seafood &mdash; título</div><input class="field-input" id="txt-seaTitle"></div><div class="field-row"><div class="field-label">Seafood &mdash; subtítulo</div><input class="field-input" id="txt-seaSub"></div></div></div></div>
+  <div class="tab-content" id="tc8"><div class="sec-hdr">Seafood / Mariscos <span class="sec-badge">PANTALLA 2</span></div><div id="list-seafood"></div><div class="layout-card"><h3>Foto Seafood &mdash; tama&ntilde;o y posici&oacute;n</h3><div id="img-ctrl-sea"></div></div><div class="layout-card"><h3>&#10084; Tama&ntilde;o de corazones (saludables)</h3><div id="img-ctrl-hearts"></div></div><div class="layout-card"><h3>&#10084; Coraz&oacute;n saludable (Seafood)</h3><div id="sea-healthy"></div></div><div class="layout-card"><h3>Tama&ntilde;o de texto (Seafood)</h3><div id="sea-textsize"></div></div><div class="layout-card"><h3>Título Seafood &mdash; tamaño y espacio</h3><div id="sea-titlectrl"></div></div><div class="layout-card"><h3>Textos Pantalla 2</h3><div class="field-row"><div class="field-label">Logo (URL)</div><input class="field-input" id="txt-logo" placeholder="link del logo (vacío = el de siempre)"></div><div class="field-row"><div class="field-label">Heart Healthy (inglés)</div><input class="field-input" id="txt-legenEn"></div><div class="field-row"><div class="field-label">Comida Saludable (español)</div><input class="field-input" id="txt-legenEs"></div><div class="field-row"><div class="field-label">Seafood &mdash; título</div><input class="field-input" id="txt-seaTitle"></div><div class="field-row"><div class="field-label">Seafood &mdash; subtítulo</div><input class="field-input" id="txt-seaSub"></div></div></div></div>
   </div><div class="save-bar" style="gap:10px;"><button class="btn-save" id="btn-save" onclick="saveAll()" style="flex:1;">GUARDAR (borrador)</button><button class="btn-save" id="btn-publish" onclick="publishAll()" style="flex:1;background:var(--yellow);color:#222;">PUBLICAR</button></div>
 </div>
 
@@ -355,11 +355,18 @@ const DFAJ={width:450,tx:0,top:-110};
 let imgP1=JSON.parse(localStorage.getItem('imgCfgP1')||'null')||DP1.map(c=>({...c}));
 let imgP2=JSON.parse(localStorage.getItem('imgCfgP2')||'null')||DP2.map(c=>({...c}));
 let imgFaj=JSON.parse(localStorage.getItem('imgCfgFaj')||'null')||{...DFAJ};
-let DSEA={width:205,tx:0,top:-86},imgSea=JSON.parse(localStorage.getItem('imgCfgSea')||'null')||{...DSEA},heartSizes={};
+let DSEA={width:205,tx:0,top:-86},imgSea=JSON.parse(localStorage.getItem('imgCfgSea')||'null')||{...DSEA},heartSizes={},healthyMarks={},seaTextSizes={},seaTitleSize=0,seaSubSize=0,seaSubGap=null;
 const HEALTHY_PLATES=["pollo","pechuga a la plancha","veggie"];
-function checkHealthy(n){n=(n||'').toLowerCase();return HEALTHY_PLATES.some(x=>n.includes(x));}
+function checkHealthy(name){var n=(name||'').toLowerCase();return HEALTHY_PLATES.some(function(x){return n.includes(x);})||!!healthyMarks[(name||'').trim()];}
 function setHeart(name,v){heartSizes[name]=v;sendMsg('iframe-p2','heartSizes',heartSizes);}
 function loadTextsP2(){var g=function(id,v){var e=document.getElementById(id);if(e)e.value=v||'';};g('txt-logo',cache.logoUrl);g('txt-legenEn',cache.legendEn||'Heart Healthy Food');g('txt-legenEs',cache.legendEs||'Comida Saludable Para el Corazón');g('txt-seaTitle',cache.seaTitle||'Seafood');g('txt-seaSub',cache.seaSub||'Mariscos');}
+function buildSeaHealthy(){var el=document.getElementById('sea-healthy');if(!el)return;var rows=(cache.seafood||[]);if(!rows.length){el.innerHTML='<div style="color:var(--muted);font-size:12px;">Sin items.</div>';return;}el.innerHTML=rows.map(function(f){var n=f.nombre;var on=!!healthyMarks[n];return '<label class="img-ctrl-item" style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" '+(on?'checked':'')+' onchange="toggleSeaHealthy(\''+n.replace(/'/g,"\\'")+'\',this.checked)" style="width:22px;height:22px;flex:none;"><span class="img-ctrl-name">&#10084; '+n+'</span></label>';}).join('');}
+function toggleSeaHealthy(name,on){if(on)healthyMarks[name]=1;else delete healthyMarks[name];sendMsg('iframe-p2','healthyMarks',healthyMarks);buildCtrlHearts();}
+function _seaTitleMsg(){sendMsg('iframe-p2','seaTitleCfg',{titleSize:seaTitleSize||54,subSize:seaSubSize||26,gap:(seaSubGap==null?-4:seaSubGap)});}
+function setSeaTitleCfg(k,v){if(k==='t')seaTitleSize=v;if(k==='s')seaSubSize=v;if(k==='g')seaSubGap=v;_seaTitleMsg();}
+function buildSeaTitleCtrl(){var el=document.getElementById('sea-titlectrl');if(!el)return;var t=seaTitleSize||54,su=seaSubSize||26,g=(seaSubGap==null?-4:seaSubGap);el.innerHTML='<div class="img-ctrl-item"><div class="ctrl-row"><span class="ctrl-label">T\u00edtulo "Seafood"</span><input type="range" min="34" max="80" value="'+t+'" oninput="setSeaTitleCfg(\'t\',+this.value);document.getElementById(\'stl1\').textContent=this.value+\'px\'"><span class="ctrl-val" id="stl1">'+t+'px</span></div>'+'<div class="ctrl-row"><span class="ctrl-label">Subt\u00edtulo "Mariscos"</span><input type="range" min="14" max="44" value="'+su+'" oninput="setSeaTitleCfg(\'s\',+this.value);document.getElementById(\'stl2\').textContent=this.value+\'px\'"><span class="ctrl-val" id="stl2">'+su+'px</span></div>'+'<div class="ctrl-row"><span class="ctrl-label">Espacio (subir/bajar)</span><input type="range" min="-30" max="30" value="'+g+'" oninput="setSeaTitleCfg(\'g\',+this.value);document.getElementById(\'stl3\').textContent=this.value+\'px\'"><span class="ctrl-val" id="stl3">'+g+'px</span></div></div>';}
+function buildSeaTextSize(){var el=document.getElementById('sea-textsize');if(!el)return;var rows=(cache.seafood||[]);if(!rows.length){el.innerHTML='<div style="color:var(--muted);font-size:12px;">Sin items.</div>';return;}el.innerHTML=rows.map(function(f){var n=f.nombre;var v=seaTextSizes[n]||28;var id='ts'+Math.abs(n.split('').reduce(function(a,c){return (a*31+c.charCodeAt(0))|0;},5));return '<div class="img-ctrl-item"><div class="img-ctrl-name">'+n+'</div><div class="ctrl-row"><span class="ctrl-label">Texto</span><input type="range" min="18" max="40" value="'+v+'" oninput="setSeaText(\''+n.replace(/'/g,"\\'")+'\',+this.value);document.getElementById(\''+id+'\').textContent=this.value+\'px\'"><span class="ctrl-val" id="'+id+'">'+v+'px</span></div></div>';}).join('');}
+function setSeaText(name,v){seaTextSizes[name]=v;sendMsg('iframe-p2','seaTextSizes',seaTextSizes);}
 function buildCtrlHearts(){var el=document.getElementById('img-ctrl-hearts');if(!el)return;var all=[].concat(cache.especialidades||[],cache.fajitas||[],cache.seafood||[]);var seen={},h=[];all.forEach(function(x){var n=x.nombre;if(checkHealthy(n)&&!seen[n]){seen[n]=1;h.push(n);}});if(!h.length){el.innerHTML='<div style="color:var(--muted);font-size:12px;">No hay platos saludables (pollo, pechuga a la plancha, veggie).</div>';return;}el.innerHTML=h.map(function(n){var v=(heartSizes[n]!=null?heartSizes[n]:42);var id='hl'+Math.abs(n.split('').reduce(function(a,c){return (a*31+c.charCodeAt(0))|0;},7));return '<div class="img-ctrl-item"><div class="img-ctrl-name">&#10084; '+n+'</div><div class="ctrl-row"><span class="ctrl-label">Tama&ntilde;o</span><input type="range" min="16" max="70" value="'+v+'" oninput="setHeart(\''+n.replace(/'/g,"\\'")+'\',+this.value);document.getElementById(\''+id+'\').textContent=this.value+\'px\'"><span class="ctrl-val" id="'+id+'">'+v+'px</span></div></div>';}).join('');}
 
 
@@ -373,7 +380,7 @@ function checkPin(){
     else if(cur===CLIENT_PIN){role='client';enter();}
     else{document.getElementById('pin-err').textContent='PIN incorrecto';cur='';updDots();}
 }
-function enter(){document.getElementById('login').style.display='none';document.getElementById('dash').style.display='block';document.body.classList.add('logged-in');applyRole();initDash();}
+function enter(){document.getElementById('login').style.display='none';document.getElementById('dash').style.display='block';document.body.classList.add('logged-in');applyRole();initDash();setTimeout(function(){try{setSidePrev('p2');}catch(e){}},300);}
 function logout(){cur='';role=null;updDots();cache=null;document.getElementById('login').style.display='flex';document.getElementById('dash').style.display='none';}
 function isOwner(){return role==='owner';}
 
@@ -396,7 +403,9 @@ function loadURLs(){
     ['cfg-p1-url','cfg-p2-url','cfg-p3-url'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.value=[ghP1,ghP2,ghP3][i];});
 }
 
-function reloadPreviews(){["p1","p2","p3"].forEach(function(id){var w=document.getElementById("preview-"+id);var f=document.getElementById("iframe-"+id);if(w&&f&&w.classList.contains("open")){var u=id==="p1"?ghP1:id==="p2"?ghP2:ghP3;if(u)f.src=u+(u.indexOf("?")>=0?"&":"?")+"mode=draft&_="+Date.now();}});}
+function reloadPreviews(){try{setSidePrev();}catch(e){}["p1","p2","p3"].forEach(function(id){var w=document.getElementById("preview-"+id);var f=document.getElementById("iframe-"+id);if(w&&f&&w.classList.contains("open")){var u=id==="p1"?ghP1:id==="p2"?ghP2:ghP3;if(u)f.src=u+(u.indexOf("?")>=0?"&":"?")+"mode=draft&_="+Date.now();}});}
+function toggleSpMode(){window._spMode=(window._spMode==="live")?"draft":"live";var b=document.getElementById("sp-mode");if(b){if(window._spMode==="live"){b.textContent="\u25cf En vivo (TV)";b.style.background="var(--green)";b.style.color="#fff";}else{b.textContent="\u25cf Borrador";b.style.background="var(--yellow)";b.style.color="#222";}}setSidePrev(window._sp||"p2");}
+function setSidePrev(){var f1=document.getElementById('sideframe-p1'),f2=document.getElementById('sideframe-p2'),em=document.getElementById('sp-empty2');if(!ghP1&&!ghP2){if(em)em.style.display='block';return;}if(em)em.style.display='none';function u(x){return x?x+(x.indexOf('?')>=0?'&':'?')+'mode=draft&_='+Date.now():'';}if(f1&&ghP1)f1.src=u(ghP1);if(f2&&ghP2)f2.src=u(ghP2);}
 function togglePreview(id){
     const wrap=document.getElementById('preview-'+id);
     const iframe=document.getElementById('iframe-'+id);
@@ -408,7 +417,10 @@ function togglePreview(id){
     }
 }
 
-function sendMsg(iframeId,type,cfg){const f=document.getElementById(iframeId);if(f&&f.contentWindow){try{f.contentWindow.postMessage({source:'emilios-admin',type,cfg},'*');}catch(e){}}}
+function sendMsg(iframeId,type,cfg){var ifr=document.querySelectorAll('iframe');for(var i=0;i<ifr.length;i++){try{if(ifr[i].contentWindow)ifr[i].contentWindow.postMessage({source:'emilios-admin',type:type,cfg:cfg},'*');}catch(e){}}}
+function pushLive(){function rd(p,arr){return (arr||[]).map(function(it,i){var nm=document.getElementById('iname-'+p+'-'+i),pr=document.getElementById('iprice-'+p+'-'+i);return {nombre:nm?nm.value:it.nombre,precio:pr?pr.value:it.precio,img:it.img,sub:it.sub};});}try{sendMsg('x','liveData',{espec:(cache.especialidades||[]),fajitas:rd('faj',cache.fajitas),seafood:rd('sea',cache.seafood)});}catch(e){}}
+document.addEventListener('input',function(e){var id=(e.target&&e.target.id)||'';if(/^(iname|iprice)-(sea|faj)-/.test(id)){clearTimeout(window._liveT);window._liveT=setTimeout(pushLive,120);}});
+
 function liveP1(){sendMsg('iframe-p1','imgCfgP1',imgP1);}
 function liveP2(){sendMsg('iframe-p2','imgCfgP2',imgP2);}
 function liveFaj(){sendMsg('iframe-p2','imgCfgFaj',imgFaj);}
@@ -464,9 +476,9 @@ function loadP3Fields(){
 async function initDash(){
     loadURLs();loadP3Fields();
     try{
-        const r=await fetch(SCRIPT_URL+'?t='+Date.now());cache=await r.json();if(!cache.seafood)cache.seafood=[];if(cache.imgCfgSea)imgSea=cache.imgCfgSea;if(cache.heartSizes)heartSizes=cache.heartSizes;loadTextsP2();
+        const r=await fetch(SCRIPT_URL+'?mode=draft&t='+Date.now());cache=await r.json();if(!cache.seafood)cache.seafood=[];if(cache.imgCfgSea)imgSea=cache.imgCfgSea;if(cache.heartSizes)heartSizes=cache.heartSizes;if(cache.healthyMarks)healthyMarks=cache.healthyMarks;if(cache.seaTextSizes)seaTextSizes=cache.seaTextSizes;if(cache.seaTitleSize)seaTitleSize=cache.seaTitleSize;if(cache.seaSubSize)seaSubSize=cache.seaSubSize;if(cache.seaSubGap!=null)seaSubGap=cache.seaSubGap;loadTextsP2();
         renderAll();loadLayoutValues();
-        if(isOwner()){buildCtrlP1();buildCtrlP2();buildCtrlFaj();buildCtrlSea();buildCtrlHearts();loadP3Fields();}
+        if(isOwner()){buildCtrlP1();buildCtrlP2();buildCtrlFaj();buildCtrlSea();buildCtrlHearts();buildSeaHealthy();buildSeaTextSize();buildSeaTitleCtrl();loadP3Fields();}
         if(cache.sidebarNotes)loadSidebarNotesFromData(cache.sidebarNotes);
         renderExtraScreens();
     }catch(e){alert('No se pudo conectar.');}
@@ -645,7 +657,7 @@ async function saveAll(){
     const tp1={styleEn:lc.titles.styleEn,styleEs:lc.titles.styleEs,meatEn:lc.titles.meatEn.replace(/\n/g,'<br>'),meatEs:lc.titles.meatEs,website:lc.titles.website};
     const tp2={titleEn:lc.titles.titleEn,titleEs:lc.titles.titleEs};
     try{
-        const seafood=(cache.seafood||[]).map(function(f,i){var nm=document.getElementById('iname-sea-'+i),pr=document.getElementById('iprice-sea-'+i);var o={nombre:nm?nm.value:f.nombre,precio:pr?pr.value:f.precio,img:f.img||''};if(i===0){var u=document.getElementById('sea-url-img');if(u)o.img=u.value.trim();}return o;});localStorage.setItem('imgCfgSea',JSON.stringify(imgSea));var _gt=function(id){var e=document.getElementById(id);return e?e.value.trim():'';};var legendEn=_gt('txt-legenEn'),legendEs=_gt('txt-legenEs'),seaTitle=_gt('txt-seaTitle'),seaSub=_gt('txt-seaSub'),logoUrl=_gt('txt-logo');const postData={estilos,especialidades,fajitas,carnes,seafood,layoutP1:lp1,titlesP1:tp1,titlesP2:tp2,imgCfgP1:imgP1,imgCfgP2:imgP2,imgCfgFaj:imgFaj,imgCfgSea:imgSea,heartSizes,legendEn,legendEs,seaTitle,seaSub,logoUrl};
+        const seafood=(cache.seafood||[]).map(function(f,i){var nm=document.getElementById('iname-sea-'+i),pr=document.getElementById('iprice-sea-'+i);var o={nombre:nm?nm.value:f.nombre,precio:pr?pr.value:f.precio,img:f.img||''};if(i===0){var u=document.getElementById('sea-url-img');if(u)o.img=u.value.trim();}return o;});localStorage.setItem('imgCfgSea',JSON.stringify(imgSea));var _gt=function(id){var e=document.getElementById(id);return e?e.value.trim():'';};var legendEn=_gt('txt-legenEn'),legendEs=_gt('txt-legenEs'),seaTitle=_gt('txt-seaTitle'),seaSub=_gt('txt-seaSub'),logoUrl=_gt('txt-logo');const postData={estilos,especialidades,fajitas,carnes,seafood,layoutP1:lp1,titlesP1:tp1,titlesP2:tp2,imgCfgP1:imgP1,imgCfgP2:imgP2,imgCfgFaj:imgFaj,imgCfgSea:imgSea,heartSizes,healthyMarks,seaTextSizes,seaTitleSize,seaSubSize,seaSubGap,legendEn,legendEs,seaTitle,seaSub,logoUrl};
         if(sidebarNotes)postData.sidebarNotes=sidebarNotes;
         await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(postData)});
         const b=document.getElementById('save-banner');b.classList.add('show');setTimeout(()=>b.classList.remove('show'),4000);
@@ -682,8 +694,9 @@ function renderSeafood(){
         <div class="field-row"><div class="field-label">Precio</div><input class="field-input price-field" id="iprice-sea-${i}" value="${dollar(f.precio)}" inputmode="text" autocomplete="off" oninput="markDirty('icard-sea-${i}')"></div>
         </div></div>`;
     });
-}
 
+    if(typeof buildSeaHealthy==='function'&&typeof isOwner==='function'&&isOwner()){buildSeaHealthy();buildSeaTextSize();}
+}
 function buildCtrlSea(){
     const el=document.getElementById('img-ctrl-sea');if(!el)return;
     el.innerHTML=`<div class="img-ctrl-item">
@@ -701,51 +714,6 @@ function updCacheImg(p,i,u){if(p==='e')cache.estilos[i].img=u;if(p==='sp')cache.
 function prevSeaImg(){const u=document.getElementById('sea-url-img').value.trim();if(u)document.getElementById('sea-big-img').src=u;}
 function applySeaImg(){const u=document.getElementById('sea-url-img').value.trim();if(!u){alert('Pega un link primero.');return;}document.getElementById('sea-main-thumb').src=u;document.getElementById('sea-big-img').src=u;if(cache.seafood[0])cache.seafood[0].img=u;document.getElementById('seaita-img-card').classList.add('dirty');toggleSeaImg();}
 function removeSeaImg(){document.getElementById('sea-url-img').value='';document.getElementById('sea-main-thumb').src='https://placehold.co/52x52/333/888?text=+';document.getElementById('sea-big-img').src='https://placehold.co/90x90/333/888?text=?';if(cache.seafood[0])cache.seafood[0].img='';}
-
-function buildCtrlP1(){
-    const el=document.getElementById('img-ctrl-p1');if(!el)return;el.innerHTML='';
-    imgP1.forEach((cfg,i)=>{el.innerHTML+=`<div class="img-ctrl-item"><div class="img-ctrl-name">${P1N[i]}</div>
-    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lp1w${i}">${cfg.width}px</span></div><input type="range" min="150" max="600" value="${cfg.width}" oninput="imgP1[${i}].width=+this.value;document.getElementById('lp1w${i}').textContent=this.value+'px';liveP1()"></div>
-    <div class="ctrl-row"><div class="ctrl-label">Arriba/Abajo <span class="ctrl-val" id="lp1b${i}">${cfg.bottom}px</span></div><input type="range" min="80" max="360" value="${cfg.bottom}" oninput="imgP1[${i}].bottom=+this.value;document.getElementById('lp1b${i}').textContent=this.value+'px';liveP1()"></div>
-    <div class="ctrl-row"><div class="ctrl-label">Izq/Der <span class="ctrl-val" id="lp1x${i}">${cfg.offsetX}px</span></div><input type="range" min="-150" max="150" value="${cfg.offsetX}" oninput="imgP1[${i}].offsetX=+this.value;document.getElementById('lp1x${i}').textContent=this.value+'px';liveP1()"></div>
-    </div>`;});
-}
-
-function prevSeaImg(){const u=document.getElementById('sea-url-img').value.trim();if(u)document.getElementById('sea-big-img').src=u;}
-function applySeaImg(){const u=document.getElementById('sea-url-img').value.trim();if(!u){alert('Pega un link primero.');return;}document.getElementById('sea-main-thumb').src=u;document.getElementById('sea-big-img').src=u;if(cache.seafood[0])cache.seafood[0].img=u;document.getElementById('seaita-img-card').classList.add('dirty');toggleSeaImg();}
-function removeSeaImg(){document.getElementById('sea-url-img').value='';document.getElementById('sea-main-thumb').src='https://placehold.co/52x52/333/888?text=+';document.getElementById('sea-big-img').src='https://placehold.co/90x90/333/888?text=?';if(cache.seafood[0])cache.seafood[0].img='';}
-
-function buildCtrlP1(){
-    const el=document.getElementById('img-ctrl-p1');if(!el)return;el.innerHTML='';
-    imgP1.forEach((cfg,i)=>{el.innerHTML+=`<div class="img-ctrl-item"><div class="img-ctrl-name">${P1N[i]}</div>
-    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lp1w${i}">${cfg.width}px</span></div><input type="range" min="150" max="600" value="${cfg.width}" oninput="imgP1[${i}].width=+this.value;document.getElementById('lp1w${i}').textContent=this.value+'px';liveP1()"></div>
-    <div class="ctrl-row"><div class="ctrl-label">Arriba/Abajo <span class="ctrl-val" id="lp1b${i}">${cfg.bottom}px</span></div><input type="range" min="80" max="360" value="${cfg.bottom}" oninput="imgP1[${i}].bottom=+this.value;document.getElementById('lp1b${i}').textContent=this.value+'px';liveP1()"></div>
-    <div class="ctrl-row"><div class="ctrl-label">Izq/Der <span class="ctrl-val" id="lp1x${i}">${cfg.offsetX}px</span></div><input type="range" min="-150" max="150" value="${cfg.offsetX}" oninput="imgP1[${i}].offsetX=+this.value;document.getElementById('lp1x${i}').textContent=this.value+'px';liveP1()"></div>
-    </div>`;});
-}
-
-function applySeaImg(){const u=document.getElementById('sea-url-img').value.trim();if(!u){alert('Pega un link primero.');return;}document.getElementById('sea-main-thumb').src=u;document.getElementById('sea-big-img').src=u;if(cache.seafood[0])cache.seafood[0].img=u;document.getElementById('seaita-img-card').classList.add('dirty');toggleSeaImg();}
-function removeSeaImg(){document.getElementById('sea-url-img').value='';document.getElementById('sea-main-thumb').src='https://placehold.co/52x52/333/888?text=+';document.getElementById('sea-big-img').src='https://placehold.co/90x90/333/888?text=?';if(cache.seafood[0])cache.seafood[0].img='';}
-
-function buildCtrlP1(){
-    const el=document.getElementById('img-ctrl-p1');if(!el)return;el.innerHTML='';
-    imgP1.forEach((cfg,i)=>{el.innerHTML+=`<div class="img-ctrl-item"><div class="img-ctrl-name">${P1N[i]}</div>
-    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lp1w${i}">${cfg.width}px</span></div><input type="range" min="150" max="600" value="${cfg.width}" oninput="imgP1[${i}].width=+this.value;document.getElementById('lp1w${i}').textContent=this.value+'px';liveP1()"></div>
-    <div class="ctrl-row"><div class="ctrl-label">Arriba/Abajo <span class="ctrl-val" id="lp1b${i}">${cfg.bottom}px</span></div><input type="range" min="80" max="360" value="${cfg.bottom}" oninput="imgP1[${i}].bottom=+this.value;document.getElementById('lp1b${i}').textContent=this.value+'px';liveP1()"></div>
-    <div class="ctrl-row"><div class="ctrl-label">Izq/Der <span class="ctrl-val" id="lp1x${i}">${cfg.offsetX}px</span></div><input type="range" min="-150" max="150" value="${cfg.offsetX}" oninput="imgP1[${i}].offsetX=+this.value;document.getElementById('lp1x${i}').textContent=this.value+'px';liveP1()"></div>
-    </div>`;});
-}
-
-function removeSeaImg(){document.getElementById('sea-url-img').value='';document.getElementById('sea-main-thumb').src='https://placehold.co/52x52/333/888?text=+';document.getElementById('sea-big-img').src='https://placehold.co/90x90/333/888?text=?';if(cache.seafood[0])cache.seafood[0].img='';}
-
-function buildCtrlP1(){
-    const el=document.getElementById('img-ctrl-p1');if(!el)return;el.innerHTML='';
-    imgP1.forEach((cfg,i)=>{el.innerHTML+=`<div class="img-ctrl-item"><div class="img-ctrl-name">${P1N[i]}</div>
-    <div class="ctrl-row"><div class="ctrl-label">Tamano <span class="ctrl-val" id="lp1w${i}">${cfg.width}px</span></div><input type="range" min="150" max="600" value="${cfg.width}" oninput="imgP1[${i}].width=+this.value;document.getElementById('lp1w${i}').textContent=this.value+'px';liveP1()"></div>
-    <div class="ctrl-row"><div class="ctrl-label">Arriba/Abajo <span class="ctrl-val" id="lp1b${i}">${cfg.bottom}px</span></div><input type="range" min="80" max="360" value="${cfg.bottom}" oninput="imgP1[${i}].bottom=+this.value;document.getElementById('lp1b${i}').textContent=this.value+'px';liveP1()"></div>
-    <div class="ctrl-row"><div class="ctrl-label">Izq/Der <span class="ctrl-val" id="lp1x${i}">${cfg.offsetX}px</span></div><input type="range" min="-150" max="150" value="${cfg.offsetX}" oninput="imgP1[${i}].offsetX=+this.value;document.getElementById('lp1x${i}').textContent=this.value+'px';liveP1()"></div>
-    </div>`;});
-}
 
 function liveSea(){sendMsg('iframe-p2','imgCfgSea',imgSea);}
 
