@@ -70,28 +70,28 @@
 </head>
 <body>
 <div id="toast">&#x2713; Men&uacute; Actualizado</div>
-<div id="splash"><img src="https://i.postimg.cc/FKtbLp6Y/Emilio-s-Logo-Icon-Transparent.png" alt="Emilios"></div>
+<div id="splash"><img src="img/Emilio-s-Logo-Icon-Transparent.png" alt="Emilios"></div>
 <div id="root">
     <div class="content">
         <div class="hdr">
             <div><div class="t-en" id="title-en">ESPECIALIDADES</div><div class="t-es" id="title-es">SIGNATURE PLATES</div></div>
             <div class="heart-legend">
-                <img src="https://i.postimg.cc/RF2RPB20/AHA-LOGO.png" class="legend-icon" alt="AHA">
+                <img src="img/AHA-LOGO.png" class="legend-icon" alt="AHA">
                 <div class="legend-text"><span class="lt-en">Heart Healthy Food</span><span class="lt-es">Comida Saludable Para el Corazón</span></div>
             </div>
-            <img class="logo-icon" src="https://i.postimg.cc/FKtbLp6Y/Emilio-s-Logo-Icon-Transparent.png" alt="Logo">
+            <img class="logo-icon" src="img/Emilio-s-Logo-Icon-Transparent.png" alt="Logo">
         </div>
         <div class="body">
             <div class="items-grid" id="items-grid"></div>
             <div class="group-col">
                 <!-- FAJITAS -->
                 <div class="group-card" id="fajita-card">
-                    <div class="group-img-wrap" id="fajita-img-wrap"><img class="group-img" id="fajita-main-img" src="https://i.postimg.cc/SsG9tktV/FAJITAS.png" alt="" onerror="this.style.opacity='0'"></div>
+                    <div class="group-img-wrap" id="fajita-img-wrap"><img class="group-img" id="fajita-main-img" src="img/FAJITAS.png" alt="" onerror="this.style.opacity='0'"></div>
                     <div class="group-content" id="fajita-content"><div class="group-title" id="fajita-title">Fajitas</div><div class="f-table" id="f-table"></div></div>
                 </div>
                 <!-- SEAFOOD -->
                 <div class="group-card" id="seafood-card">
-                    <div class="group-img-wrap" id="seafood-img-wrap"><img class="group-img" id="seafood-main-img" src="https://i.postimg.cc/PfR1ChWZ/COCTEL-DE-CAMARONES.png" alt="" onerror="this.style.opacity='0'"></div>
+                    <div class="group-img-wrap" id="seafood-img-wrap"><img class="group-img" id="seafood-main-img" src="img/COCTEL-DE-CAMARONES.png" alt="" onerror="this.style.opacity='0'"></div>
                     <div class="group-content" id="seafood-content"><div class="group-title">Seafood<span class="group-sub">Mariscos</span></div><div class="f-table" id="sea-table"></div></div>
                 </div>
             </div>
@@ -102,14 +102,15 @@
 
 <script>
 // ---- CONFIG ----
-const HEART_LOGO_URL = "https://i.postimg.cc/RF2RPB20/AHA-LOGO.png";
+const HEART_LOGO_URL = "img/AHA-LOGO.png";
 const HEALTHY_PLATES = ["pollo", "pechuga a la plancha", "veggie"];
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzALLWnYC4GVS23_Zg45GNbKB8F3Ru1iFgKXN-3i8BzKyW0RrVn6Ea-qYVkdIfeYw3N/exec";
-const FALLBACK_IMGS=["https://i.postimg.cc/vBvnSbS0/CHILAQUILES.png","https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png","https://i.postimg.cc/8cK6NwGw/GORDITAS.png","https://i.postimg.cc/KjqMxQbH/MOLCAJETE.png","https://i.postimg.cc/pXrjqNQB/PECHUGA-A-LA-PLANCHA.png","https://i.postimg.cc/fLsXKJ5p/CARNE-ASADA-A-LA-PLANCHA.png","https://i.postimg.cc/pdbnWmN2/QUESABIRRIA-TACOS.png","https://i.postimg.cc/G2jDSdSg/ENCHILADAS-VERDES.png","https://i.postimg.cc/T1YDzFzy/FLAUTA-DE-POLLO.png","https://i.postimg.cc/8PqX8QpT/CHICHARRON.png"];
+const FALLBACK_IMGS=["img/CHILAQUILES.png","img/TORTA-CUBANO.png","img/GORDITAS.png","img/MOLCAJETE.png","img/PECHUGA-A-LA-PLANCHA.png","img/CARNE-ASADA-A-LA-PLANCHA.png","img/QUESABIRRIA-TACOS.png","img/ENCHILADAS-VERDES.png","img/FLAUTA-DE-POLLO.png","img/CHICHARON-BITES.png"];
 
 // Fallbacks (se usan solo si el Sheet aún no tiene esos datos; los datos reales mandan)
 const FALLBACK_SEAFOOD=[{nombre:"Coctel de Camarón",precio:"14.99"},{nombre:"Ceviche",precio:"00.00"},{nombre:"Caldo de mariscos",precio:"00.00"}];
-const SEAFOOD_IMG_DEFAULT="https://i.postimg.cc/PfR1ChWZ/COCTEL-DE-CAMARONES.png";
+const SEAFOOD_IMG_DEFAULT="img/COCTEL-DE-CAMARONES.png";
+const FAJITA_IMG_DEFAULT="img/FAJITAS.png";
 
 const DEF_P2=FALLBACK_IMGS.map(()=>({width:190,tx:0,ty:0}));
 const DEF_FAJ={width:255,gx:0,top:-86};
@@ -183,6 +184,10 @@ function buildGroup(tableId,prefix,rows,cfg,defImg){
 }
 
 function updateInPlace(espec,fajitas,seafood){
+    // Si cambió la cantidad de items, reconstruir esa sección (el update por índice no agrega/quita filas)
+    if(document.querySelectorAll('#items-grid .card').length!==espec.slice(0,10).length)buildGrid(espec);
+    if(document.querySelectorAll('#f-table .f-row').length!==fajitas.length)buildGroup('f-table','fajita',fajitas,imgCfgFaj,FAJITA_IMG_DEFAULT);
+    if(document.querySelectorAll('#sea-table .f-row').length!==seafood.length)buildGroup('sea-table','seafood',seafood,imgCfgSea,SEAFOOD_IMG_DEFAULT);
     espec.slice(0,10).forEach((item,i)=>{
         const img=item.img||FALLBACK_IMGS[i]||'';
         const elImg=document.getElementById('cimg-p2-'+i),elN=document.getElementById('cname-p2-'+i),elS=document.getElementById('csub-p2-'+i),elP=document.getElementById('cprice-p2-'+i),elH=document.getElementById('heart-p2-'+i);
@@ -212,9 +217,7 @@ window.addEventListener('message',(e)=>{
     if(d.type==='heartSizes'&&d.cfg){heartSizes=d.cfg;}if(d.type==='healthyMarks'&&d.cfg){healthyMarks=d.cfg;}if(d.type==='seaTextSizes'&&d.cfg){seaTextSizes=d.cfg;}if((d.type==='heartSizes'||d.type==='healthyMarks'||d.type==='seaTextSizes')&&initialized&&window._last)updateInPlace(window._last.espec,window._last.fajitas,window._last.seafood);
 });
 
-async function load(){
-    try{
-        const r=await fetch(DATA_URL+Date.now());const data=await r.json();
+function render(data){
         const espec=data.especialidades||[];
         const fajitas=data.fajitas||[];
         const seafood=(data.seafood&&data.seafood.length)?data.seafood:FALLBACK_SEAFOOD;
@@ -232,13 +235,23 @@ async function load(){
 
         if(!initialized){
             buildGrid(espec);
-            buildGroup('f-table','fajita',fajitas,imgCfgFaj,'https://i.postimg.cc/SsG9tktV/FAJITAS.png');
+            buildGroup('f-table','fajita',fajitas,imgCfgFaj,FAJITA_IMG_DEFAULT);
             buildGroup('sea-table','seafood',seafood,imgCfgSea,SEAFOOD_IMG_DEFAULT);
         } else if(key!==lastKey){updateInPlace(espec,fajitas,seafood);showToast();}
         lastKey=key;if(!initialized){initialized=true;const _w=Math.max(0,2800-(Date.now()-(window.__T0__||0)));setTimeout(function(){var sp=document.getElementById('splash');if(sp)sp.classList.add('hide');document.getElementById('root').classList.add('ready');},_w);}
+}
+async function load(){
+    try{
+        const r=await fetch(DATA_URL+Date.now());const data=await r.json();
+        if(MODE!=='draft'){try{localStorage.setItem('menuCacheP2',JSON.stringify(data));}catch(_e){}}
+        render(data);
     }catch(e){console.warn(e);}
 }
-window.__T0__=Date.now();scaleRoot();window.addEventListener('resize',scaleRoot);load();setInterval(load,30000);
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js');}catch(_e){}}
+window.__T0__=Date.now();scaleRoot();window.addEventListener('resize',scaleRoot);
+// Arranque offline: pinta el último menú guardado y luego refresca de la red (draft nunca se cachea)
+if(MODE!=='draft'){try{const _c=localStorage.getItem('menuCacheP2');if(_c)render(JSON.parse(_c));}catch(_e){}}
+load();setInterval(load,30000);
 </script>
 </body>
 </html>

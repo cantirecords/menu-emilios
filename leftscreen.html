@@ -61,7 +61,7 @@
 <body>
 
 <div id="toast">✓ Precios actualizados</div>
-<div id="splash"><img src="https://i.postimg.cc/FKtbLp6Y/Emilio-s-Logo-Icon-Transparent.png" alt="Emilios"></div>
+<div id="splash"><img src="img/Emilio-s-Logo-Icon-Transparent.png" alt="Emilios"></div>
 <div id="root">
     <div class="left">
         <div class="hdr">
@@ -78,7 +78,7 @@
     </div>
     <div class="divider"></div>
     <div class="right" id="sidebar">
-        <img class="logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="Logo">
+        <img class="logo" src="img/Emilios-Grocery-Logo.png" alt="Logo">
         <div class="s-en" id="meat-title-en">PICK YOUR<br>MEAT</div>
         <div class="sidebar-title-gap"></div>
         <div class="s-es" id="meat-title-es">ELIGE TU CARNE</div>
@@ -93,7 +93,7 @@
 <script>
 const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbzALLWnYC4GVS23_Zg45GNbKB8F3Ru1iFgKXN-3i8BzKyW0RrVn6Ea-qYVkdIfeYw3N/exec";
 const _MODE=new URLSearchParams(location.search).get("mode");const _DATA_URL=APPS_SCRIPT_URL+(_MODE==="draft"?"?mode=draft&t=":"?t=");
-const FALLBACK_IMGS=["https://i.postimg.cc/fL53f5Vt/TACOS.png","https://i.postimg.cc/SRDWjk6g/BURRITOS.png","https://i.postimg.cc/1tMgrM8Z/TORTA-CUBANO.png","https://i.postimg.cc/8cK6NwGw/GORDITAS.png","https://i.postimg.cc/7L3JfqDh/SOPES.png","https://i.postimg.cc/BvTPXJs3/QUESADILLAS.png","https://i.postimg.cc/SQD86Q96/HUARACHES.png","https://i.postimg.cc/cL8nGQbc/PLATILLO.png"];
+const FALLBACK_IMGS=["img/TACOS.png","img/BURRITOS.png","img/TORTA-CUBANO.png","img/GORDITAS.png","img/SOPES.png","img/QUESADILLAS.png","img/HUARACHES.png","img/PLATILLO.png"];
 const DEF_CFG=FALLBACK_IMGS.map(()=>({bottom:160,width:400,offsetX:0}));
 let imgCfg=JSON.parse(localStorage.getItem('imgCfgP1')||'null')||DEF_CFG.map(c=>({...c}));
 let initialized=false,lastKey='',lastCarnesKey='';
@@ -141,7 +141,9 @@ function updateEstilos(items){
     const newKey=JSON.stringify(items.map(i=>[i.nombre,i.sub,i.precio,i.img]));
     if(!initialized){buildGrid(items);}
     else if(newKey!==lastKey){
-        items.forEach((item,i)=>{
+        // Si cambió la cantidad de platos, reconstruir (el update por índice no agrega/quita cards)
+        if(document.querySelectorAll('#grid-estilos .card').length!==items.length){buildGrid(items);}
+        else items.forEach((item,i)=>{
             const img=item.img||FALLBACK_IMGS[i]||'';
             const elImg=document.getElementById('cimg-e-'+i);
             const elN=document.getElementById('cname-e-'+i);
@@ -165,7 +167,12 @@ function updateCarnes(items){
         items.forEach(c=>{const div=document.createElement('div');div.className='m-row';div.innerHTML=`<span class="m-name">${c.es}</span><span class="m-sub">${c.en}</span>`;list.appendChild(div);});
     }else if(newKey!==lastCarnesKey){
         const rows=list.querySelectorAll('.m-row');
-        items.forEach((c,i)=>{if(rows[i]){rows[i].querySelector('.m-name').textContent=c.es;rows[i].querySelector('.m-sub').textContent=c.en;}});
+        if(rows.length!==items.length){
+            list.innerHTML='';
+            items.forEach(c=>{const div=document.createElement('div');div.className='m-row';div.innerHTML=`<span class="m-name">${c.es}</span><span class="m-sub">${c.en}</span>`;list.appendChild(div);});
+        }else{
+            items.forEach((c,i)=>{if(rows[i]){rows[i].querySelector('.m-name').textContent=c.es;rows[i].querySelector('.m-sub').textContent=c.en;}});
+        }
     }
     lastCarnesKey=newKey;
 }
@@ -205,10 +212,7 @@ function applySidebarNotes(sn){
     }
 }
 
-async function load(){
-    try{
-        const r=await fetch(_DATA_URL+Date.now());
-        const data=await r.json();
+function render(data){
         applyLayout(data.layoutP1);
         if(data.titlesP1){
             const te=document.getElementById('title-en'),ts=document.getElementById('title-es'),me=document.getElementById('meat-title-en'),ms=document.getElementById('meat-title-es'),wp=document.getElementById('website-pill');
@@ -223,9 +227,20 @@ async function load(){
         updateEstilos(data.estilos||[]);
         updateCarnes(data.carnes||[]);
         if(!initialized){initialized=true;var _w=Math.max(0,2800-(Date.now()-(window.__T0__||0)));setTimeout(function(){var sp=document.getElementById('splash');if(sp)sp.classList.add('hide');document.getElementById('root').classList.add('ready');},_w);}
+}
+async function load(){
+    try{
+        const r=await fetch(_DATA_URL+Date.now());
+        const data=await r.json();
+        if(_MODE!=='draft'){try{localStorage.setItem('menuCacheP1',JSON.stringify(data));}catch(_e){}}
+        render(data);
     }catch(e){console.warn(e);}
 }
-window.__T0__=Date.now();scaleRoot();window.addEventListener('resize',scaleRoot);load();setInterval(load,30000);
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js');}catch(_e){}}
+window.__T0__=Date.now();scaleRoot();window.addEventListener('resize',scaleRoot);
+// Arranque offline: pinta el último menú guardado y luego refresca de la red (draft nunca se cachea)
+if(_MODE!=='draft'){try{const _c=localStorage.getItem('menuCacheP1');if(_c)render(JSON.parse(_c));}catch(_e){}}
+load();setInterval(load,30000);
 </script>
 </body>
 </html>
