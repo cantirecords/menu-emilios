@@ -35,7 +35,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
 .role-pill.client{background:rgba(0,132,61,.15);color:#4ecb7a;}
 .btn-out{background:transparent;border:1.5px solid var(--border);color:var(--muted);font-family:var(--ff);font-size:13px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;}
 .btn-out:active{border-color:var(--red);color:var(--red);}
-.tabs{display:flex;overflow-x:auto;background:var(--surf);border-bottom:1px solid var(--border);-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.tabs{display:flex;flex-wrap:wrap;background:var(--surf);border-bottom:1px solid var(--border);}
 .tabs::-webkit-scrollbar{display:none;}
 .tab{flex:none;padding:13px 16px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;}
 .tab.active{color:var(--red);border-bottom-color:var(--red);}
@@ -591,6 +591,7 @@ function renderCarn(key){
     const el=document.getElementById('carn-'+key+'-editor');
     if(!el)return;
     el.innerHTML='';
+    if(!(cache[key]||[]).length){el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:4px 2px 8px;">Sin items todavía — usa el botón de abajo para agregar, o carga los datos desde el Sheet.</div>';}
     (cache[key]||[]).forEach((c,i)=>{
         el.innerHTML+=`<div class="item-card" id="carn-${key}-card-${i}" style="margin-bottom:8px;">
         <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
