@@ -153,7 +153,7 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
     <div style="order:6" class="tab owner-tab" onclick="switchTab(4)">Layout</div>
     <div style="order:7" class="tab owner-tab" onclick="switchTab(5)">Sidebar P1</div>
     <div style="order:8" class="tab owner-tab" onclick="switchTab(6)">Pantalla 3</div>
-    <div style="order:9" class="tab owner-tab" onclick="switchTab(7)">Pantallas</div><div style="order:5" class="tab" onclick="switchTab(8)">Seafood</div>
+    <div style="order:9" class="tab owner-tab" onclick="switchTab(7)">Pantallas</div><div style="order:5" class="tab" onclick="switchTab(8)">Seafood</div><div style="order:10" class="tab" onclick="switchTab(9)">🥩 Carnicería</div>
   </div>
   <div class="body">
     <div class="status-row"><div class="sdot"></div>Las pantallas se actualizan cada 30 segundos</div>
@@ -331,6 +331,36 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
       </div>
     </div>
   <div class="tab-content" id="tc8"><div class="sec-hdr">Seafood / Mariscos <span class="sec-badge">PANTALLA 2</span></div><div id="list-seafood"></div><div class="layout-card"><h3>Foto Seafood &mdash; tama&ntilde;o y posici&oacute;n</h3><div id="img-ctrl-sea"></div></div><div class="layout-card"><h3>&#10084; Tama&ntilde;o de corazones (saludables)</h3><div id="img-ctrl-hearts"></div></div><div class="layout-card"><h3>&#10084; Coraz&oacute;n saludable (Seafood)</h3><div id="sea-healthy"></div></div><div class="layout-card"><h3>Tama&ntilde;o de texto (Seafood)</h3><div id="sea-textsize"></div></div><div class="layout-card"><h3>Título Seafood &mdash; tamaño y espacio</h3><div id="sea-titlectrl"></div></div><div class="layout-card"><h3>Textos Pantalla 2</h3><div class="field-row"><div class="field-label">Logo (URL)</div><input class="field-input" id="txt-logo" placeholder="link del logo (vacío = el de siempre)"></div><div class="field-row"><div class="field-label">Heart Healthy (inglés)</div><input class="field-input" id="txt-legenEn"></div><div class="field-row"><div class="field-label">Comida Saludable (español)</div><input class="field-input" id="txt-legenEs"></div><div class="field-row"><div class="field-label">Seafood &mdash; título</div><input class="field-input" id="txt-seaTitle"></div><div class="field-row"><div class="field-label">Seafood &mdash; subtítulo</div><input class="field-input" id="txt-seaSub"></div></div></div></div>
+  <div class="tab-content" id="tc9">
+    <div class="sec-hdr">Carnicería <span class="sec-badge">3 PANTALLAS</span></div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Precios reales de la carnicería. Agrega, quita o edita cada categoría. Los cambios se guardan al presionar GUARDAR.</div>
+    <div class="sec-hdr" style="font-size:15px;">Res</div>
+    <div id="carn-res-editor"></div>
+    <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('res')">+ Agregar a Res</button>
+    <div class="sec-hdr" style="font-size:15px;">Carnes Especiales</div>
+    <div id="carn-especiales-editor"></div>
+    <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('especiales')">+ Agregar a Carnes Especiales</button>
+    <div class="sec-hdr" style="font-size:15px;">Puerco</div>
+    <div id="carn-puerco-editor"></div>
+    <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('puerco')">+ Agregar a Puerco</button>
+    <div class="sec-hdr" style="font-size:15px;">Pollo</div>
+    <div id="carn-pollo-editor"></div>
+    <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('pollo')">+ Agregar a Pollo</button>
+    <div class="sec-hdr" style="font-size:15px;">Mariscos</div>
+    <div id="carn-mariscos-editor"></div>
+    <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('mariscos')">+ Agregar a Mariscos</button>
+    <div class="sec-hdr" style="font-size:15px;">Vísceras</div>
+    <div id="carn-visceras-editor"></div>
+    <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('visceras')">+ Agregar a Vísceras</button>
+    <div class="sec-hdr" style="font-size:15px;">Embutidos</div>
+    <div id="carn-embutidos-editor"></div>
+    <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('embutidos')">+ Agregar a Embutidos</button>
+    <div class="layout-card"><h3>Imágenes y video intercambiables</h3>
+      <div class="field-row"><div class="field-label">Imagen Promo (Pantalla 1)</div><input class="field-input" id="txt-promoImg" placeholder="URL de la imagen, 768x552px"></div>
+      <div class="field-row"><div class="field-label">Imagen Pedidos/Contacto (Pantalla 3)</div><input class="field-input" id="txt-contactImg" placeholder="URL de la imagen, 876x322px"></div>
+      <div class="field-row"><div class="field-label">Video / Reel (Pantalla 2)</div><input class="field-input" id="txt-videoSrc" placeholder="URL del .mp4, vertical 320x846px"></div>
+    </div>
+  </div>
   </div><div class="save-bar" style="gap:10px;"><button class="btn-save" id="btn-save" onclick="saveAll()" style="flex:1;">GUARDAR (borrador)</button><button class="btn-save" id="btn-publish" onclick="publishAll()" style="flex:1;background:var(--yellow);color:#222;">PUBLICAR</button></div>
 </div>
 
@@ -476,7 +506,7 @@ function loadP3Fields(){
 async function initDash(){
     loadURLs();loadP3Fields();
     try{
-        const r=await fetch(SCRIPT_URL+'?mode=draft&t='+Date.now());cache=await r.json();if(!cache.seafood)cache.seafood=[];if(cache.imgCfgSea)imgSea=cache.imgCfgSea;if(cache.heartSizes)heartSizes=cache.heartSizes;if(cache.healthyMarks)healthyMarks=cache.healthyMarks;if(cache.seaTextSizes)seaTextSizes=cache.seaTextSizes;if(cache.seaTitleSize)seaTitleSize=cache.seaTitleSize;if(cache.seaSubSize)seaSubSize=cache.seaSubSize;if(cache.seaSubGap!=null)seaSubGap=cache.seaSubGap;loadTextsP2();
+        const r=await fetch(SCRIPT_URL+'?mode=draft&t='+Date.now());cache=await r.json();if(!cache.seafood)cache.seafood=[];CARN_CATS.forEach(k=>{if(!cache[k])cache[k]=[];});if(cache.imgCfgSea)imgSea=cache.imgCfgSea;if(cache.heartSizes)heartSizes=cache.heartSizes;if(cache.healthyMarks)healthyMarks=cache.healthyMarks;if(cache.seaTextSizes)seaTextSizes=cache.seaTextSizes;if(cache.seaTitleSize)seaTitleSize=cache.seaTitleSize;if(cache.seaSubSize)seaSubSize=cache.seaSubSize;if(cache.seaSubGap!=null)seaSubGap=cache.seaSubGap;loadTextsP2();loadCarnTexts();
         renderAll();loadLayoutValues();
         if(isOwner()){buildCtrlP1();buildCtrlP2();buildCtrlFaj();buildCtrlSea();buildCtrlHearts();buildSeaHealthy();buildSeaTextSize();buildSeaTitleCtrl();loadP3Fields();}
         if(cache.sidebarNotes)loadSidebarNotesFromData(cache.sidebarNotes);
@@ -492,7 +522,7 @@ function dollar(v){
 }
 
 function markDirty(id){document.getElementById(id)?.classList.add('dirty');}
-function renderAll(){renderList('list-estilos',cache.estilos||[],'e');renderCarnes();renderList('list-espec',cache.especialidades||[],'sp');renderFajitas();renderSeafood();}
+function renderAll(){renderList('list-estilos',cache.estilos||[],'e');renderCarnes();renderList('list-espec',cache.especialidades||[],'sp');renderFajitas();renderSeafood();renderAllCarn();}
 
 function renderList(cid,items,px){
     const el=document.getElementById(cid);el.innerHTML='';
@@ -553,6 +583,53 @@ function addCarne(){
 function removeCarne(i){
     cache.carnes.splice(i,1);
     renderCarnes();
+}
+
+const CARN_CATS=['res','especiales','puerco','pollo','mariscos','visceras','embutidos'];
+
+function renderCarn(key){
+    const el=document.getElementById('carn-'+key+'-editor');
+    if(!el)return;
+    el.innerHTML='';
+    (cache[key]||[]).forEach((c,i)=>{
+        el.innerHTML+=`<div class="item-card" id="carn-${key}-card-${i}" style="margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+            <div style="flex:1;display:grid;grid-template-columns:2fr 1fr;gap:8px;">
+                <input class="field-input" style="font-size:15px;padding:8px 10px;" id="carn-${key}-nombre-${i}" value="${escHtml(c.nombre)}" placeholder="Nombre">
+                <input class="field-input" style="font-size:15px;padding:8px 10px;" id="carn-${key}-precio-${i}" value="${escHtml(c.precio)}" placeholder="Precio">
+            </div>
+            <button onclick="removeCarn('${key}',${i})" style="background:transparent;border:1.5px solid #555;color:#888;font-size:13px;font-weight:700;padding:6px 10px;border-radius:8px;cursor:pointer;flex-shrink:0;">X</button>
+        </div></div>`;
+    });
+}
+
+function addCarn(key){
+    if(!cache[key])cache[key]=[];
+    cache[key].push({nombre:'Nuevo item',precio:'0.00'});
+    renderCarn(key);
+    markDirty('carn-'+key+'-card-'+(cache[key].length-1));
+}
+
+function removeCarn(key,i){
+    cache[key].splice(i,1);
+    renderCarn(key);
+}
+
+function getCarnFromEditor(key){
+    const result=[];
+    (cache[key]||[]).forEach((_,i)=>{
+        const n=document.getElementById('carn-'+key+'-nombre-'+i);
+        const p=document.getElementById('carn-'+key+'-precio-'+i);
+        if(n&&p)result.push({nombre:n.value.trim(),precio:p.value.trim()});
+    });
+    return result;
+}
+
+function renderAllCarn(){CARN_CATS.forEach(renderCarn);}
+
+function loadCarnTexts(){
+    var g=function(id,v){var e=document.getElementById(id);if(e)e.value=v||'';};
+    g('txt-promoImg',cache.promoImg);g('txt-contactImg',cache.contactImg);g('txt-videoSrc',cache.videoSrc);
 }
 
 function getCarnesFromEditor(){
@@ -657,12 +734,12 @@ async function saveAll(){
     const tp1={styleEn:lc.titles.styleEn,styleEs:lc.titles.styleEs,meatEn:lc.titles.meatEn.replace(/\n/g,'<br>'),meatEs:lc.titles.meatEs,website:lc.titles.website};
     const tp2={titleEn:lc.titles.titleEn,titleEs:lc.titles.titleEs};
     try{
-        const seafood=(cache.seafood||[]).map(function(f,i){var nm=document.getElementById('iname-sea-'+i),pr=document.getElementById('iprice-sea-'+i);var o={nombre:nm?nm.value:f.nombre,precio:pr?pr.value:f.precio,img:f.img||''};if(i===0){var u=document.getElementById('sea-url-img');if(u)o.img=u.value.trim();}return o;});localStorage.setItem('imgCfgSea',JSON.stringify(imgSea));var _gt=function(id){var e=document.getElementById(id);return e?e.value.trim():'';};var legendEn=_gt('txt-legenEn'),legendEs=_gt('txt-legenEs'),seaTitle=_gt('txt-seaTitle'),seaSub=_gt('txt-seaSub'),logoUrl=_gt('txt-logo');const postData={estilos,especialidades,fajitas,carnes,seafood,layoutP1:lp1,titlesP1:tp1,titlesP2:tp2,imgCfgP1:imgP1,imgCfgP2:imgP2,imgCfgFaj:imgFaj,imgCfgSea:imgSea,heartSizes,healthyMarks,seaTextSizes,seaTitleSize,seaSubSize,seaSubGap,legendEn,legendEs,seaTitle,seaSub,logoUrl};
+        const seafood=(cache.seafood||[]).map(function(f,i){var nm=document.getElementById('iname-sea-'+i),pr=document.getElementById('iprice-sea-'+i);var o={nombre:nm?nm.value:f.nombre,precio:pr?pr.value:f.precio,img:f.img||''};if(i===0){var u=document.getElementById('sea-url-img');if(u)o.img=u.value.trim();}return o;});localStorage.setItem('imgCfgSea',JSON.stringify(imgSea));var _gt=function(id){var e=document.getElementById(id);return e?e.value.trim():'';};var legendEn=_gt('txt-legenEn'),legendEs=_gt('txt-legenEs'),seaTitle=_gt('txt-seaTitle'),seaSub=_gt('txt-seaSub'),logoUrl=_gt('txt-logo');const res=getCarnFromEditor('res'),especiales=getCarnFromEditor('especiales'),puerco=getCarnFromEditor('puerco'),pollo=getCarnFromEditor('pollo'),mariscos=getCarnFromEditor('mariscos'),visceras=getCarnFromEditor('visceras'),embutidos=getCarnFromEditor('embutidos');var promoImg=_gt('txt-promoImg'),contactImg=_gt('txt-contactImg'),videoSrc=_gt('txt-videoSrc');const postData={estilos,especialidades,fajitas,carnes,seafood,layoutP1:lp1,titlesP1:tp1,titlesP2:tp2,imgCfgP1:imgP1,imgCfgP2:imgP2,imgCfgFaj:imgFaj,imgCfgSea:imgSea,heartSizes,healthyMarks,seaTextSizes,seaTitleSize,seaSubSize,seaSubGap,legendEn,legendEs,seaTitle,seaSub,logoUrl,res,especiales,puerco,pollo,mariscos,visceras,embutidos,promoImg,contactImg,videoSrc};
         if(sidebarNotes)postData.sidebarNotes=sidebarNotes;
         await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(postData)});
         const b=document.getElementById('save-banner');b.classList.add('show');setTimeout(()=>b.classList.remove('show'),4000);
         document.querySelectorAll('.item-card.dirty').forEach(el=>el.classList.remove('dirty'));
-        cache.estilos=estilos;cache.especialidades=especialidades;cache.fajitas=fajitas;cache.seafood=seafood;try{reloadPreviews();}catch(e){}
+        cache.estilos=estilos;cache.especialidades=especialidades;cache.fajitas=fajitas;cache.seafood=seafood;cache.res=res;cache.especiales=especiales;cache.puerco=puerco;cache.pollo=pollo;cache.mariscos=mariscos;cache.visceras=visceras;cache.embutidos=embutidos;cache.promoImg=promoImg;cache.contactImg=contactImg;cache.videoSrc=videoSrc;try{reloadPreviews();}catch(e){}
         if(isOwner())cache.carnes=carnes;
     }catch(e){alert('Error al guardar.');}
     btn.disabled=false;btn.textContent='GUARDAR CAMBIOS';
