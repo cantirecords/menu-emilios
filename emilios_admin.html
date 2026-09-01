@@ -108,12 +108,74 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
 .btn-add-screen{width:100%;background:var(--surf2);border:2px dashed var(--border);color:var(--muted);font-family:var(--ff);font-size:15px;font-weight:700;padding:16px;border-radius:14px;cursor:pointer;margin-top:8px;transition:all .2s;}
 .btn-add-screen:active{border-color:var(--red);color:var(--red);}
 .save-bar{position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:var(--bg);border-top:1px solid var(--border);z-index:50;}
-.btn-save{width:100%;background:var(--green);color:white;border:none;font-family:var(--ff);font-size:20px;font-weight:700;padding:17px;border-radius:16px;cursor:pointer;box-shadow:0 8px 24px rgba(0,132,61,.35);transition:all .2s;}
+.btn-save{width:100%;background:var(--green);color:white;border:none;font-family:var(--ff);font-size:20px;font-weight:700;padding:17px;border-radius:16px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.4);transition:all .2s;}
 .btn-save:active{background:var(--green-dk);transform:scale(.98);}.btn-save:disabled{background:#444;box-shadow:none;}
 /* P3 slide editor */
 .slide-editor{background:var(--surf2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;}
 .slide-editor h4{font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
-.save-bar{display:none;} body.logged-in .save-bar{display:flex;}#sidePrev{display:none;}.sp-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000;margin-bottom:10px;flex:none;}.sp-frame iframe{width:100%;height:100%;border:0;display:block;}.sp-lbl{position:absolute;top:6px;left:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;z-index:2;}#sp-empty2{display:none;text-align:center;color:var(--muted);font-size:13px;padding:20px;}#sp-title{flex:1;color:var(--muted);font-size:12px;font-weight:700;}#sp-tabs{display:flex;gap:6px;margin-bottom:8px;align-items:center;}.sp-tab{flex:1;background:var(--surf2,#222);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;}.sp-tab.active{background:var(--yellow);color:#222;}.sp-reload{background:var(--surf2,#222);color:#fff;border:1px solid var(--border);border-radius:8px;width:38px;padding:8px;cursor:pointer;}#sp-hint{margin-top:8px;font-size:11px;color:var(--muted);text-align:center;}@media(min-width:1200px){#sidePrev{display:flex;flex-direction:column;position:fixed;top:56px;right:0;bottom:0;width:640px;overflow-y:auto;background:#0d0d0d;border-left:1px solid var(--border);z-index:60;padding:14px;}body.logged-in .body{margin-right:660px;}body.logged-in .save-bar{right:660px;}}</style>
+.save-bar{display:none;} body.logged-in .save-bar{display:flex;}#sidePrev{display:none;}.sp-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000;margin-bottom:10px;flex:none;}.sp-frame iframe{width:100%;height:100%;border:0;display:block;}.sp-lbl{position:absolute;top:6px;left:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;z-index:2;}#sp-empty2{display:none;text-align:center;color:var(--muted);font-size:13px;padding:20px;}#sp-title{flex:1;color:var(--muted);font-size:12px;font-weight:700;}#sp-tabs{display:flex;gap:6px;margin-bottom:8px;align-items:center;}.sp-tab{flex:1;background:var(--surf2,#222);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;}.sp-tab.active{background:var(--yellow);color:#222;}.sp-reload{background:var(--surf2,#222);color:#fff;border:1px solid var(--border);border-radius:8px;width:38px;padding:8px;cursor:pointer;}#sp-hint{margin-top:8px;font-size:11px;color:var(--muted);text-align:center;}@media(min-width:1200px){#sidePrev{display:flex;flex-direction:column;position:fixed;top:56px;right:0;bottom:0;width:640px;overflow-y:auto;background:#0d0d0d;border-left:1px solid var(--border);z-index:60;padding:14px;}body.logged-in .body{margin-right:660px;}body.logged-in .save-bar{right:660px;}}
+
+/* ===== RESPONSIVE UPGRADE (PC + mobile) ===== */
+/* Mouse hover feedback (touch devices keep only :active) */
+@media(hover:hover) and (pointer:fine){
+  .pad-btn:hover{background:#2a2a2a;border-color:var(--red);}
+  .btn-out:hover{border-color:var(--red);color:var(--red);}
+  .tab:hover{color:var(--red);}
+  .btn-green:hover{background:var(--green-dk);}
+  .btn-ghost:hover{border-color:#ff4d4d;color:#ff4d4d;}
+  .btn-del-screen:hover{border-color:#ff4d4d;color:#ff4d4d;}
+  .btn-add-screen:hover{border-color:var(--red);color:var(--red);}
+  .btn-save:hover:not(:disabled){filter:brightness(1.08);}
+  .preview-toggle-btn:hover{border-color:var(--yellow);}
+  .item-header:hover{background:rgba(255,255,255,.03);}
+  .sp-tab:hover,.sp-reload:hover{border-color:var(--yellow);}
+}
+
+/* Tabs: one scrollable row instead of wrapping into a messy block */
+.tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:none;}
+
+/* #tc9 (Carnicería) lives outside .body in the markup — give it the same treatment */
+#tc9{padding:16px;max-width:680px;margin:0 auto;}
+@media(min-width:1200px){body.logged-in #tc9{margin-right:660px;margin-left:auto;}}
+
+/* Fluid content width so tablet/desktop don't sit trapped at phone width */
+@media(min-width:640px){
+  .body{max-width:760px;padding:20px 24px 96px;}
+  #tc9{max-width:760px;padding:20px 24px 96px;}
+  #list-estilos,#list-espec,#list-fajitas,#list-seafood,#carnes-editor,
+  #carn-res-editor,#carn-especiales-editor,#carn-puerco-editor,#carn-pollo-editor,
+  #carn-mariscos-editor,#carn-visceras-editor,#carn-embutidos-editor{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-items:start;
+  }
+  #list-estilos>.item-card,#list-espec>.item-card,#list-fajitas>.item-card,#list-seafood>.item-card,
+  #carnes-editor>.item-card,#carn-res-editor>.item-card,#carn-especiales-editor>.item-card,
+  #carn-puerco-editor>.item-card,#carn-pollo-editor>.item-card,#carn-mariscos-editor>.item-card,
+  #carn-visceras-editor>.item-card,#carn-embutidos-editor>.item-card{margin-bottom:0;}
+}
+@media(min-width:900px){
+  .body{max-width:1000px;padding:24px 32px 100px;}
+  #tc9{max-width:1000px;padding:24px 32px 100px;}
+  .login-card{max-width:400px;padding:48px 36px;}
+}
+@media(min-width:1000px){
+  #tc4.active,#tc5.active,#tc6.active{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px;align-items:start;}
+  #tc4>.sec-hdr,#tc5>.sec-hdr,#tc6>.sec-hdr,
+  #tc4>.url-config-box,#tc4>.preview-toggle-btn,#tc4>.preview-wrap,
+  #tc6>.preview-toggle-btn,#tc6>.preview-wrap,
+  #tc4>div[style],#tc5>div[style],#tc6>div[style]{grid-column:1/-1;}
+}
+
+/* Very small phones */
+@media(max-width:359px){
+  .topbar{padding:10px 12px;}
+  .topbar-logo{height:32px;}
+  .topbar-title{font-size:16px;}
+  .role-pill{font-size:11px;padding:4px 8px;}
+  .btn-out{padding:6px 10px;font-size:12px;}
+}
+</style>
 </head>
 <body>
 <div id="save-banner">Guardado! Pantallas actualizadas en menos de 1 minuto.</div>
@@ -134,7 +196,7 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
   </div>
 </div>
 
-<div id="dash"><div id="sidePrev"><div id="sp-tabs"><span id="sp-title">Vista previa &middot; BORRADOR</span><button class="sp-reload" onclick="setSidePrev()" title="Recargar">&#8635;</button></div><div class="sp-frame"><div class="sp-lbl">Pantalla 1</div><iframe id="sideframe-p1" src=""></iframe></div><div class="sp-frame"><div class="sp-lbl">Pantalla 2</div><iframe id="sideframe-p2" src=""></iframe></div><div id="sp-empty2">Pon las URLs de las pantallas en el tab <b>Pantallas</b> para ver el preview.</div></div>
+<div id="dash"><div id="sidePrev"><div id="sp-tabs"><span id="sp-title">Vista previa &middot; BORRADOR</span><button class="sp-reload" onclick="setSidePrev()" title="Recargar">&#8635;</button></div><div id="sp-menu-frames" style="display:contents"><div class="sp-frame"><div class="sp-lbl">Pantalla 1</div><iframe id="sideframe-p1" src=""></iframe></div><div class="sp-frame"><div class="sp-lbl">Pantalla 2</div><iframe id="sideframe-p2" src=""></iframe></div><div id="sp-empty2">Pon las URLs de las pantallas en el tab <b>Pantallas</b> para ver el preview.</div></div><div id="sp-carn-frame" style="display:none;width:100%;height:1200px;border-radius:10px;overflow:hidden;background:#000;margin-bottom:10px;flex:none;"><iframe id="sideframe-carn" src="" style="width:100%;height:100%;border:0;display:block;"></iframe></div></div>
   <div class="topbar">
     <div class="topbar-left">
       <img class="topbar-logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="">
@@ -335,24 +397,31 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
     <div class="sec-hdr">Carnicería <span class="sec-badge">3 PANTALLAS</span></div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Precios reales de la carnicería. Agrega, quita o edita cada categoría. Los cambios se guardan al presionar GUARDAR.</div>
     <div class="sec-hdr" style="font-size:15px;">Res</div>
+    <input class="field-input carn-search" id="carn-res-search" placeholder="Buscar en Res..." oninput="filterCarn('res')" style="margin-bottom:8px;">
     <div id="carn-res-editor"></div>
     <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('res')">+ Agregar a Res</button>
     <div class="sec-hdr" style="font-size:15px;">Carnes Especiales</div>
+    <input class="field-input carn-search" id="carn-especiales-search" placeholder="Buscar en Carnes Especiales..." oninput="filterCarn('especiales')" style="margin-bottom:8px;">
     <div id="carn-especiales-editor"></div>
     <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('especiales')">+ Agregar a Carnes Especiales</button>
     <div class="sec-hdr" style="font-size:15px;">Puerco</div>
+    <input class="field-input carn-search" id="carn-puerco-search" placeholder="Buscar en Puerco..." oninput="filterCarn('puerco')" style="margin-bottom:8px;">
     <div id="carn-puerco-editor"></div>
     <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('puerco')">+ Agregar a Puerco</button>
     <div class="sec-hdr" style="font-size:15px;">Pollo</div>
+    <input class="field-input carn-search" id="carn-pollo-search" placeholder="Buscar en Pollo..." oninput="filterCarn('pollo')" style="margin-bottom:8px;">
     <div id="carn-pollo-editor"></div>
     <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('pollo')">+ Agregar a Pollo</button>
     <div class="sec-hdr" style="font-size:15px;">Mariscos</div>
+    <input class="field-input carn-search" id="carn-mariscos-search" placeholder="Buscar en Mariscos..." oninput="filterCarn('mariscos')" style="margin-bottom:8px;">
     <div id="carn-mariscos-editor"></div>
     <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('mariscos')">+ Agregar a Mariscos</button>
     <div class="sec-hdr" style="font-size:15px;">Vísceras</div>
+    <input class="field-input carn-search" id="carn-visceras-search" placeholder="Buscar en Vísceras..." oninput="filterCarn('visceras')" style="margin-bottom:8px;">
     <div id="carn-visceras-editor"></div>
     <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('visceras')">+ Agregar a Vísceras</button>
     <div class="sec-hdr" style="font-size:15px;">Embutidos</div>
+    <input class="field-input carn-search" id="carn-embutidos-search" placeholder="Buscar en Embutidos..." oninput="filterCarn('embutidos')" style="margin-bottom:8px;">
     <div id="carn-embutidos-editor"></div>
     <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('embutidos')">+ Agregar a Embutidos</button>
     <div class="layout-card"><h3>Imágenes y video intercambiables</h3>
@@ -421,7 +490,20 @@ function applyRole(){
     else{pill.className='role-pill client';pill.textContent='Cliente';}
 }
 
-function switchTab(n){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===n));document.querySelectorAll('.tab-content').forEach((c,i)=>c.classList.toggle('active',i===n));}
+function switchTab(n){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===n));document.querySelectorAll('.tab-content').forEach((c,i)=>c.classList.toggle('active',i===n));updSidePrevMode(n===9);}
+
+const CARN_PREVIEW_URL='carniceria/prototipo-carniceria.html';
+function updSidePrevMode(isCarn){
+    const menu=document.getElementById('sp-menu-frames'),carn=document.getElementById('sp-carn-frame');
+    if(!menu||!carn)return;
+    menu.style.display=isCarn?'none':'contents';
+    carn.style.display=isCarn?'block':'none';
+    if(isCarn)reloadCarnPreview();
+}
+function reloadCarnPreview(){
+    const f=document.getElementById('sideframe-carn');
+    if(f)f.src=CARN_PREVIEW_URL+'?mode=draft&_='+Date.now();
+}
 
 function saveURLs(){
     ghP1=document.getElementById('cfg-p1-url').value.trim();
@@ -435,7 +517,7 @@ function loadURLs(){
 
 function reloadPreviews(){try{setSidePrev();}catch(e){}["p1","p2","p3"].forEach(function(id){var w=document.getElementById("preview-"+id);var f=document.getElementById("iframe-"+id);if(w&&f&&w.classList.contains("open")){var u=id==="p1"?ghP1:id==="p2"?ghP2:ghP3;if(u)f.src=u+(u.indexOf("?")>=0?"&":"?")+"mode=draft&_="+Date.now();}});}
 function toggleSpMode(){window._spMode=(window._spMode==="live")?"draft":"live";var b=document.getElementById("sp-mode");if(b){if(window._spMode==="live"){b.textContent="\u25cf En vivo (TV)";b.style.background="var(--green)";b.style.color="#fff";}else{b.textContent="\u25cf Borrador";b.style.background="var(--yellow)";b.style.color="#222";}}setSidePrev(window._sp||"p2");}
-function setSidePrev(){var f1=document.getElementById('sideframe-p1'),f2=document.getElementById('sideframe-p2'),em=document.getElementById('sp-empty2');if(!ghP1&&!ghP2){if(em)em.style.display='block';return;}if(em)em.style.display='none';function u(x){return x?x+(x.indexOf('?')>=0?'&':'?')+'mode=draft&_='+Date.now():'';}if(f1&&ghP1)f1.src=u(ghP1);if(f2&&ghP2)f2.src=u(ghP2);}
+function setSidePrev(){var carn=document.getElementById('sp-carn-frame');if(carn&&carn.style.display!=='none'){reloadCarnPreview();return;}var f1=document.getElementById('sideframe-p1'),f2=document.getElementById('sideframe-p2'),em=document.getElementById('sp-empty2');if(!ghP1&&!ghP2){if(em)em.style.display='block';return;}if(em)em.style.display='none';function u(x){return x?x+(x.indexOf('?')>=0?'&':'?')+'mode=draft&_='+Date.now():'';}if(f1&&ghP1)f1.src=u(ghP1);if(f2&&ghP2)f2.src=u(ghP2);}
 function togglePreview(id){
     const wrap=document.getElementById('preview-'+id);
     const iframe=document.getElementById('iframe-'+id);
@@ -581,6 +663,8 @@ function addCarne(){
 }
 
 function removeCarne(i){
+    const nombre=(cache.carnes[i]&&cache.carnes[i].es)||'este item';
+    if(!confirm('¿Borrar "'+nombre+'"?'))return;
     cache.carnes.splice(i,1);
     renderCarnes();
 }
@@ -593,27 +677,55 @@ function renderCarn(key){
     el.innerHTML='';
     if(!(cache[key]||[]).length){el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:4px 2px 8px;">Sin items todavía — usa el botón de abajo para agregar, o carga los datos desde el Sheet.</div>';}
     (cache[key]||[]).forEach((c,i)=>{
-        el.innerHTML+=`<div class="item-card" id="carn-${key}-card-${i}" style="margin-bottom:8px;">
+        const disponible=c.disponible!==false;
+        el.innerHTML+=`<div class="item-card" id="carn-${key}-card-${i}" style="margin-bottom:8px;${disponible?'':'opacity:.5;'}">
         <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+            <label style="display:flex;align-items:center;flex-shrink:0;cursor:pointer;" title="Disponible en pantalla">
+                <input type="checkbox" id="carn-${key}-disp-${i}" ${disponible?'checked':''} onchange="toggleCarnDisp('${key}',${i})" style="width:18px;height:18px;cursor:pointer;">
+            </label>
             <div style="flex:1;display:grid;grid-template-columns:2fr 1fr;gap:8px;">
                 <input class="field-input" style="font-size:15px;padding:8px 10px;" id="carn-${key}-nombre-${i}" value="${escHtml(c.nombre)}" placeholder="Nombre">
-                <input class="field-input" style="font-size:15px;padding:8px 10px;" id="carn-${key}-precio-${i}" value="${escHtml(c.precio)}" placeholder="Precio">
+                <input class="field-input" style="font-size:15px;padding:8px 10px;" id="carn-${key}-precio-${i}" value="${escHtml(c.precio)}" placeholder="Precio" inputmode="decimal">
             </div>
             <button onclick="removeCarn('${key}',${i})" style="background:transparent;border:1.5px solid #555;color:#888;font-size:13px;font-weight:700;padding:6px 10px;border-radius:8px;cursor:pointer;flex-shrink:0;">X</button>
         </div></div>`;
     });
 }
 
+function toggleCarnDisp(key,i){
+    const chk=document.getElementById('carn-'+key+'-disp-'+i);
+    if(!chk||!cache[key]||!cache[key][i])return;
+    cache[key][i].disponible=chk.checked;
+    const card=document.getElementById('carn-'+key+'-card-'+i);
+    if(card)card.style.opacity=chk.checked?'':'.5';
+    markDirty('carn-'+key+'-card-'+i);
+}
+
 function addCarn(key){
     if(!cache[key])cache[key]=[];
-    cache[key].push({nombre:'Nuevo item',precio:'0.00'});
+    cache[key].push({nombre:'Nuevo item',precio:'0.00',disponible:true});
+    const search=document.getElementById('carn-'+key+'-search');
+    if(search)search.value='';
     renderCarn(key);
     markDirty('carn-'+key+'-card-'+(cache[key].length-1));
 }
 
 function removeCarn(key,i){
+    const nombre=(cache[key][i]&&cache[key][i].nombre)||'este item';
+    if(!confirm('¿Borrar "'+nombre+'"?'))return;
     cache[key].splice(i,1);
     renderCarn(key);
+}
+
+function filterCarn(key){
+    const search=document.getElementById('carn-'+key+'-search');
+    const q=(search?search.value:'').trim().toLowerCase();
+    (cache[key]||[]).forEach((c,i)=>{
+        const card=document.getElementById('carn-'+key+'-card-'+i);
+        if(!card)return;
+        const nombre=String(c.nombre||'').toLowerCase();
+        card.style.display=(!q||nombre.includes(q))?'':'none';
+    });
 }
 
 function getCarnFromEditor(key){
@@ -621,7 +733,8 @@ function getCarnFromEditor(key){
     (cache[key]||[]).forEach((_,i)=>{
         const n=document.getElementById('carn-'+key+'-nombre-'+i);
         const p=document.getElementById('carn-'+key+'-precio-'+i);
-        if(n&&p)result.push({nombre:n.value.trim(),precio:p.value.trim()});
+        const d=document.getElementById('carn-'+key+'-disp-'+i);
+        if(n&&p)result.push({nombre:n.value.trim(),precio:p.value.trim(),disponible:d?d.checked:true});
     });
     return result;
 }
