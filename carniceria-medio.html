@@ -254,18 +254,22 @@ function hideSplashes(){
   },_w);
 }
 
+let _lastDataStr=null;
 async function loadFromSheet(){
   if(!APPS_SCRIPT_URL_CARNICERIA)return;
   try{
     const r=await fetch(_DATA_URL_CARNICERIA+Date.now());
     const data=await r.json();
-    try{localStorage.setItem(CACHE_KEY,JSON.stringify(data));}catch(_e){}
+    const str=JSON.stringify(data);
+    if(str===_lastDataStr)return;
+    _lastDataStr=str;
+    try{localStorage.setItem(CACHE_KEY,str);}catch(_e){}
     applyData(data);
   }catch(_e){ /* sin internet o Sheet caído: se queda con lo último que haya (caché o muestra) */ }
 }
 try{
   const cached=localStorage.getItem(CACHE_KEY);
-  if(cached)applyData(JSON.parse(cached));
+  if(cached){_lastDataStr=cached;applyData(JSON.parse(cached));}
 }catch(_e){}
 loadFromSheet();
 setInterval(loadFromSheet,30000);
