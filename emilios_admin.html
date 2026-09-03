@@ -425,9 +425,9 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
     <div id="carn-embutidos-editor"></div>
     <button class="btn-sm btn-green" style="margin-top:8px;margin-bottom:20px;width:100%;padding:14px;font-size:16px;" onclick="addCarn('embutidos')">+ Agregar a Embutidos</button>
     <div class="layout-card"><h3>Imágenes y video intercambiables</h3>
-      <div class="field-row"><div class="field-label">Imagen Promo (Pantalla 1)</div><input class="field-input" id="txt-promoImg" placeholder="URL de la imagen, 768x552px"></div>
-      <div class="field-row"><div class="field-label">Imagen Pedidos/Contacto (Pantalla 3)</div><input class="field-input" id="txt-contactImg" placeholder="URL de la imagen, 876x322px"></div>
-      <div class="field-row"><div class="field-label">Video / Reel (Pantalla 2)</div><input class="field-input" id="txt-videoSrc" placeholder="URL del .mp4, vertical 320x846px"></div>
+      <div class="field-row" id="drop-promoImg"><div class="field-label">Imagen Promo (Pantalla 1)</div><input class="field-input" id="txt-promoImg" placeholder="URL de la imagen, 768x552px"><input type="file" id="file-promoImg" accept="image/*" style="display:none"><button type="button" class="sp-reload" id="btn-up-promoImg" title="Subir imagen (o arrastrala aquí)" onclick="document.getElementById('file-promoImg').click()">&#128193;</button></div>
+      <div class="field-row" id="drop-contactImg"><div class="field-label">Imagen Pedidos/Contacto (Pantalla 3)</div><input class="field-input" id="txt-contactImg" placeholder="URL de la imagen, 876x322px"><input type="file" id="file-contactImg" accept="image/*" style="display:none"><button type="button" class="sp-reload" id="btn-up-contactImg" title="Subir imagen (o arrastrala aquí)" onclick="document.getElementById('file-contactImg').click()">&#128193;</button></div>
+      <div class="field-row" id="drop-videoSrc"><div class="field-label">Video / Reel (Pantalla 2)</div><input class="field-input" id="txt-videoSrc" placeholder="URL del .mp4, vertical 320x846px"><input type="file" id="file-videoSrc" accept="video/*" style="display:none"><button type="button" class="sp-reload" id="btn-up-videoSrc" title="Subir video (o arrastralo aquí)" onclick="document.getElementById('file-videoSrc').click()">&#128193;</button></div>
     </div>
   </div>
   </div><div class="save-bar" style="gap:10px;"><button class="btn-save" id="btn-save" onclick="saveAll()" style="flex:1;">GUARDAR (borrador)</button><button class="btn-save" id="btn-publish" onclick="publishAll()" style="flex:1;background:var(--yellow);color:#222;">PUBLICAR</button></div>
@@ -925,6 +925,74 @@ function buildSidebarNotes(){
 
 
 async function publishAll(){try{await saveAll();var b=document.getElementById("btn-publish");if(b){b.disabled=true;b.textContent="PUBLICANDO...";}await fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({action:"publish"})});if(b){b.textContent="\u2713 PUBLICADO";setTimeout(function(){b.textContent="PUBLICAR";b.disabled=false;},2200);}}catch(e){alert("Error al publicar: "+e);}}
+
+/* ---------------- Subida de archivos a GitHub (drag & drop / select) ---------------- */
+const GH_OWNER='cantirecords', GH_REPO='menu-emilios', GH_BRANCH='main';
+const GH_UPLOAD_TARGETS={promoImg:'img/CARNICERIA-PROMO',contactImg:'img/CARNICERIA-CONTACTO',videoSrc:'video/CARNICERIA-REEL'};
+function ghToken(){
+  let t=localStorage.getItem('gh_pat');
+  if(!t){
+    t=prompt('Peg\u00e1 tu GitHub Token (con permiso de escritura en cantirecords/menu-emilios).\nSe guarda solo en este navegador, se pide una sola vez.');
+    if(t){t=t.trim();if(t)localStorage.setItem('gh_pat',t);}
+  }
+  return t;
+}
+function b64FromFile(file){
+  return new Promise(function(resolve,reject){
+    const r=new FileReader();
+    r.onload=function(){resolve(r.result.split(',')[1]);};
+    r.onerror=reject;
+    r.readAsDataURL(file);
+  });
+}
+async function uploadFieldFile(field,file){
+  const token=ghToken();
+  if(!token)return;
+  const ext=(file.name.split('.').pop()||'bin').toLowerCase();
+  const path=GH_UPLOAD_TARGETS[field]+'.'+ext;
+  const btn=document.getElementById('btn-up-'+field);
+  if(btn){btn.textContent='\u23f3';btn.disabled=true;}
+  try{
+    const content=await b64FromFile(file);
+    const api='https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/contents/'+path;
+    let sha=null;
+    const getRes=await fetch(api+'?ref='+GH_BRANCH,{headers:{Authorization:'token '+token}});
+    if(getRes.ok){const j=await getRes.json();sha=j.sha;}
+    else if(getRes.status===401){alert('Token inv\u00e1lido o sin permiso. Se va a pedir de nuevo.');localStorage.removeItem('gh_pat');return;}
+    const body={message:'Admin upload: '+path,content:content,branch:GH_BRANCH};
+    if(sha)body.sha=sha;
+    const putRes=await fetch(api,{method:'PUT',headers:{Authorization:'token '+token,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!putRes.ok){
+      const errTxt=await putRes.text();
+      alert('Error subiendo a GitHub ('+putRes.status+'): '+errTxt);
+      return;
+    }
+    const url='https://cantirecords.github.io/'+GH_REPO+'/'+path+'?v='+Date.now();
+    const inp=document.getElementById('txt-'+field);
+    if(inp)inp.value=url;
+    alert('Listo, se subi\u00f3. Ahora dale GUARDAR y PUBLICAR para que se vea en las pantallas.');
+  }catch(e){
+    alert('Error subiendo el archivo: '+e.message);
+  }finally{
+    if(btn){btn.textContent='\ud83d\udcc1';btn.disabled=false;}
+  }
+}
+['promoImg','contactImg','videoSrc'].forEach(function(field){
+  const fileInp=document.getElementById('file-'+field);
+  const dropZone=document.getElementById('drop-'+field);
+  if(fileInp)fileInp.addEventListener('change',function(e){
+    if(e.target.files&&e.target.files[0])uploadFieldFile(field,e.target.files[0]);
+    e.target.value='';
+  });
+  if(dropZone){
+    dropZone.addEventListener('dragover',function(e){e.preventDefault();dropZone.style.outline='2px dashed #E31837';});
+    dropZone.addEventListener('dragleave',function(e){dropZone.style.outline='';});
+    dropZone.addEventListener('drop',function(e){
+      e.preventDefault();dropZone.style.outline='';
+      if(e.dataTransfer.files&&e.dataTransfer.files[0])uploadFieldFile(field,e.dataTransfer.files[0]);
+    });
+  }
+});
 </script>
 </body>
 </html>
