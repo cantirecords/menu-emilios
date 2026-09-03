@@ -203,7 +203,7 @@ document.getElementById('screen2').innerHTML=`
   <div style="position:absolute;left:800px;top:36px;width:320px;">
     ${headSpacer(72,62)}
     <div class="reel" style="height:846px;">
-      ${VIDEO_SRC?`<video src="${VIDEO_SRC}" autoplay muted loop playsinline></video>`:`<div class="play"></div>`}
+      ${VIDEO_SRC?`<video id="carnVideo" src="${VIDEO_SRC}" autoplay muted loop playsinline></video>`:`<div class="play"></div>`}
     </div>
   </div>
   <!-- POLLO right -->
@@ -273,6 +273,13 @@ try{
 }catch(_e){}
 loadFromSheet();
 setInterval(loadFromSheet,30000);
+setInterval(function(){
+  const v=document.getElementById('carnVideo');
+  if(v&&(v.error||v.paused||v.readyState<2)){
+    v.load();
+    v.play().catch(function(){});
+  }
+},15000);
 
 /* ---------------- SCALING ---------------- */
 function scaleAll(){
