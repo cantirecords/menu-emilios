@@ -189,43 +189,80 @@ function fakeQR(){let c='';for(let y=0;y<11;y++){for(let x=0;x<11;x++){const cor
 
 /* ---------------- RENDER (llamado al cargar y cada vez que llegan datos del Sheet) ---------------- */
 
-/* Conserva el <video> entre re-renders: si el src no cambio, se reusa el mismo
-   nodo para que no se reinicie ni vuelva a bufferear. */
-let _keptVideo=null;
-function renderAll(){
-  const old=document.getElementById('carnVideo');
-  if(old&&old.getAttribute('src')===VIDEO_SRC&&!old.error){_keptVideo=old;old.remove();}
-  _renderAllRaw();
-  if(_keptVideo){
-    const slot=document.getElementById('carnVideo');
-    if(slot&&slot!==_keptVideo&&slot.parentNode)slot.parentNode.replaceChild(_keptVideo,slot);
-    _keptVideo=null;
-  }
+/* El <video> vive FUERA de lo que se reescribe.
+
+   Antes el reel estaba dentro del innerHTML de #screen2, asi que en CADA render
+   el navegador creaba un <video> nuevo que empezaba a cargar, y el que estaba
+   corriendo se sacaba del documento. En el WebView del Fire Stick eso prende un
+   decodificador de video extra cada vez y pausa el que ya estaba: por eso el reel
+   se veia a veces si y a veces no.
+
+   Ahora #screen2 se arma UNA sola vez con dos hijos:
+     #dyn     -> lo unico que se reescribe (puerco, pollo, logo, leyenda)
+     #reelBox -> el reel y su <video>, creados una vez y nunca mas tocados.
+   El <video> jamas se saca del documento, asi que no se pausa ni se reinicia. */
+
+function ensureSkeleton(){
+  if(document.getElementById('dyn'))return;
+  document.getElementById('screen2').innerHTML=
+    '<div class="canvas">'+
+      '<div id="dyn"></div>'+
+      '<div id="reelBox" style="position:absolute;left:800px;top:36px;width:320px;">'+
+        headSpacer(72,62)+
+        '<div class="reel" style="height:846px;"></div>'+
+      '</div>'+
+    '</div>';
 }
+
+function mountVideo(){
+  const reel=document.querySelector('#reelBox .reel');
+  if(!reel)return;
+  let v=document.getElementById('carnVideo');
+
+  if(!VIDEO_SRC){                      // sin video: el circulo de play de siempre
+    if(!reel.querySelector('.play'))reel.innerHTML='<div class="play"></div>';
+    return;
+  }
+  if(v){                               // ya existe: solo cambiamos el src si cambio
+    if(v.getAttribute('src')!==VIDEO_SRC){v.src=VIDEO_SRC;v.load();v.play().catch(function(){});}
+    return;
+  }
+  reel.innerHTML='';
+  v=document.createElement('video');
+  v.id='carnVideo';
+  /* atributos antes del src: algunos WebViews solo respetan el autoplay mudo
+     si ya venia marcado como muted cuando empieza a cargar */
+  v.setAttribute('muted','');v.setAttribute('playsinline','');
+  v.setAttribute('autoplay','');v.setAttribute('loop','');
+  v.setAttribute('preload','auto');
+  v.muted=true;v.loop=true;v.playsInline=true;v.autoplay=true;
+  v.src=VIDEO_SRC;
+  reel.appendChild(v);
+  v.play().catch(function(){});
+}
+
+function renderAll(){
+  ensureSkeleton();
+  _renderAllRaw();
+  mountVideo();
+}
+
 function _renderAllRaw(){
-document.getElementById('screen2').innerHTML=`
-<div class="canvas">
+document.getElementById('dyn').innerHTML=`
   <img class="corner-logo" src="${LOGO}" alt="">
   <!-- PUERCO left -->
   <div style="position:absolute;left:40px;top:36px;width:735px;">
     ${head('pig','PUERCO','',72,62)}
     <div class="card" style="height:846px;">${twocol(PUERCO,24,25,26)}</div>
   </div>
-  <!-- VIDEO center: header invisible reserva el mismo alto que PUERCO/POLLO,
-       así el reel queda con la misma altura y el mismo top que las tarjetas -->
-  <div style="position:absolute;left:800px;top:36px;width:320px;">
-    ${headSpacer(72,62)}
-    <div class="reel" style="height:846px;">
-      ${VIDEO_SRC?`<video id="carnVideo" src="${VIDEO_SRC}" autoplay muted loop playsinline preload="auto"></video>`:`<div class="play"></div>`}
-    </div>
-  </div>
+  <!-- El reel del centro ya no se dibuja aqui: vive en #reelBox (ver arriba) -->
   <!-- POLLO right -->
   <div style="position:absolute;left:1145px;top:36px;width:735px;">
     ${head('chicken','POLLO','',72,62)}
     <div class="card" style="height:846px;">${twocol(POLLO,24,25,26)}</div>
   </div>
 ${legend()}
-</div>`;
+`;
 
 }
 
