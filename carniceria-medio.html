@@ -99,12 +99,20 @@ body{padding:56px 24px 120px;}
    avanzando): el video siempre estuvo corriendo, nadie lo estaba dibujando.
 
    Asi que SOLO cuando hay video (clase puesta desde mountVideo) el .reel deja
-   de recortar y no se le pone nada encima. El marco blanco se queda; lo unico
-   que se pierde son las esquinas redondeadas de ese recuadro. Vale la pena.
+   de recortar y no se le pone nada encima.
+
+   LAS ESQUINAS REDONDEADAS SE QUEDAN. Lo que rompe el video es RECORTAR, no que
+   el marco sea redondo: con overflow:visible el border-radius sigue dibujando el
+   marco curvo pero ya no recorta nada adentro. Para que las esquinas CUADRADAS
+   del video no se asomen por la curva, lo metemos un poco hacia adentro:
+     radio exterior 28px - borde 8px = radio interior 20px
+     inset minimo = 20 * (1 - 1/raiz(2)) = 5.86px
+   Usamos 12px, con holgura de sobra, y el fondo negro hace de marquito interior.
    Si algun dia se quita el video, el .reel normal sigue igual que siempre. */
-.reel.has-video{overflow:visible;border-radius:0;background:#000;}
+.reel.has-video{overflow:visible;background:#000;}
 .reel.has-video::after{content:none;}          /* la capa de rayitas tapaba el plano de video */
-.reel.has-video video{position:relative;z-index:1;border-radius:0;}
+.reel.has-video video{position:relative;z-index:1;border-radius:0;
+  width:calc(100% - 24px);height:calc(100% - 24px);}   /* 12px por lado, centrado por el flex */
 
 /* contact block (screen 3) */
 .contact{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;}
