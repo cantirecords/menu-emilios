@@ -107,9 +107,11 @@ body{padding:56px 24px 120px;}
    del video no se asomen por la curva, lo metemos un poco hacia adentro:
      radio exterior 28px - borde 8px = radio interior 20px
      inset minimo = 20 * (1 - 1/raiz(2)) = 5.86px
-   Usamos 12px, con holgura de sobra, y el fondo negro hace de marquito interior.
+   Usamos 12px, con holgura de sobra. El fondo va BLANCO, del mismo color que el
+   borde de 8px, asi los dos se funden y se lee como un solo marco blanco de 20px
+   con esquinas redondeadas, en vez de un filito negro alrededor del video.
    Si algun dia se quita el video, el .reel normal sigue igual que siempre. */
-.reel.has-video{overflow:visible;background:#000;}
+.reel.has-video{overflow:visible;background:var(--white);}
 .reel.has-video::after{content:none;}          /* la capa de rayitas tapaba el plano de video */
 .reel.has-video video{position:relative;z-index:1;border-radius:0;
   width:calc(100% - 24px);height:calc(100% - 24px);}   /* 12px por lado, centrado por el flex */
