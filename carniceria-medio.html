@@ -214,6 +214,17 @@ function ensureSkeleton(){
     '</div>';
 }
 
+/* Guardamos POR QUE fallo play(). Antes se tragaba el error en silencio y por eso
+   no habia manera de saber si el WebView lo estaba bloqueando. Se ve con ?diag=1 */
+let _playErr="(todavia no se intento)";
+function tryPlay(v){
+  let p;
+  _playErr="(llamado, esperando respuesta...)";
+  try{ p=v.play(); }catch(e){ _playErr="throw "+e.name+": "+e.message; return; }
+  if(p&&p.then)p.then(function(){_playErr="OK";},function(e){_playErr=e.name+": "+e.message;});
+  else _playErr="(play() no devolvio promesa - WebView viejo)";
+}
+
 function mountVideo(){
   const reel=document.querySelector('#reelBox .reel');
   if(!reel)return;
@@ -224,7 +235,7 @@ function mountVideo(){
     return;
   }
   if(v){                               // ya existe: solo cambiamos el src si cambio
-    if(v.getAttribute('src')!==VIDEO_SRC){v.src=VIDEO_SRC;v.load();v.play().catch(function(){});}
+    if(v.getAttribute('src')!==VIDEO_SRC){v.src=VIDEO_SRC;v.load();tryPlay(v);}
     return;
   }
   reel.innerHTML='';
@@ -238,7 +249,7 @@ function mountVideo(){
   v.muted=true;v.loop=true;v.playsInline=true;v.autoplay=true;
   v.src=VIDEO_SRC;
   reel.appendChild(v);
-  v.play().catch(function(){});
+  tryPlay(v);
 }
 
 function renderAll(){
@@ -330,25 +341,83 @@ setInterval(function(){
   const v=document.getElementById('carnVideo');
   if(!v)return;
   if(!v.error&&v.readyState>=3&&!v.paused){_vdogStuck=0;return;}
-  v.play().catch(function(){});
+  tryPlay(v);
   if(v.error||v.readyState<3){
-    if(++_vdogStuck>=2){_vdogStuck=0;v.load();v.play().catch(function(){});}
+    if(++_vdogStuck>=2){_vdogStuck=0;v.load();tryPlay(v);}
   }
 },15000);
 
+/* ---------------- DIAGNOSTICO EN PANTALLA ----------------
+   Se activa SOLO con ?diag=1 en la URL. Sirve para ver que esta pasando en el
+   Fire Stick, donde no hay consola. En la URL normal no se dibuja nada. */
+if(location.search.indexOf('diag=1')>=0){
+  const box=document.createElement('div');
+  box.style.cssText='position:fixed;left:0;top:0;right:0;z-index:99999;background:rgba(0,0,0,.92);'+
+    'color:#0f0;font:bold 26px/1.45 monospace;padding:16px 20px;white-space:pre-wrap;';
+  document.body.appendChild(box);
+  const RS=['0 NADA','1 METADATA','2 DATOS','3 PUEDE SEGUIR','4 SUFICIENTE'];
+  const NS=['0 VACIO','1 INACTIVO','2 DESCARGANDO','3 SIN FUENTE'];
+  const ERR={1:'1 ABORTADO',2:'2 RED',3:'3 NO SE PUDO DECODIFICAR',4:'4 FUENTE NO SOPORTADA'};
+  const t0=Date.now();
+  setInterval(function(){
+    const v=document.getElementById('carnVideo');
+    const seg=Math.round((Date.now()-t0)/1000);
+    if(!v){box.textContent='SEG '+seg+'\nNO EXISTE EL <video> (ese es el problema)';return;}
+    const r=v.getBoundingClientRect();
+    box.textContent=
+      'SEG '+seg+'   videos en pagina: '+document.querySelectorAll('video').length+'\n'+
+      'VENTANA    : '+window.innerWidth+'x'+window.innerHeight+
+        '   escala='+_lastScale.toFixed(4)+(_lastScale?'':'  <<< PANTALLA EN NEGRO')+'\n'+
+      'readyState : '+(RS[v.readyState]||v.readyState)+'\n'+
+      'networkState: '+(NS[v.networkState]||v.networkState)+'\n'+
+      'error      : '+(v.error?(ERR[v.error.code]||v.error.code):'ninguno')+'\n'+
+      'play()     : '+_playErr+'\n'+
+      'paused='+v.paused+'  t='+v.currentTime.toFixed(1)+'s'+
+        '  bajado='+(v.buffered.length?v.buffered.end(0).toFixed(1)+'s':'0')+'\n'+
+      'tamano en pantalla: '+Math.round(r.width)+'x'+Math.round(r.height)+
+        '   video real: '+v.videoWidth+'x'+v.videoHeight;
+  },1000);
+}
+
 /* ---------------- SCALING ---------------- */
+/* OJO: esto es lo que decide si se ve ALGO o no.
+
+   Antes calculaba la escala con window.innerWidth/innerHeight tal cual. Si el
+   WebView todavia no sabe de que tamano es cuando corre esto -pasa seguido en
+   los players de signage, que crean la vista antes de darle medidas- entonces
+   innerWidth es 0, la escala sale 0, y transform:scale(0) deja la pantalla
+   COMPLETAMENTE EN NEGRO. Solo habia un reintento a los 60ms; si el WebView
+   tardaba mas, se quedaba en negro para siempre.
+
+   Ahora: si las medidas no sirven, no aplicamos nada y reintentamos hasta 60
+   veces (15s). Ademas re-escalamos cuando la pagina se vuelve visible. */
+let _scaleTries=0, _lastScale=0;
 function scaleAll(){
-  const s=Math.min(window.innerWidth/1920,window.innerHeight/1080);
+  const W=window.innerWidth||document.documentElement.clientWidth||0;
+  const H=window.innerHeight||document.documentElement.clientHeight||0;
+  if(W<50||H<50){                       // medidas que no sirven: NO pintamos scale(0)
+    if(_scaleTries++<60)setTimeout(scaleAll,250);
+    return;
+  }
+  const s=Math.min(W/1920,H/1080);
+  if(!(s>0)){ if(_scaleTries++<60)setTimeout(scaleAll,250); return; }
+  _lastScale=s;
   const scr=document.getElementById('screen2');
   scr.style.transform='scale('+s+')';
-  scr.style.left=((window.innerWidth-1920*s)/2)+'px';
-  scr.style.top=((window.innerHeight-1080*s)/2)+'px';
+  scr.style.left=((W-1920*s)/2)+'px';
+  scr.style.top=((H-1080*s)/2)+'px';
   const sp=document.getElementById('splash2');
   if(sp){sp.style.transform='scale('+s+')';sp.style.left=scr.style.left;sp.style.top=scr.style.top;}
   document.body.style.background='#E31837';
 }
 window.addEventListener('resize',scaleAll);
+window.addEventListener('orientationchange',scaleAll);
+window.addEventListener('load',scaleAll);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)scaleAll();});
 scaleAll();
 setTimeout(scaleAll,60);
+setTimeout(scaleAll,500);
+setTimeout(scaleAll,2000);
+setTimeout(scaleAll,5000);
 
 </script>
