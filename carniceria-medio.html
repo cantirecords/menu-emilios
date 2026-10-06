@@ -316,17 +316,20 @@ function hideSplashes(){
 }
 
 let _lastDataStr=null;
+let _fetchState="(todavia no se intento)";
 async function loadFromSheet(){
   if(!APPS_SCRIPT_URL_CARNICERIA)return;
   try{
     const r=await fetch(_DATA_URL_CARNICERIA+Date.now());
     const data=await r.json();
+    _fetchState="OK ("+r.status+")";
     const str=JSON.stringify(data);
-    if(str===_lastDataStr)return;
+    if(str===_lastDataStr){hideSplashes();return;}
     _lastDataStr=str;
     try{localStorage.setItem(CACHE_KEY,str);}catch(_e){}
     applyData(data);
-  }catch(_e){ /* sin internet o Sheet caído: se queda con lo último que haya (caché o muestra) */ }
+  }catch(_e){ _fetchState="FALLO: "+((_e&&_e.message)?_e.message:_e);
+              /* sin internet o Sheet caído: se queda con lo último que haya (caché o muestra) */ }
 }
 try{
   const cached=localStorage.getItem(CACHE_KEY);
@@ -334,6 +337,20 @@ try{
 }catch(_e){}
 loadFromSheet();
 setInterval(loadFromSheet,30000);
+
+/* ===================== RED DE SEGURIDAD DEL SPLASH =====================
+   ESTE ERA EL BUG DE "NO SE VE NADA".
+   hideSplashes() se llamaba UNICAMENTE desde applyData(), o sea el fondo rojo
+   con la E se quitaba SOLO si el fetch al Apps Script salia bien. Si fallaba
+   -internet del local, Sheet caido, o un WebView de signage que borra el
+   localStorage en cada carga, asi que no hay cache de donde tirar- la pantalla
+   se quedaba en el splash PARA SIEMPRE, tapando el menu y el video.
+   Por eso era intermitente: cada recarga era un volado, y con el refresh de
+   AbleSign cada 30s se volvia a tirar el volado.
+   El menu de muestra ya se dibujo arriba (renderAll en el arranque), asi que
+   vale mil veces mas ensenar el menu -aunque sea con los ultimos datos- que
+   dejar una pantalla roja indefinida. */
+setTimeout(hideSplashes,6000);
 /* Watchdog: primero intenta play(); solo recarga el archivo si sigue atorado
    dos chequeos seguidos, para no reiniciar la descarga en una red lenta. */
 let _vdogStuck=0;
@@ -359,13 +376,25 @@ if(location.search.indexOf('diag=1')>=0){
   const NS=['0 VACIO','1 INACTIVO','2 DESCARGANDO','3 SIN FUENTE'];
   const ERR={1:'1 ABORTADO',2:'2 RED',3:'3 NO SE PUDO DECODIFICAR',4:'4 FUENTE NO SOPORTADA'};
   const t0=Date.now();
+  /* Estado del splash: si dice VISIBLE, no importa como este el video, no se ve nada. */
+  function splashState(){
+    const ids=['splash1','splash2','splash3'];
+    for(let i=0;i<ids.length;i++){
+      const sp=document.getElementById(ids[i]);
+      if(sp&&!sp.classList.contains('hide'))return ids[i]+' VISIBLE  <<< ESTO TAPA TODO';
+    }
+    return 'oculto (OK)';
+  }
   setInterval(function(){
     const v=document.getElementById('carnVideo');
     const seg=Math.round((Date.now()-t0)/1000);
-    if(!v){box.textContent='SEG '+seg+'\nNO EXISTE EL <video> (ese es el problema)';return;}
+    if(!v){box.textContent='SEG '+seg+'\nNO EXISTE EL <video> (ese es el problema)'+
+      '\nsplash     : '+splashState()+'\nfetch Sheet: '+_fetchState;return;}
     const r=v.getBoundingClientRect();
     box.textContent=
       'SEG '+seg+'   videos en pagina: '+document.querySelectorAll('video').length+'\n'+
+      'splash     : '+splashState()+'\n'+
+      'fetch Sheet: '+_fetchState+'\n'+
       'VENTANA    : '+window.innerWidth+'x'+window.innerHeight+
         '   escala='+_lastScale.toFixed(4)+(_lastScale?'':'  <<< PANTALLA EN NEGRO')+'\n'+
       'readyState : '+(RS[v.readyState]||v.readyState)+'\n'+
