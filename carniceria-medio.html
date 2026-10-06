@@ -87,6 +87,25 @@ body{padding:56px 24px 120px;}
 .reel .tag{position:absolute;bottom:26px;left:0;right:0;text-align:center;color:rgba(255,255,255,.9);font-size:22px;font-weight:600;letter-spacing:2px;z-index:2;}
 .reel .tag small{display:block;font-size:15px;font-weight:500;color:rgba(255,255,255,.6);letter-spacing:1px;margin-top:4px;}
 
+/* ============ FIRE TV: QUE EL VIDEO SI SE PINTE ============
+   Esto NO es cosmetico, es la razon por la que el recuadro salia negro.
+   En el WebView del Fire Stick el <video> no se dibuja con el resto de la
+   pagina: se manda a un plano de hardware aparte. Ese plano no se puede
+   recortar con esquinas redondeadas ni dejar que le pinten algo encima.
+   Cuando el compositor no puede resolverlo, simplemente DEJA DE PINTAR EL
+   VIDEO y se ve el fondo del contenedor -el degradado oscuro de .reel-, que
+   es exactamente el "recuadro negro" que se veia en la pantalla. Por eso los
+   diagnosticos salian perfectos (readyState 4, play() OK, el tiempo
+   avanzando): el video siempre estuvo corriendo, nadie lo estaba dibujando.
+
+   Asi que SOLO cuando hay video (clase puesta desde mountVideo) el .reel deja
+   de recortar y no se le pone nada encima. El marco blanco se queda; lo unico
+   que se pierde son las esquinas redondeadas de ese recuadro. Vale la pena.
+   Si algun dia se quita el video, el .reel normal sigue igual que siempre. */
+.reel.has-video{overflow:visible;border-radius:0;background:#000;}
+.reel.has-video::after{content:none;}          /* la capa de rayitas tapaba el plano de video */
+.reel.has-video video{position:relative;z-index:1;border-radius:0;}
+
 /* contact block (screen 3) */
 .contact{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;}
 .contact .pedidos{color:var(--green-lt);font-size:40px;font-weight:600;font-style:italic;transform:rotate(-3deg);line-height:.9;}
@@ -231,9 +250,13 @@ function mountVideo(){
   let v=document.getElementById('carnVideo');
 
   if(!VIDEO_SRC){                      // sin video: el circulo de play de siempre
+    reel.classList.remove('has-video');
     if(!reel.querySelector('.play'))reel.innerHTML='<div class="play"></div>';
     return;
   }
+  /* Avisa al CSS que aqui adentro hay un plano de video de hardware, para que
+     deje de recortarlo y no le pinte nada encima (ver el bloque FIRE TV). */
+  reel.classList.add('has-video');
   if(v){                               // ya existe: solo cambiamos el src si cambio
     if(v.getAttribute('src')!==VIDEO_SRC){v.src=VIDEO_SRC;v.load();tryPlay(v);}
     return;
@@ -312,6 +335,12 @@ function hideSplashes(){
   const _w=Math.max(0,2800-(Date.now()-(window.__T0__||0)));
   setTimeout(function(){
     ['splash1','splash2','splash3'].forEach(function(id){const sp=document.getElementById(id);if(sp)sp.classList.add('hide');});
+    /* Con opacity:0 el splash es invisible pero SIGUE siendo una capa de
+       1920x1080 con z-index:50 encima de todo, incluido el plano de video del
+       Fire Stick. Una vez que termino el fundido, lo sacamos del pintado. */
+    setTimeout(function(){
+      ['splash1','splash2','splash3'].forEach(function(id){const sp=document.getElementById(id);if(sp)sp.style.display='none';});
+    },1200);
   },_w);
 }
 
@@ -319,16 +348,29 @@ let _lastDataStr=null;
 let _fetchState="(todavia no se intento)";
 async function loadFromSheet(){
   if(!APPS_SCRIPT_URL_CARNICERIA)return;
+  /* El Fire Stick mostro "fetch Sheet: (todavia no se intento)" a los 16s: el
+     fetch NO fallaba, se quedaba COLGADO sin responder nunca. Sin corte, cada
+     30s se apilaba otra peticion encima. Ocho segundos y lo abortamos. */
+  let _corta=null, _ctl=null;
   try{
-    const r=await fetch(_DATA_URL_CARNICERIA+Date.now());
+    const opts={cache:'no-store'};
+    if(typeof AbortController==='function'){
+      _ctl=new AbortController();
+      opts.signal=_ctl.signal;
+      _corta=setTimeout(function(){try{_ctl.abort();}catch(_x){}},8000);
+    }
+    const r=await fetch(_DATA_URL_CARNICERIA+Date.now(),opts);
     const data=await r.json();
+    if(_corta)clearTimeout(_corta);
     _fetchState="OK ("+r.status+")";
     const str=JSON.stringify(data);
     if(str===_lastDataStr){hideSplashes();return;}
     _lastDataStr=str;
     try{localStorage.setItem(CACHE_KEY,str);}catch(_e){}
     applyData(data);
-  }catch(_e){ _fetchState="FALLO: "+((_e&&_e.message)?_e.message:_e);
+  }catch(_e){ if(_corta)clearTimeout(_corta);
+              _fetchState=(_e&&_e.name==='AbortError')?"COLGADO (cortado a los 8s)"
+                          :"FALLO: "+((_e&&_e.message)?_e.message:_e);
               /* sin internet o Sheet caído: se queda con lo último que haya (caché o muestra) */ }
 }
 try{
@@ -391,10 +433,23 @@ if(location.search.indexOf('diag=1')>=0){
     if(!v){box.textContent='SEG '+seg+'\nNO EXISTE EL <video> (ese es el problema)'+
       '\nsplash     : '+splashState()+'\nfetch Sheet: '+_fetchState;return;}
     const r=v.getBoundingClientRect();
+    /* Las condiciones que impiden que el Fire Stick pinte el plano de video.
+       Las tres tienen que decir NO; si alguna dice SI, ese es el culpable. */
+    const reel=document.querySelector('#reelBox .reel');
+    const cr=reel?getComputedStyle(reel):null;
+    const scr=document.getElementById('screen2');
+    const tr=scr?getComputedStyle(scr).transform:'?';
+    const recorta=cr?((cr.overflow!=='visible')||(parseFloat(cr.borderRadius)>0)):false;
+    const encima=cr?(getComputedStyle(reel,'::after').content!=='none'):false;
+    const capa=(tr&&tr!=='none');
     box.textContent=
       'SEG '+seg+'   videos en pagina: '+document.querySelectorAll('video').length+'\n'+
       'splash     : '+splashState()+'\n'+
       'fetch Sheet: '+_fetchState+'\n'+
+      'TAPAN EL VIDEO -> recorta:'+(recorta?'SI':'no')+
+        '  capa encima:'+(encima?'SI':'no')+
+        '  transform:'+(capa?'SI':'no')+
+        ((recorta||encima||capa)?'   <<< CULPABLE':'   (todo limpio)')+'\n'+
       'VENTANA    : '+window.innerWidth+'x'+window.innerHeight+
         '   escala='+_lastScale.toFixed(4)+(_lastScale?'':'  <<< PANTALLA EN NEGRO')+'\n'+
       'readyState : '+(RS[v.readyState]||v.readyState)+'\n'+
@@ -432,7 +487,15 @@ function scaleAll(){
   if(!(s>0)){ if(_scaleTries++<60)setTimeout(scaleAll,250); return; }
   _lastScale=s;
   const scr=document.getElementById('screen2');
-  scr.style.transform='scale('+s+')';
+  /* En una TV de 1920x1080 la escala sale exactamente 1. Poner scale(1) no
+     cambia NADA visualmente pero obliga al navegador a meter todo en una capa
+     compuesta, y eso en el Fire Stick es otra manera de que el plano de video
+     no se pinte. Si no hay nada que escalar, mejor no poner transform. */
+  if(Math.abs(s-1)<0.0005&&Math.abs(W-1920)<2&&Math.abs(H-1080)<2){
+    scr.style.transform='none';
+  }else{
+    scr.style.transform='scale('+s+')';
+  }
   scr.style.left=((W-1920*s)/2)+'px';
   scr.style.top=((H-1080*s)/2)+'px';
   const sp=document.getElementById('splash2');
