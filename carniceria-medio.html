@@ -210,9 +210,12 @@ function v2(list,cat){
   const q=new Set((V2_QUITAR[cat]||[]).map(norm));
   const ren={};Object.keys(V2_NOMBRE[cat]||{}).forEach(k=>{ren[norm(k)]=V2_NOMBRE[cat][k];});
   const out=list.filter(([n])=>!q.has(norm(n))).map(([n,p])=>{
-    let d=ren[norm(n)]||n;
-    if(cat==='res')d=d.replace(/ de Res\b/i,'');   // el título ya dice RES (igual que Puerco/Pollo)
-    return [d,p,n];
+    let d=ren[norm(n)]||n,o=n;
+    if(cat==='res'){
+      d=d.replace(/ de Res\b/i,'');   // el título ya dice RES (igual que Puerco/Pollo)
+      o=/ de /i.test(d)?d:d+' de Res';   // color: "Lomo" de RES se compara como "Lomo de Res", no como el Lomo de puerco
+    }
+    return [d,p,o];
   });
   /* los rojos (solo por encargo) van al final de cada sección, para no mezclarse con los verdes */
   return out.filter(it=>!esPorEncargo(it[2])).concat(out.filter(it=>esPorEncargo(it[2])));
