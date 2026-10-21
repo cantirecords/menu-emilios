@@ -187,8 +187,97 @@ function legendBig(){return `<div style="position:absolute;left:726px;top:85px;t
   <span style="display:flex;align-items:center;gap:10px;font-family:var(--ff);font-weight:700;font-size:20px;color:var(--red-dk);white-space:nowrap;"><span style="width:16px;height:16px;border-radius:50%;background:var(--red-dk);display:inline-block;"></span>Solo por encargo</span>
 </div>`;}
 
+/* ===================== VERSIÓN 2 (oct 2026) =====================
+   Lista del dueño: naranja = quitar, verde = se queda, nombres corregidos al lado.
+   Se filtra AQUÍ (no en el Sheet) para que las pantallas v1 sigan igual mientras
+   se aprueba esta versión. Cada producto lleva su nombre original como 3er valor
+   para que el color rojo/verde (POR_ENCARGO) siga funcionando aunque cambie el nombre. */
+const V2_QUITAR={
+  res:["Bistex de Espaldilla de Res","Bistec de Espaldilla de Res","Bistec de Pulpa Blanca","Grasa de Res","Hueso Blanco","Picaña","Milanesa de Res","Chuleta de Res"],
+  especiales:["Codorniz","Conejo","Chivo Congelado"],
+  puerco:["Baby Ribs","Baby Ribs Marinada","Chamorro","Hígado","Lengua","Molida","Oreja","Pata en Vinagre","Tocino","Útero"],
+  pollo:["Chorizo","Corazón","Molido","Muslo","Muslo con Hueso","Muslo sin Hueso","Pierna de Pavo"],
+  mariscos:["Bacalao Seco","Camarón Congelado","Camarón con Cabeza","Huachinango","Pulpo","Filete de Tilapia","Pescado Corvina","Pescado Macarela","Pescado Pargo"],
+  visceras:["Huevos de Toro","Riñón de Res","Sesos"],
+  embutidos:["Chicharrón Morusa","Chorizo Seco","Chorizo de Res","Discada","Orejas en Vinagre","Tripa para Chorizo"]
+};
+const V2_NOMBRE={
+  especiales:{"Chivo Fresco":"Chivo","Borrego Fresco":"Borrego"},
+  pollo:{"Milanesa Natural":"Bistec","P. y Muslo Marinada":"Pierna y Muslo Marinada","P. y Muslo p/Asar":"Pierna y Muslo p/Asar"},
+  mariscos:{"Camarón Fresco":"Camarón","Mojarra Grande":"Mojarra"}
+};
+function v2(list,cat){
+  const q=new Set((V2_QUITAR[cat]||[]).map(norm));
+  const ren={};Object.keys(V2_NOMBRE[cat]||{}).forEach(k=>{ren[norm(k)]=V2_NOMBRE[cat][k];});
+  const out=list.filter(([n])=>!q.has(norm(n))).map(([n,p])=>{
+    let d=ren[norm(n)]||n;
+    if(cat==='res')d=d.replace(/ de Res\b/i,'');   // el título ya dice RES (igual que Puerco/Pollo)
+    return [d,p,n];
+  });
+  /* los rojos (solo por encargo) van al final de cada sección, para no mezclarse con los verdes */
+  return out.filter(it=>!esPorEncargo(it[2])).concat(out.filter(it=>esPorEncargo(it[2])));
+}
+
+/* ---------------- LETRA AUTO-AJUSTABLE ----------------
+   Cada tarjeta busca el tamaño de letra MÁS GRANDE que cabe (alto y ancho) y elige
+   1 o 2 columnas según cuál deje la letra más grande. Si mañana se quitan o agregan
+   productos en el Sheet, la letra se reajusta sola. */
+let _FIT=[];
+function fitList(list,maxS,minK){_FIT.push({list:list,maxS:maxS||64,minK:minK||0.75});return `<div class="fit-box" data-fit="${_FIT.length-1}" style="height:100%;"></div>`;}
+function _fitCols(list,cols){
+  /* pocos productos: reparte el aire parejo arriba/en medio/abajo, no todo en medio */
+  if(cols===1)return `<div class="pl-col"${list.length<=4?' style="justify-content:space-evenly;"':''}>${rows(list,20,20)}</div>`;
+  const h=Math.ceil(list.length/2);   // minmax(0,1fr): que una columna no empuje a la otra fuera de la tarjeta
+  /* renglón vacío al final de la columna corta: así los renglones de ambas columnas quedan a la misma altura */
+  const fill=list.length%2?'<div class="pl-row"><span class="pl-name"></span></div>':'';
+  return `<div class="card-grid" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:40px;"><div class="pl-col">${rows(list.slice(0,h),20,20)}</div><div class="pl-col">${rows(list.slice(h),20,20)}${fill}</div></div>`;
+}
+function _fitsAt(box,s,minK){minK=minK||0.75;
+  box.querySelectorAll('.pl-name,.pl-price').forEach(e=>{e.style.fontSize=s+'px';});
+  box.querySelectorAll('.pl-row').forEach(r=>{r.style.minHeight=Math.round(s*1.2)+'px';});
+  if(box.scrollWidth>box.clientWidth+1||box.scrollHeight>box.clientHeight+1)return false;
+  const cols=box.querySelectorAll('.pl-col');
+  for(let i=0;i<cols.length;i++){
+    let h=0;
+    for(let j=0;j<cols[i].children.length;j++){
+      const r=cols[i].children[j];
+      /* un nombre largo no debe achicar toda la lista: solo ese nombre baja (hasta 75%) */
+      if(r.scrollWidth>r.clientWidth+1){
+        const nm=r.querySelector('.pl-name');let k=0.95;
+        while(k>minK-0.01){nm.style.fontSize=(s*k)+'px';if(r.scrollWidth<=r.clientWidth+1)break;k-=0.05;}
+        if(k<=minK-0.01)return false;
+      }
+      h+=r.offsetHeight;
+    }
+    if(h*1.15>cols[i].clientHeight)return false;   // deja aire entre renglones
+  }
+  return true;
+}
+function _bestSize(box,max,minK){
+  let lo=14,hi=max;
+  if(!_fitsAt(box,lo,minK))return lo;
+  if(_fitsAt(box,hi,minK))return hi;
+  while(hi-lo>0.5){const m=(lo+hi)/2;if(_fitsAt(box,m,minK))lo=m;else hi=m;}
+  return Math.floor(lo);
+}
+function layoutFit(){
+  document.querySelectorAll('.fit-box').forEach(box=>{
+    const f=_FIT[+box.dataset.fit];if(!f)return;
+    let best={s:0,c:1};
+    (f.list.length>6?[1,2]:[1]).forEach(c=>{
+      box.innerHTML=_fitCols(f.list,c);
+      const s=_bestSize(box,f.maxS,f.minK);
+      if(s>best.s+1)best={s:s,c:c};
+    });
+    box.innerHTML=_fitCols(f.list,best.c);
+    _fitsAt(box,best.s,f.minK);
+    box.dataset.size=best.s;box.dataset.cols=best.c;
+  });
+}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){try{layoutFit();}catch(_e){}});
+
 function rows(list,nameSize,priceSize){
-  return list.map(([n,p])=>{const st=esPorEncargo(n)?'color:var(--red-dk)':'color:var(--green)';return `<div class="pl-row"><span class="pl-name" style="font-size:${nameSize}px;${st}">${n}</span><span class="pl-lead"></span><span class="pl-price" style="font-size:${priceSize}px;${st}">$${p}</span></div>`;}).join('');
+  return list.map(([n,p,o])=>{const st=esPorEncargo(o||n)?'color:var(--red-dk)':'color:var(--green)';return `<div class="pl-row"><span class="pl-name" style="font-size:${nameSize}px;${st}">${n}</span><span class="pl-lead"></span><span class="pl-price" style="font-size:${priceSize}px;${st}">$${p}</span></div>`;}).join('');
 }
 function head(icon,title,sub,titleSize,iconSize){
   iconSize=iconSize||Math.round(titleSize*1.1);
@@ -288,22 +377,24 @@ function mountVideo(){
 function renderAll(){
   ensureSkeleton();
   _renderAllRaw();
+  layoutFit();
   mountVideo();
 }
 
 function _renderAllRaw(){
+_FIT=[];
 document.getElementById('dyn').innerHTML=`
   <img class="corner-logo" src="${LOGO}" alt="">
   <!-- PUERCO left -->
   <div style="position:absolute;left:40px;top:36px;width:735px;">
     ${head('pig','PUERCO','',72,62)}
-    <div class="card" style="height:846px;">${twocol(PUERCO,24,25,26)}</div>
+    <div class="card" style="height:846px;">${fitList(v2(PUERCO,'puerco'),58)}</div>
   </div>
   <!-- El reel del centro ya no se dibuja aqui: vive en #reelBox (ver arriba) -->
   <!-- POLLO right -->
   <div style="position:absolute;left:1145px;top:36px;width:735px;">
     ${head('chicken','POLLO','',72,62)}
-    <div class="card" style="height:846px;">${twocol(POLLO,24,25,26)}</div>
+    <div class="card" style="height:846px;">${fitList(v2(POLLO,'pollo'),58)}</div>
   </div>
 ${legend()}
 `;
