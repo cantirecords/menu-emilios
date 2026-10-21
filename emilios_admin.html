@@ -196,7 +196,7 @@ input[type=color]{-webkit-appearance:none;width:44px;height:36px;border:none;bor
   </div>
 </div>
 
-<div id="dash"><div id="sidePrev"><div id="sp-tabs"><span id="sp-title">Vista previa &middot; BORRADOR</span><button class="sp-reload" onclick="setSidePrev()" title="Recargar">&#8635;</button></div><div id="sp-menu-frames" style="display:contents"><div class="sp-frame"><div class="sp-lbl">Pantalla 1</div><iframe id="sideframe-p1" src=""></iframe></div><div class="sp-frame"><div class="sp-lbl">Pantalla 2</div><iframe id="sideframe-p2" src=""></iframe></div><div id="sp-empty2">Pon las URLs de las pantallas en el tab <b>Pantallas</b> para ver el preview.</div></div><div id="sp-carn-frame" style="display:none;width:100%;height:1200px;border-radius:10px;overflow:hidden;background:#000;margin-bottom:10px;flex:none;"><iframe id="sideframe-carn" src="" style="width:100%;height:100%;border:0;display:block;"></iframe></div></div>
+<div id="dash"><div id="sidePrev"><div id="sp-tabs"><span id="sp-title">Vista previa &middot; BORRADOR</span><button class="sp-reload" onclick="setSidePrev()" title="Recargar">&#8635;</button></div><div id="sp-menu-frames" style="display:contents"><div class="sp-frame"><div class="sp-lbl">Pantalla 1</div><iframe id="sideframe-p1" src=""></iframe></div><div class="sp-frame"><div class="sp-lbl">Pantalla 2</div><iframe id="sideframe-p2" src=""></iframe></div><div id="sp-empty2">Pon las URLs de las pantallas en el tab <b>Pantallas</b> para ver el preview.</div></div><div id="sp-carn-frame" style="display:none"><div class="sp-frame"><div class="sp-lbl">Carnicería · Izquierda</div><iframe class="carn-prev" data-screen="carniceria-izquierda.html" src=""></iframe></div><div class="sp-frame"><div class="sp-lbl">Carnicería · Medio</div><iframe class="carn-prev" data-screen="carniceria-medio.html" src=""></iframe></div><div class="sp-frame"><div class="sp-lbl">Carnicería · Derecha</div><iframe class="carn-prev" data-screen="carniceria-derecha.html" src=""></iframe></div></div></div>
   <div class="topbar">
     <div class="topbar-left">
       <img class="topbar-logo" src="https://emiliosgrocery.com/wp-content/uploads/2025/04/Emilios-Grocery-Logo.png" alt="">
@@ -492,17 +492,16 @@ function applyRole(){
 
 function switchTab(n){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===n));document.querySelectorAll('.tab-content').forEach((c,i)=>c.classList.toggle('active',i===n));updSidePrevMode(n===9);}
 
-const CARN_PREVIEW_URL='carniceria/prototipo-carniceria.html';
+/* preview de carnicería = las 3 pantallas reales en modo borrador */
 function updSidePrevMode(isCarn){
     const menu=document.getElementById('sp-menu-frames'),carn=document.getElementById('sp-carn-frame');
     if(!menu||!carn)return;
     menu.style.display=isCarn?'none':'contents';
-    carn.style.display=isCarn?'block':'none';
+    carn.style.display=isCarn?'contents':'none';
     if(isCarn)reloadCarnPreview();
 }
 function reloadCarnPreview(){
-    const f=document.getElementById('sideframe-carn');
-    if(f)f.src=CARN_PREVIEW_URL+'?mode=draft&_='+Date.now();
+    document.querySelectorAll('#sp-carn-frame iframe.carn-prev').forEach(f=>{f.src=f.dataset.screen+'?mode=draft&_='+Date.now();});
 }
 
 function saveURLs(){
