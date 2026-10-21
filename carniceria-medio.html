@@ -188,29 +188,11 @@ function legendBig(){return `<div style="position:absolute;left:726px;top:85px;t
 </div>`;}
 
 /* ===================== VERSIÓN 2 (oct 2026) =====================
-   Lista del dueño: naranja = quitar, verde = se queda, nombres corregidos al lado.
-   Se filtra AQUÍ (no en el Sheet) para que las pantallas v1 sigan igual mientras
-   se aprueba esta versión. Cada producto lleva su nombre original como 3er valor
-   para que el color rojo/verde (POR_ENCARGO) siga funcionando aunque cambie el nombre. */
-const V2_QUITAR={
-  res:["Bistex de Espaldilla de Res","Bistec de Espaldilla de Res","Bistec de Pulpa Blanca","Grasa de Res","Hueso Blanco","Picaña","Milanesa de Res","Chuleta de Res"],
-  especiales:["Codorniz","Conejo","Chivo Congelado"],
-  puerco:["Baby Ribs","Baby Ribs Marinada","Chamorro","Hígado","Lengua","Molida","Oreja","Pata en Vinagre","Tocino","Útero"],
-  pollo:["Chorizo","Corazón","Molido","Muslo","Muslo con Hueso","Muslo sin Hueso","Pierna de Pavo"],
-  mariscos:["Bacalao Seco","Camarón Congelado","Camarón con Cabeza","Huachinango","Pulpo","Filete de Tilapia","Pescado Corvina","Pescado Macarela","Pescado Pargo"],
-  visceras:["Huevos de Toro","Riñón de Res","Sesos"],
-  embutidos:["Chicharrón Morusa","Chorizo Seco","Chorizo de Res","Discada","Orejas en Vinagre","Tripa para Chorizo"]
-};
-const V2_NOMBRE={
-  especiales:{"Chivo Fresco":"Chivo","Borrego Fresco":"Borrego"},
-  pollo:{"Milanesa Natural":"Bistec","P. y Muslo Marinada":"Pierna y Muslo Marinada","P. y Muslo p/Asar":"Pierna y Muslo p/Asar"},
-  mariscos:{"Camarón Fresco":"Camarón","Mojarra Grande":"Mojarra"}
-};
+   La lista viene directo del Sheet: lo que se edita en el admin es lo que sale aquí.
+   Cada producto lleva un 3er valor = nombre con el que se decide el color rojo/verde (POR_ENCARGO). */
 function v2(list,cat){
-  const q=new Set((V2_QUITAR[cat]||[]).map(norm));
-  const ren={};Object.keys(V2_NOMBRE[cat]||{}).forEach(k=>{ren[norm(k)]=V2_NOMBRE[cat][k];});
-  const out=list.filter(([n])=>!q.has(norm(n))).map(([n,p])=>{
-    let d=ren[norm(n)]||n,o=n;
+  const out=list.map(([n,p])=>{
+    let d=n,o=n;
     if(cat==='res'){
       d=d.replace(/ de Res\b/i,'');   // el título ya dice RES (igual que Puerco/Pollo)
       o=/ de /i.test(d)?d:d+' de Res';   // color: "Lomo" de RES se compara como "Lomo de Res", no como el Lomo de puerco
